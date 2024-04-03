@@ -16,22 +16,27 @@ class DrawerCubit extends Cubit<HomeDrawerState> {
 
   final ZoomDrawerController zoomDrawerController = ZoomDrawerController();
   bool isOpen = false;
+  Timer? timer;
 
   void openDrawer() {
-    Timer(const Duration(milliseconds: 40), () {
+    timer ??= Timer(const Duration(milliseconds: 40), () {
       isOpen = true;
-      emit(DrawerStateOpen());
     });
     zoomDrawerController.toggle?.call();
     emit(DrawerStateOpen());
   }
 
   void closeDrawer() {
-    Timer(const Duration(milliseconds: 40), () {
+    timer ??= Timer(const Duration(milliseconds: 40), () {
       isOpen = false;
-      emit(DrawerStateClose());
     });
     zoomDrawerController.close?.call();
     emit(DrawerStateClose());
+  }
+
+  @override
+  Future<void> close() {
+    timer = null;
+    return super.close();
   }
 }

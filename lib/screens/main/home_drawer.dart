@@ -18,9 +18,11 @@ import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
+import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../models/drawer_model.dart';
 
@@ -69,7 +71,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   children: [
                     ZoomDrawer(
                       controller: bloc.zoomDrawerController,
-                      menuScreen: const _DrawerMenuScreen(),
+                      menuScreen: _DrawerMenuScreen(
+                        onItemTap: (index) {
+                          setState(() {
+                            currentIndex = index;
+                          });
+                          bloc.closeDrawer();
+                        },
+                      ),
                       mainScreen: currentScreen(),
                       borderRadius: 30,
                       showShadow: true,
@@ -89,7 +98,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
 }
 
 class _DrawerMenuScreen extends StatelessWidget {
-  const _DrawerMenuScreen();
+  const _DrawerMenuScreen({required this.onItemTap});
+  final Function(int) onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -139,21 +149,24 @@ class _DrawerMenuScreen extends StatelessWidget {
                     for (int i = 0; i < drawerItems.length; i++)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(drawerItems[i].asset),
-                            gapW10,
-                            Flexible(
-                              child: Text(
-                                drawerItems[i].title,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                        child: InkWell(
+                          onTap: () => onItemTap(i),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(drawerItems[i].asset),
+                              gapW10,
+                              Flexible(
+                                child: Text(
+                                  drawerItems[i].title,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                   ],
@@ -171,7 +184,9 @@ class _DrawerMenuScreen extends StatelessWidget {
                     gapH20,
                     CustomButton(
                       title: "Logout",
-                      onPressed: () {},
+                      onPressed: () {
+                        NavigationService.offAll(const SplashScreen());
+                      },
                       height: 44,
                       backgroundColor: Colors.white.withOpacity(0.4),
                     ),
