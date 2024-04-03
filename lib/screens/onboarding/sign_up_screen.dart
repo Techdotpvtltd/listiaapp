@@ -1,8 +1,8 @@
 // Project: 	   listi_shop
-// File:    	   login_screen
-// Path:    	   lib/screens/onboarding/login_screen.dart
+// File:    	   sign_up_screen
+// Path:    	   lib/screens/onboarding/sign_up_screen.dart
 // Author:       Ali Akbar
-// Date:        03-04-24 14:37:57 -- Wednesday
+// Date:        03-04-24 16:43:03 -- Wednesday
 // Description:
 
 import 'package:flutter/gestures.dart';
@@ -11,72 +11,56 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
 import 'package:listi_shop/screens/onboarding/components/auth_scaffold.dart';
-import 'package:listi_shop/screens/onboarding/sign_up_screen.dart';
+import 'package:listi_shop/screens/onboarding/login_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      title: "Sign In",
-      subTitle: "Please login to continue",
-      asset: AppAssets.loginAsset,
+      asset: AppAssets.signupAsset,
+      title: "Sign Up",
+      subTitle: "Please  Sign Up to Join Us",
       child: Expanded(
         child: SingleChildScrollView(
           child: Padding(
             padding:
-                const EdgeInsets.only(top: 38, left: 29, right: 29, bottom: 10),
+                const EdgeInsets.only(top: 38, left: 29, right: 29, bottom: 30),
             child: Column(
               children: [
-                /// Email TextFiled
+                const CustomTextFiled(
+                  hintText: "Name",
+                  keyboardType: TextInputType.name,
+                ),
+                gapH10,
                 const CustomTextFiled(
                   hintText: "Email",
                   keyboardType: TextInputType.emailAddress,
                 ),
-                gapH12,
-
-                /// Password TextFiled
+                gapH10,
+                const CustomTextFiled(
+                  hintText: "Phone",
+                  keyboardType: TextInputType.phone,
+                ),
+                gapH10,
                 const CustomTextFiled(
                   hintText: "Password",
                   keyboardType: TextInputType.visiblePassword,
                 ),
-
-                /// Forgot Password Button
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    style: const ButtonStyle(
-                      shadowColor: MaterialStatePropertyAll(Colors.transparent),
-                      splashFactory: NoSplash.splashFactory,
-                      overlayColor:
-                          MaterialStatePropertyAll(Colors.transparent),
-                      surfaceTintColor:
-                          MaterialStatePropertyAll(Colors.transparent),
-                      padding: MaterialStatePropertyAll(EdgeInsets.zero),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    child: Text(
-                      "Forgot your password?",
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppTheme.primaryColor2,
-                      ),
-                    ),
-                  ),
+                gapH10,
+                const CustomTextFiled(
+                  hintText: "Confirm Password",
+                  keyboardType: TextInputType.visiblePassword,
                 ),
-                gapH50,
-                gapH20,
-
-                /// Login Button
-                CustomButton(title: "Login", onPressed: () {}),
-                gapH20,
-
-                /// Don't have Account Button
+                gapH18,
+                gapH26,
+                CustomButton(title: "Sign Up", onPressed: () {}),
+                gapH26,
                 Text.rich(
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w600,
@@ -84,13 +68,13 @@ class LoginScreen extends StatelessWidget {
                     color: AppTheme.titleColor1.withOpacity(0.67),
                   ),
                   TextSpan(
-                    text: "Don’t have an account? ",
+                    text: "Already have an account? ",
                     children: [
                       TextSpan(
-                        text: "Sign Up",
+                        text: "Login In",
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            NavigationService.offAll(const SignUpScreen());
+                            NavigationService.offAll(const LoginScreen());
                           },
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w600,

@@ -11,4 +11,6 @@ class AppAssets {
   static const String gs1 = "${AppAssets._iconPath}/gs1.svg";
   static const String gs2 = "${AppAssets._iconPath}/gs2.svg";
   static const String gs3 = "${AppAssets._iconPath}/gs3.svg";
+  static const String loginAsset = "${AppAssets._iconPath}/login_asset.svg";
+  static const String signupAsset = "${AppAssets._iconPath}/sign_up_asset.svg";
 }
