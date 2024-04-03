@@ -21,7 +21,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   void triggerSplashEvent() async {
     await Future.delayed(const Duration(seconds: 3));
-    NavigationService.go(const GetStartedScreen());
+    NavigationService.off(const GetStartedScreen());
   }
 
   @override
