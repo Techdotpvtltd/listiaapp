@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
+import 'package:listi_shop/screens/main/home_drawer.dart';
 import 'package:listi_shop/screens/onboarding/components/auth_scaffold.dart';
 import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
 import 'package:listi_shop/screens/onboarding/sign_up_screen.dart';
@@ -76,7 +77,11 @@ class LoginScreen extends StatelessWidget {
                 gapH20,
 
                 /// Login Button
-                CustomButton(title: "Login", onPressed: () {}),
+                CustomButton(
+                    title: "Login",
+                    onPressed: () {
+                      NavigationService.offAll(const HomeDrawer());
+                    }),
                 gapH20,
 
                 /// Don't have Account Button

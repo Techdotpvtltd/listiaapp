@@ -15,6 +15,7 @@ class CustomButton extends StatelessWidget {
     this.isLoading = false,
     this.onlyBorder = false,
     this.textColor,
+    this.backgroundColor,
   });
   final String title;
   final VoidCallback onPressed;
@@ -24,16 +25,19 @@ class CustomButton extends StatelessWidget {
   final bool isLoading;
   final bool onlyBorder;
   final Color? textColor;
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width ?? SCREEN_WIDTH,
       height: height ?? 48,
       decoration: BoxDecoration(
-        gradient:
-            onlyBorder || !isEnabled ? null : AppTheme.primaryLinearGradient,
+        gradient: onlyBorder || !isEnabled || backgroundColor != null
+            ? null
+            : AppTheme.primaryLinearGradient,
         borderRadius: const BorderRadius.all(Radius.circular(24)),
-        color: !isEnabled ? Colors.grey[400] : null,
+        color: !isEnabled ? Colors.grey[400] : backgroundColor,
         border: Border.all(
             color: onlyBorder && isEnabled
                 ? AppTheme.primaryColor1
