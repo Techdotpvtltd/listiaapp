@@ -14,9 +14,9 @@ import '../../utils/constants/app_assets.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold(
-      {super.key, required this.title, required this.body, this.actions});
+      {super.key, required this.title, this.body, this.actions});
   final String title;
-  final Widget body;
+  final Widget? body;
   final List<Widget>? actions;
 
   @override
@@ -31,7 +31,7 @@ class CustomScaffold extends StatelessWidget {
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(60),
               child: AppBar(
                 title: Text(
                   title,

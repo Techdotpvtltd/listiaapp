@@ -13,4 +13,6 @@ class AppAssets {
   static const String gs3 = "${AppAssets._iconPath}/gs3.svg";
   static const String loginAsset = "${AppAssets._iconPath}/login_asset.svg";
   static const String signupAsset = "${AppAssets._iconPath}/sign_up_asset.svg";
+  static const String forgotPasswordAsset =
+      "${AppAssets._iconPath}/forgot_password_asset.svg";
 }

@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
 import 'package:listi_shop/screens/onboarding/components/auth_scaffold.dart';
+import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
 import 'package:listi_shop/screens/onboarding/sign_up_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
@@ -50,7 +51,9 @@ class LoginScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      NavigationService.go(const ForgotPasswordScreen());
+                    },
                     style: const ButtonStyle(
                       shadowColor: MaterialStatePropertyAll(Colors.transparent),
                       splashFactory: NoSplash.splashFactory,
