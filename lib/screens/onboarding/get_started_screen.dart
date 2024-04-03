@@ -6,16 +6,20 @@
 // Description:
 
 import 'package:flutter/material.dart';
-import 'package:listi_shop/screens/components/custom_scaffold.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const CustomScaffold(
-      title: "Get Started",
-      body: Column(),
+    return const Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [],
+        ),
+      ),
     );
   }
 }

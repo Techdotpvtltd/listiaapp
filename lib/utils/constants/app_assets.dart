@@ -8,4 +8,7 @@ class AppAssets {
 
 //  Icons ====================================
   static const String logo = "${AppAssets._iconPath}/logo.svg";
+  static const String gs1 = "${AppAssets._iconPath}/gs1.svg";
+  static const String gs2 = "${AppAssets._iconPath}/gs2.svg";
+  static const String gs3 = "${AppAssets._iconPath}/gs3.svg";
 }
