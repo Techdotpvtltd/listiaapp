@@ -21,6 +21,8 @@ class AppAssets {
   static const String menuIcon = "${AppAssets._iconPath}/menu-ic.svg";
   static const String bucketIcon = "${AppAssets._iconPath}/bucket_ic.svg";
   static const String fireIcon = "${AppAssets._iconPath}/fire-ic.svg";
+  static const String phoneMessageIcon =
+      "${AppAssets._iconPath}/phone_message_icon.svg";
   static const String electricIcon = "${AppAssets._iconPath}/electric-ic.svg";
   static const String notificationIcon =
       "${AppAssets._iconPath}/notification_ic.svg";
