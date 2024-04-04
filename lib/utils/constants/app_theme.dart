@@ -10,6 +10,9 @@ class AppTheme {
   /// titleColor1
   static const Color titleColor1 = Color(0xFF1E1E1E);
 
+  /// Mostly used for subTitle Color
+  static const Color subTitleColor1 = Color(0xFFA3A3A3);
+
   /// Primary Linear Gradient, Useed on Button, Container etc
   static const LinearGradient primaryLinearGradient = LinearGradient(
     begin: Alignment(0.99, -0.10),
