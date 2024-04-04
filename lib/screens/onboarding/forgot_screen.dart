@@ -36,7 +36,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
               ),
               SizedBox(height: SCREEN_HEIGHT * 0.15),
-              CustomButton(title: "Sent mail", onPressed: () {}),
+              CustomButton(title: "Send mail", onPressed: () {}),
             ],
           ),
         ),

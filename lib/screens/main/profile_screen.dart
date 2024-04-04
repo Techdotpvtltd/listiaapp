@@ -12,6 +12,8 @@ import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
+import 'package:listi_shop/screens/main/edit_profile_screen.dart';
+import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
@@ -56,7 +58,9 @@ class ProfileScreen extends StatelessWidget {
                       width: 26,
                       height: 26,
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          NavigationService.go(const EditProfileScreen());
+                        },
                         style: const ButtonStyle(
                           padding: MaterialStatePropertyAll(EdgeInsets.zero),
                           visualDensity: VisualDensity.compact,
@@ -105,7 +109,9 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: SCREEN_HEIGHT * 0.08),
             _CustomButton(
               "Change password",
-              () {},
+              () {
+                NavigationService.go(const ForgotPasswordScreen());
+              },
             ),
             gapH20,
             _CustomButton(
@@ -138,7 +144,7 @@ class _CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onTap,
+      onTap: onTap,
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       child: Container(
