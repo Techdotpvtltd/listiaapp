@@ -12,9 +12,11 @@ import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/components/round_button.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
+import 'package:listi_shop/screens/main/notification_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -105,8 +107,12 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+
+                  /// Notification Button
                   RoundButton(
-                    onTap: () {},
+                    onTap: () {
+                      NavigationService.go(const NotificationScreen());
+                    },
                     icon: SvgPicture.asset(AppAssets.notificationDotIcon),
                   )
                 ],

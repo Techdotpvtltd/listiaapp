@@ -32,6 +32,7 @@ class _ProfilesWidgetState extends State<ProfilesWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SizedBox(
           height: widget.height,
