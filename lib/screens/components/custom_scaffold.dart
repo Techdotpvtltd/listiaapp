@@ -14,10 +14,19 @@ import '../../utils/constants/app_assets.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold(
-      {super.key, required this.title, this.body, this.actions});
+      {super.key,
+      required this.title,
+      this.body,
+      this.actions,
+      this.backButtonPressed,
+      this.backButtonIcon,
+      this.middleWidget});
   final String title;
   final Widget? body;
   final List<Widget>? actions;
+  final VoidCallback? backButtonPressed;
+  final Widget? backButtonIcon;
+  final Widget? middleWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -44,33 +53,41 @@ class CustomScaffold extends StatelessWidget {
                 actions: actions,
                 leadingWidth: 80,
                 leading: IconButton(
-                  onPressed: () {
-                    NavigationService.back();
-                  },
+                  onPressed: backButtonPressed ??
+                      () {
+                        NavigationService.back();
+                      },
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(
                       const Color(0xffffffff).withOpacity(0.07),
                     ),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
+                  icon: backButtonIcon ??
+                      const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
                 ),
                 backgroundColor: Colors.transparent,
               ),
             ),
-            body: Container(
-              height: SCREEN_HEIGHT,
-              width: SCREEN_WIDTH,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+            body: Column(
+              children: [
+                if (middleWidget != null) middleWidget!,
+                Expanded(
+                  child: Container(
+                    width: SCREEN_WIDTH,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(28),
+                        topRight: Radius.circular(28),
+                      ),
+                    ),
+                    child: body,
+                  ),
                 ),
-              ),
-              child: body,
+              ],
             ),
           ),
         ),

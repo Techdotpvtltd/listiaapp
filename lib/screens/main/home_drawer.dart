@@ -15,7 +15,9 @@ import 'package:listi_shop/blocs/drawer_cubit/drawer_state.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
+import 'package:listi_shop/screens/main/complete_list_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
+import 'package:listi_shop/screens/main/profile_screen.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
@@ -46,7 +48,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
     switch (currentIndex) {
       case 0:
         return const HomeScreen();
-
+      case 1:
+        return const CompleteListScreen();
+      case 2:
+        return const ProfileScreen();
       default:
         return const HomeScreen();
     }

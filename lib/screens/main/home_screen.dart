@@ -115,9 +115,11 @@ class HomeScreen extends StatelessWidget {
           },
         ),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: HorizontalPadding(
-          child: ItemList(),
+          child: ItemList(
+            onItemTap: (index) {},
+          ),
         ),
       ),
     );
