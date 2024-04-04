@@ -13,6 +13,7 @@ import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/components/round_button.dart';
 import 'package:listi_shop/screens/main/add_item_screen.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
+import 'package:listi_shop/screens/main/list_item_detail_screen.dart';
 import 'package:listi_shop/screens/main/notification_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
@@ -127,7 +128,9 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: HorizontalPadding(
           child: ItemList(
-            onItemTap: (index) {},
+            onItemTap: (index) {
+              NavigationService.go(const ListItemDetailScreen());
+            },
           ),
         ),
       ),

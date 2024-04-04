@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/main/components/profiles_widget.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
@@ -50,7 +51,7 @@ class _ItemListState extends State<ItemList> {
       padding: const EdgeInsets.only(top: 18, bottom: 80),
       itemCount: 5,
       itemBuilder: (context, index) {
-        return InkWell(
+        return CustomInkWell(
           onTap: () => widget.onItemTap(index),
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 4),

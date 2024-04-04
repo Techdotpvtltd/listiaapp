@@ -20,13 +20,19 @@ class CustomScaffold extends StatelessWidget {
       this.actions,
       this.backButtonPressed,
       this.backButtonIcon,
-      this.middleWidget});
+      this.middleWidget,
+      this.floatingActionButton,
+      this.endDrawer,
+      this.floatingActionButtonLocation});
   final String title;
   final Widget? body;
   final List<Widget>? actions;
   final VoidCallback? backButtonPressed;
   final Widget? backButtonIcon;
   final Widget? middleWidget;
+  final Widget? floatingActionButton;
+  final Widget? endDrawer;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,11 @@ class CustomScaffold extends StatelessWidget {
         ),
         Positioned.fill(
           child: Scaffold(
+            key: scaffoldkey,
             backgroundColor: Colors.transparent,
+            floatingActionButton: floatingActionButton,
+            floatingActionButtonLocation: floatingActionButtonLocation,
+            endDrawer: endDrawer,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(60),
               child: AppBar(
@@ -95,3 +105,5 @@ class CustomScaffold extends StatelessWidget {
     );
   }
 }
+
+final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();

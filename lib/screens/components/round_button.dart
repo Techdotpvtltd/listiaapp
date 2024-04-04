@@ -8,10 +8,14 @@
 import 'package:flutter/material.dart';
 
 class RoundButton extends StatelessWidget {
-  const RoundButton({super.key, required this.onTap, required this.icon});
+  const RoundButton(
+      {super.key,
+      required this.onTap,
+      required this.icon,
+      this.backgroundColor});
   final VoidCallback onTap;
   final Widget icon;
-
+  final Color? backgroundColor;
   @override
   Widget build(BuildContext context) {
     return IconButton(
@@ -22,7 +26,7 @@ class RoundButton extends StatelessWidget {
         overlayColor: const MaterialStatePropertyAll(Colors.transparent),
         fixedSize: const MaterialStatePropertyAll(Size(49, 49)),
         backgroundColor: MaterialStatePropertyAll(
-          Colors.white.withOpacity(0.07),
+          backgroundColor ?? Colors.white.withOpacity(0.07),
         ),
       ),
       icon: icon,

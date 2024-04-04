@@ -18,6 +18,10 @@ class AppAssets {
   static const String userIcon = "${AppAssets._iconPath}/user-ic.svg";
   static const String loginAsset = "${AppAssets._iconPath}/login_asset.svg";
   static const String signupAsset = "${AppAssets._iconPath}/sign_up_asset.svg";
+  static const String menuIcon = "${AppAssets._iconPath}/menu-ic.svg";
+  static const String bucketIcon = "${AppAssets._iconPath}/bucket_ic.svg";
+  static const String fireIcon = "${AppAssets._iconPath}/fire-ic.svg";
+  static const String electricIcon = "${AppAssets._iconPath}/electric-ic.svg";
   static const String notificationIcon =
       "${AppAssets._iconPath}/notification_ic.svg";
   static const String notificationDotIcon =
