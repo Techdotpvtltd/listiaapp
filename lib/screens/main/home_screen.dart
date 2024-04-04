@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/components/round_button.dart';
+import 'package:listi_shop/screens/main/add_item_screen.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
 import 'package:listi_shop/screens/main/notification_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
@@ -32,7 +33,9 @@ class HomeScreen extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            NavigationService.go(const AddItemScreen());
+          },
           icon: const Icon(
             Icons.add,
             color: Colors.white,
