@@ -10,7 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
-import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 
 import '../../utils/constants/app_assets.dart';
@@ -18,8 +17,8 @@ import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
-
+  const CartScreen({super.key, required this.scaffoldKey});
+  final GlobalKey<ScaffoldState> scaffoldKey;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +52,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   CustomInkWell(
                     onTap: () {
-                      scaffoldkey.currentState!.closeEndDrawer();
+                      scaffoldKey.currentState!.closeEndDrawer();
                     },
                     child: Container(
                       width: 28,

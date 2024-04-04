@@ -18,18 +18,27 @@ import 'package:listi_shop/screens/main/cart_screen.dart';
 import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
 import 'package:listi_shop/screens/main/components/item_type_list.dart';
 import 'package:listi_shop/screens/main/components/profiles_widget.dart';
+import 'package:listi_shop/screens/main/share_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
-class ListItemDetailScreen extends StatelessWidget {
+class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen({super.key});
+
+  @override
+  State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
+}
+
+class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       title: "",
+      scaffoldkey: scaffoldKey,
       floatingActionButton: HorizontalPadding(
         child: CustomButton(
           title: "Add new item",
@@ -44,7 +53,7 @@ class ListItemDetailScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFEFEFE).withOpacity(0.87),
         ),
-        child: const CartScreen(),
+        child: CartScreen(scaffoldKey: scaffoldKey),
       ),
       actions: [
         const ProfilesWidget(
@@ -57,17 +66,22 @@ class ListItemDetailScreen extends StatelessWidget {
         gapW10,
 
         /// Add User Button
-        Container(
-          height: 25,
-          width: 25,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 12,
+        CustomInkWell(
+          onTap: () {
+            NavigationService.go(const ShareScreen());
+          },
+          child: Container(
+            height: 25,
+            width: 25,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 12,
+            ),
           ),
         ),
         gapW20,
@@ -115,7 +129,7 @@ class ListItemDetailScreen extends StatelessWidget {
                   builder: (context) {
                     return IconButton(
                       onPressed: () {
-                        scaffoldkey.currentState!.openEndDrawer();
+                        scaffoldKey.currentState!.openEndDrawer();
                       },
                       style: const ButtonStyle(
                         backgroundColor:

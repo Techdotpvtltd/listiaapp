@@ -23,7 +23,8 @@ class CustomScaffold extends StatelessWidget {
       this.middleWidget,
       this.floatingActionButton,
       this.endDrawer,
-      this.floatingActionButtonLocation});
+      this.floatingActionButtonLocation,
+      this.scaffoldkey});
   final String title;
   final Widget? body;
   final List<Widget>? actions;
@@ -33,7 +34,7 @@ class CustomScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final Widget? endDrawer;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
-
+  final GlobalKey<ScaffoldState>? scaffoldkey;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -105,5 +106,3 @@ class CustomScaffold extends StatelessWidget {
     );
   }
 }
-
-final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
