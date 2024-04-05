@@ -11,8 +11,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
+import 'package:listi_shop/screens/main/payment_method_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
 import '../../models/subscription_model.dart';
@@ -163,21 +165,26 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                     gapH2,
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border.all(
+                      child: CustomInkWell(
+                        onTap: () {
+                          NavigationService.go(const PaymentMethodScreen());
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppTheme.primaryColor2,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward,
                             color: isSelected
                                 ? Colors.white
                                 : AppTheme.primaryColor2,
                           ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: isSelected
-                              ? Colors.white
-                              : AppTheme.primaryColor2,
                         ),
                       ),
                     ),
