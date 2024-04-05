@@ -19,6 +19,7 @@ import 'package:listi_shop/screens/main/complete_list_screen.dart';
 import 'package:listi_shop/screens/main/contact_us_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
+import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
@@ -55,6 +56,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
         return const ProfileScreen();
       case 3:
         return const ContactUsScreen();
+      case 4:
+        return const SubscriptionPlanScreen();
       default:
         return const HomeScreen();
     }
