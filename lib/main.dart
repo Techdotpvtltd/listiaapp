@@ -8,9 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
+import 'package:listi_shop/managers/app_bloc_observer.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 
 void main() {
+  Bloc.observer = AppBlocObserver();
   runApp(const _WasteApp());
 }
 
@@ -22,6 +25,7 @@ class _WasteApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
+        BlocProvider(create: (context) => DrawerCubit()),
       ],
       child: const _WasteMaterialApp(),
     );

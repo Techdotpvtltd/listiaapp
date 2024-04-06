@@ -14,11 +14,27 @@ import '../../utils/constants/app_assets.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold(
-      {super.key, required this.title, required this.body, this.actions});
+      {super.key,
+      required this.title,
+      this.body,
+      this.actions,
+      this.backButtonPressed,
+      this.backButtonIcon,
+      this.middleWidget,
+      this.floatingActionButton,
+      this.endDrawer,
+      this.floatingActionButtonLocation,
+      this.scaffoldkey});
   final String title;
-  final Widget body;
+  final Widget? body;
   final List<Widget>? actions;
-
+  final VoidCallback? backButtonPressed;
+  final Widget? backButtonIcon;
+  final Widget? middleWidget;
+  final Widget? floatingActionButton;
+  final Widget? endDrawer;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final GlobalKey<ScaffoldState>? scaffoldkey;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -29,9 +45,13 @@ class CustomScaffold extends StatelessWidget {
         ),
         Positioned.fill(
           child: Scaffold(
+            key: scaffoldkey,
             backgroundColor: Colors.transparent,
+            floatingActionButton: floatingActionButton,
+            floatingActionButtonLocation: floatingActionButtonLocation,
+            endDrawer: endDrawer,
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(60),
               child: AppBar(
                 title: Text(
                   title,
@@ -44,33 +64,41 @@ class CustomScaffold extends StatelessWidget {
                 actions: actions,
                 leadingWidth: 80,
                 leading: IconButton(
-                  onPressed: () {
-                    NavigationService.back();
-                  },
+                  onPressed: backButtonPressed ??
+                      () {
+                        NavigationService.back();
+                      },
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(
                       const Color(0xffffffff).withOpacity(0.07),
                     ),
                   ),
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
+                  icon: backButtonIcon ??
+                      const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
                 ),
                 backgroundColor: Colors.transparent,
               ),
             ),
-            body: Container(
-              height: SCREEN_HEIGHT,
-              width: SCREEN_WIDTH,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
+            body: Column(
+              children: [
+                if (middleWidget != null) middleWidget!,
+                Expanded(
+                  child: Container(
+                    width: SCREEN_WIDTH,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(28),
+                        topRight: Radius.circular(28),
+                      ),
+                    ),
+                    child: body,
+                  ),
                 ),
-              ),
-              child: body,
+              ],
             ),
           ),
         ),

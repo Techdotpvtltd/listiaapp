@@ -38,6 +38,10 @@ dependencies:
   flutter_bloc: ^8.1.5
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
+  flutter_zoom_drawer: ^3.2.0
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
+  syncfusion_flutter_charts: ^25.1.38
 
 dev_dependencies:
   flutter_test:
