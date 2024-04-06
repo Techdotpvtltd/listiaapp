@@ -12,6 +12,8 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_state.dart';
+import 'package:listi_shop/models/user_model.dart';
+import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
@@ -106,9 +108,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 }
 
-class _DrawerMenuScreen extends StatelessWidget {
+class _DrawerMenuScreen extends StatefulWidget {
   const _DrawerMenuScreen({required this.onItemTap});
   final Function(int) onItemTap;
+
+  @override
+  State<_DrawerMenuScreen> createState() => _DrawerMenuScreenState();
+}
+
+class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
+  late final UserModel user = UserRepo().currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -130,9 +139,9 @@ class _DrawerMenuScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
-                child: const AvatarWidget(
-                  avatarUrl:
-                      "https://t4.ftcdn.net/jpg/03/25/73/59/360_F_325735908_TkxHU7okor9CTWHBhkGfdRumONWfIDEb.jpg",
+                child: AvatarWidget(
+                  avatarUrl: user.avatar,
+                  placeholderChar: user.name.isNotEmpty ? user.name[0] : 'U',
                   backgroundColor: AppTheme.primaryColor2,
                 ),
               ),
@@ -140,7 +149,7 @@ class _DrawerMenuScreen extends StatelessWidget {
 
               /// Named Widget
               Text(
-                "Ali Akbar",
+                user.name,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.plusJakartaSans(
                   color: Colors.white,
@@ -159,7 +168,7 @@ class _DrawerMenuScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: InkWell(
-                          onTap: () => onItemTap(i),
+                          onTap: () => widget.onItemTap(i),
                           child: Row(
                             children: [
                               SvgPicture.asset(drawerItems[i].asset),

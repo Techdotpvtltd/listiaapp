@@ -5,9 +5,12 @@
 // Date:        04-04-24 16:48:30 -- Thursday
 // Description:
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/models/user_model.dart';
+import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
@@ -21,9 +24,15 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final UserModel user = UserRepo().currentUser;
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -46,7 +55,9 @@ class ProfileScreen extends StatelessWidget {
               height: 80,
               child: Stack(
                 children: [
-                  const AvatarWidget(
+                  AvatarWidget(
+                    avatarUrl: user.avatar,
+                    placeholderChar: user.name.isNotEmpty ? user.name[0] : 'U',
                     width: 80,
                     height: 80,
                     backgroundColor: AppTheme.primaryColor2,
@@ -82,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
 
             /// Name Text
             Text(
-              "Ali Akbar",
+              user.name,
               style: GoogleFonts.plusJakartaSans(
                 color: Colors.white,
                 fontSize: 18,
@@ -93,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
             /// Email Text
             gapH8,
             Text(
-              "Abc1231234@gmai.com",
+              user.email,
               style: GoogleFonts.plusJakartaSans(
                 color: Colors.white,
                 fontSize: 12,
