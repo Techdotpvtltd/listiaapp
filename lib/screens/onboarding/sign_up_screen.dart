@@ -82,8 +82,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             }
             CustomDilaogs().errorBox(message: state.exception.message);
           }
-          if (state is AuthStateRegistered ||
-              state is AuthStateAppleLoggedIn ||
+
+          if (state is AuthStateRegistered) {
+            CustomDilaogs().successBox(
+              message:
+                  "We've sent you an email verification link to ${emailController.text}. Please verify your email by clicking the link before logging in.",
+              positiveTitle: "Go to Login",
+              onPositivePressed: () {
+                NavigationService.off(const LoginScreen());
+              },
+            );
+          }
+          if (state is AuthStateAppleLoggedIn ||
               state is AuthStateGoogleLoggedIn) {
             NavigationService.go(const HomeDrawer());
           }

@@ -13,6 +13,7 @@ class CustomDilaogs {
     required String message,
     required Widget bottomWidget,
     bool barrierDismissible = true,
+    int maxSubLines = 3,
     Color iconColor = AppTheme.primaryColor2,
     Color titleColor = AppTheme.primaryColor2,
   }) {
@@ -65,7 +66,7 @@ class CustomDilaogs {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  maxLines: 3,
+                  maxLines: maxSubLines,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans().copyWith(
                     fontSize: 12,
@@ -170,6 +171,7 @@ class CustomDilaogs {
       title: title ?? "Success",
       barrierDismissible: barrierDismissible,
       message: message,
+      maxSubLines: 6,
       bottomWidget: RoundedButton(
         title: positiveTitle ?? "Done",
         height: 50,

@@ -43,8 +43,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthEventSentEmailVerificationLink>(
-      (event, emit) {
-        AuthRepo().sendEmailVerifcationLink();
+      (event, emit) async {
+        try {
+          emit(AuthStateSendingMailVerification());
+          await AuthRepo().sendEmailVerifcationLink();
+          emit(AuthStateSentMailVerification());
+        } on AppException catch (e) {
+          emit(AuthStateSendingMailVerificationFailure(exception: e));
+        }
       },
     );
     on<AuthEventPerformLogin>((event, emit) async {

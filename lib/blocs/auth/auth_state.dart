@@ -126,3 +126,20 @@ class AuthStateAllowedLocation extends AuthState {
 class AuthStateNeedToAllowLocation extends AuthState {
   AuthStateNeedToAllowLocation({super.isLoading});
 }
+
+// ===========================Mail Verification Link Sent State================================
+
+class AuthStateSendingMailVerification extends AuthState {
+  AuthStateSendingMailVerification(
+      {super.isLoading = true,
+      super.loadingText = "Verification Link Sending..."});
+}
+
+class AuthStateSendingMailVerificationFailure extends AuthState {
+  final AppException exception;
+  AuthStateSendingMailVerificationFailure({required this.exception});
+}
+
+class AuthStateSentMailVerification extends AuthState {
+  AuthStateSentMailVerification();
+}

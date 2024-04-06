@@ -23,7 +23,11 @@ class AuthRepo {
   }
 
   Future<void> sendEmailVerifcationLink() async {
-    FirebaseAuthService().sendEmailVerifcationLink();
+    try {
+      await FirebaseAuthService().sendEmailVerifcationLink();
+    } catch (e) {
+      throw thrownAppException(e: e);
+    }
   }
 
 //  RegisteredAUser ====================================
