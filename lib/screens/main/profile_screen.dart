@@ -5,7 +5,6 @@
 // Date:        04-04-24 16:48:30 -- Thursday
 // Description:
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,12 +16,14 @@ import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/edit_profile_screen.dart';
 import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
-import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
+import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/auth/auth_event.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -33,6 +34,19 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final UserModel user = UserRepo().currentUser;
+
+  void trigegrLogoutEvent(AuthBloc bloc) {
+    CustomDilaogs().alertBox(
+      title: "Logout Action",
+      message: "Are you sure to logout this account?",
+      negativeTitle: "No",
+      positiveTitle: "Yes",
+      onPositivePressed: () {
+        bloc.add(AuthEventPerformLogout());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -138,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CustomButton(
                 title: "Logout",
                 onPressed: () {
-                  NavigationService.offAll(const SplashScreen());
+                  trigegrLogoutEvent(context.read<AuthBloc>());
                 }),
             gapH30,
           ],

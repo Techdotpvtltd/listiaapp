@@ -44,7 +44,9 @@ class _SplashScreenState extends State<SplashScreen> {
         }
 
         if (state is AuthStateLoginRequired) {
-          NavigationService.off(const GetStartedScreen());
+          Future.delayed(const Duration(seconds: 1), () {
+            NavigationService.off(const GetStartedScreen());
+          });
         }
       },
       child: Scaffold(

@@ -10,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/auth/auth_event.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_state.dart';
 import 'package:listi_shop/models/user_model.dart';
@@ -22,12 +24,10 @@ import 'package:listi_shop/screens/main/contact_us_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
-import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
-import 'package:listi_shop/utils/extensions/navigation_service.dart';
-
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
 import '../../models/drawer_model.dart';
 
 final List<DrawerModel> drawerItems = [
@@ -119,6 +119,18 @@ class _DrawerMenuScreen extends StatefulWidget {
 class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
   late final UserModel user = UserRepo().currentUser;
 
+  void trigegrLogoutEvent(AuthBloc bloc) {
+    CustomDilaogs().alertBox(
+      title: "Logout Action",
+      message: "Are you sure to logout this account?",
+      negativeTitle: "No",
+      positiveTitle: "Yes",
+      onPositivePressed: () {
+        bloc.add(AuthEventPerformLogout());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,7 +215,7 @@ class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
                     CustomButton(
                       title: "Logout",
                       onPressed: () {
-                        NavigationService.offAll(const SplashScreen());
+                        trigegrLogoutEvent(context.read<AuthBloc>());
                       },
                       height: 44,
                       backgroundColor: Colors.white.withOpacity(0.4),
