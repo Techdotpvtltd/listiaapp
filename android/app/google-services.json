@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "47515538677",
+    "project_id": "listi-shop",
+    "storage_bucket": "listi-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47515538677:android:b48711c5bf7c66d5d1e1bc",
+        "android_client_info": {
+          "package_name": "com.techdot.listiShop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb7PsOfhcGUbch6FtAThSz5Xstzwe-tzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
