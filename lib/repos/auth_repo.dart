@@ -1,4 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import '../exceptions/app_exceptions.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
 import '../utils/utils.dart';
@@ -84,75 +87,72 @@ class AuthRepo {
     }
     await FirebaseAuthService().resetPassword(email: atMail);
   }
+
+  /// =========================== Social Auth Methods ================================
+  //  Login With Apple ====================================
+  Future<void> loginWithApple() async {
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ]);
+
+      AuthCredential authCredential = OAuthProvider("apple.com").credential(
+          accessToken: credential.authorizationCode,
+          idToken: credential.identityToken);
+      await FirebaseAuthService()
+          .loginWithCredentials(credential: authCredential);
+      await _fetchOrCreateUser();
+    } catch (e) {
+      throw thrownAppException(e: e);
+    }
+  }
+
+  // Mostly used for Social Account Authenticatopn
+  Future<void> _fetchOrCreateUser() async {
+    try {
+      await UserRepo().fetch();
+      userFetchFailureCount = 0;
+    } on AppException catch (e) {
+      if (UserRepo().isUserNull || e is AuthExceptionUserNotFound) {
+        final User? user = FirebaseAuth.instance.currentUser;
+
+        if (user != null) {
+          if (userFetchFailureCount <= 1) {
+            await UserRepo().create(
+                uid: user.uid,
+                name: user.displayName ?? "",
+                avatarUrl: user.photoURL,
+                phoneNumber: user.phoneNumber ?? "",
+                email: user.email ?? "");
+            _fetchOrCreateUser();
+          } else {
+            throw thrownAppException(e: e);
+          }
+          userFetchFailureCount += 1;
+        }
+        return;
+      }
+      throw thrownAppException(e: e);
+    }
+  }
+
+  //  Login With Google ====================================
+  Future<void> loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      await FirebaseAuthService().loginWithCredentials(credential: credential);
+      await _fetchOrCreateUser();
+    } catch (e) {
+      throw thrownAppException(e: e);
+    }
+  }
 }
-
-
-// =========================== Social Auth Methods ================================
-  // //  Login With Apple ====================================
-  // Future<void> loginWithApple() async {
-  //   try {
-  //     final credential = await SignInWithApple.getAppleIDCredential(scopes: [
-  //       AppleIDAuthorizationScopes.email,
-  //       AppleIDAuthorizationScopes.fullName,
-  //     ]);
-
-  //     AuthCredential authCredential = OAuthProvider("apple.com").credential(
-  //         accessToken: credential.authorizationCode,
-  //         idToken: credential.identityToken);
-  //     await FirebaseAuthService()
-  //         .loginWithCredentials(credential: authCredential);
-  //     await _fetchOrCreateUser();
-  //   } catch (e) {
-  //     throw thrownAppException(e: e);
-  //   }
-  // }
-
-  /// Mostly used for Social Account Authenticatopn
-  // Future<void> _fetchOrCreateUser() async {
-  //   try {
-  //     await UserRepo().fetch();
-  //     userFetchFailureCount = 0;
-  //   } on AppException catch (e) {
-  //     if (UserRepo().isUserNull || e is AuthExceptionUserNotFound) {
-  //       final User? user = FirebaseAuth.instance.currentUser;
-
-  //       if (user != null) {
-  //         if (userFetchFailureCount <= 1) {
-  //           await UserRepo().create(
-  //               uid: user.uid,
-  //               name: user.displayName ?? "",
-  //               avatarUrl: user.photoURL,
-  //               phoneNumber: user.phoneNumber,
-  //               email: user.email ?? "");
-  //           _fetchOrCreateUser();
-  //         } else {
-  //           throw thrownAppException(e: e);
-  //         }
-  //         userFetchFailureCount += 1;
-  //       }
-  //       return;
-  //     }
-  //     throw thrownAppException(e: e);
-  //   }
-  // }
-
-  // //  Login With Google ====================================
-  // Future<void> loginWithGoogle() async {
-  //   try {
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-  //     final GoogleSignInAuthentication? googleAuth =
-  //         await googleUser?.authentication;
-
-  //     final credential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth?.accessToken,
-  //       idToken: googleAuth?.idToken,
-  //     );
-  //     await FirebaseAuthService().loginWithCredentials(credential: credential);
-  //     await _fetchOrCreateUser();
-  //   } catch (e) {
-  //     throw thrownAppException(e: e);
-  //   }
-  // }
-
-  

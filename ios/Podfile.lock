@@ -1,4 +1,10 @@
 PODS:
+  - AppAuth (1.7.3):
+    - AppAuth/Core (= 1.7.3)
+    - AppAuth/ExternalUserAgent (= 1.7.3)
+  - AppAuth/Core (1.7.3)
+  - AppAuth/ExternalUserAgent (1.7.3):
+    - AppAuth/Core
   - cloud_firestore (4.16.0):
     - Firebase/Firestore (= 10.22.0)
     - firebase_core
@@ -72,6 +78,14 @@ PODS:
     - FirebaseCoreExtension (~> 10.0)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
   - Flutter (1.0.0)
+  - google_sign_in_ios (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - GoogleSignIn (~> 7.0.0)
+  - GoogleSignIn (7.0.0):
+    - AppAuth (~> 1.5)
+    - GTMAppAuth (< 3.0, >= 1.3)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
   - GoogleUtilities/AppDelegateSwizzler (7.13.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -94,6 +108,9 @@ PODS:
   - GoogleUtilities/Reachability (7.13.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - GTMAppAuth (2.0.0):
+    - AppAuth/Core (~> 1.6)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.5)
   - GTMSessionFetcher/Core (3.3.1)
   - image_picker_ios (0.0.1):
     - Flutter
@@ -110,6 +127,8 @@ PODS:
     - Flutter
   - PromisesObjC (2.4.0)
   - RecaptchaInterop (100.0.0)
+  - sign_in_with_apple (0.0.1):
+    - Flutter
   - sqflite (0.0.3):
     - Flutter
     - FlutterMacOS
@@ -121,13 +140,16 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `10.22.0`)
   - Flutter (from `Flutter`)
+  - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/darwin`)
 
 SPEC REPOS:
   trunk:
+    - AppAuth
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -143,7 +165,9 @@ SPEC REPOS:
     - FirebaseFirestoreInternalBinary
     - FirebaseSharedSwift
     - FirebaseStorage
+    - GoogleSignIn
     - GoogleUtilities
+    - GTMAppAuth
     - GTMSessionFetcher
     - leveldb-library
     - nanopb
@@ -164,12 +188,16 @@ EXTERNAL SOURCES:
     :tag: 10.22.0
   Flutter:
     :path: Flutter
+  google_sign_in_ios:
+    :path: ".symlinks/plugins/google_sign_in_ios/darwin"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/darwin"
 
@@ -179,6 +207,7 @@ CHECKOUT OPTIONS:
     :tag: 10.22.0
 
 SPEC CHECKSUMS:
+  AppAuth: a13994980c1ec792f7e2e665acd4d4aa6be43240
   cloud_firestore: 4991f9c366cc8446171deec57a905c572c964fc1
   Firebase: 797fd7297b7e1be954432743a0b3f90038e45a71
   firebase_auth: bd4ebe97d1e836aa5692b75c8f13412ed4381871
@@ -200,7 +229,10 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 48076404e6e52372290d15a07d2ed1d2f1754023
   FirebaseStorage: bc7bddc743548a89cfb896843a77cf4bdde2c231
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  google_sign_in_ios: 7c205d44fdc266640375c6ac33d96ba3983dbe02
+  GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: d053d902a8edaa9904e1bd00c37535385b8ed152
+  GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
   image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
   leveldb-library: 06a69cc7582d64b29424a63e085e683cc188230a
@@ -209,6 +241,7 @@ SPEC CHECKSUMS:
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
 
 PODFILE CHECKSUM: 2523196b73944321c363973e90b25aab9887e9af

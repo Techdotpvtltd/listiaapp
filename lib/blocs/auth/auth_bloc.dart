@@ -102,27 +102,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
     );
 
-    // // Apple Login Event
-    // on<AuthEventAppleLogin>((event, emit) async {
-    //   try {
-    //     emit(AuthStateLogging(loadingText: "Signing with Apple."));
-    //     await AuthRepo().loginWithApple();
-    //     emit(AuthStateAppleLoggedIn());
-    //   } on AppException catch (e) {
-    //     emit(AuthStateLoginFailure(exception: e));
-    //   }
-    // });
+    // Apple Login Event
+    on<AuthEventAppleLogin>((event, emit) async {
+      try {
+        emit(AuthStateLogging(loadingText: "Signing with Apple."));
+        await AuthRepo().loginWithApple();
+        emit(AuthStateAppleLoggedIn());
+      } on AppException catch (e) {
+        emit(AuthStateLoginFailure(exception: e));
+      }
+    });
 
-    // //Google Login Event
-    // on<AuthEventGoogleLogin>((event, emit) async {
-    //   emit(AuthStateLogging(
-    //       isLoading: true, loadingText: "Signing with Google."));
-    //   try {
-    //     await AuthRepo().loginWithGoogle();
-    //     emit(AuthStateGoogleLoggedIn());
-    //   } on AppException catch (e) {
-    //     emit(AuthStateLoginFailure(exception: e));
-    //   }
-    // });
+    //Google Login Event
+    on<AuthEventGoogleLogin>((event, emit) async {
+      emit(AuthStateLogging(
+          isLoading: true, loadingText: "Signing with Google."));
+      try {
+        await AuthRepo().loginWithGoogle();
+        emit(AuthStateGoogleLoggedIn());
+      } on AppException catch (e) {
+        emit(AuthStateLoginFailure(exception: e));
+      }
+    });
   }
 }

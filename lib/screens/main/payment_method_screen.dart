@@ -68,7 +68,7 @@ class PaymentMethodScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      SvgPicture.asset(AppAssets.appleIcon),
+                      SvgPicture.asset(AppAssets.appleSmallIcon),
                       gapW20,
                       Text(
                         "Apple",

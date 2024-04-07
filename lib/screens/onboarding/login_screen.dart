@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/auth/auth_state.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
+import 'package:listi_shop/screens/components/social_icon_button.dart';
 import 'package:listi_shop/screens/main/home_drawer.dart';
 import 'package:listi_shop/screens/onboarding/components/auth_scaffold.dart';
 import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
@@ -49,6 +50,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void triggeEmailVerificationMail(AuthBloc bloc) {
     bloc.add(AuthEventSentEmailVerificationLink());
+  }
+
+  void triggerAppleLogin(AuthBloc bloc) {
+    bloc.add(AuthEventAppleLogin());
+  }
+
+  void triggerGoogleLogin(AuthBloc bloc) {
+    bloc.add(AuthEventGoogleLogin());
   }
 
   @override
@@ -136,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.only(
-                  top: 38, left: 29, right: 29, bottom: 10),
+                  top: 38, left: 29, right: 29, bottom: 30),
               child: Column(
                 children: [
                   /// Email TextFiled
@@ -187,7 +196,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   gapH50,
-                  gapH20,
 
                   /// Login Button
                   CustomButton(
@@ -197,6 +205,34 @@ class _LoginScreenState extends State<LoginScreen> {
                         triggerLoginEvent(context.read<AuthBloc>());
                       }),
                   gapH20,
+                  Text(
+                    "------ OR ------",
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppTheme.subTitleColor1,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  gapH10,
+
+                  /// Social Login Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SocialIconButton(
+                          onPressed: () {
+                            triggerAppleLogin(context.read<AuthBloc>());
+                          },
+                          icon: AppAssets.appleIcon),
+                      gapW20,
+                      SocialIconButton(
+                          onPressed: () {
+                            triggerGoogleLogin(context.read<AuthBloc>());
+                          },
+                          icon: AppAssets.googleIcon),
+                    ],
+                  ),
+                  gapH30,
 
                   /// Don't have Account Button
                   Text.rich(
