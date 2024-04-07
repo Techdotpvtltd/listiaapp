@@ -26,6 +26,7 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../utils/dialogs/dialogs.dart';
+import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -219,11 +220,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SocialIconButton(
-                          onPressed: () {
-                            triggerAppleLogin(context.read<AuthBloc>());
-                          },
-                          icon: AppAssets.appleIcon),
+                      Visibility(
+                        visible: Platform.isIOS,
+                        child: SocialIconButton(
+                            onPressed: () {
+                              triggerAppleLogin(context.read<AuthBloc>());
+                            },
+                            icon: AppAssets.appleIcon),
+                      ),
                       gapW20,
                       SocialIconButton(
                           onPressed: () {
