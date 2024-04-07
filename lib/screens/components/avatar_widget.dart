@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import 'circle_network_image_widget.dart';
+import 'my_image_picker.dart';
 
 class AvatarWidget extends StatefulWidget {
   const AvatarWidget({
@@ -26,6 +28,26 @@ class AvatarWidget extends StatefulWidget {
 
 class _AvatarWidgetState extends State<AvatarWidget> {
   late String selectedAvatar = widget.avatarUrl ?? "";
+
+  void selectImage() {
+    final MyImagePicker imagePicker = MyImagePicker();
+    imagePicker.pick();
+    imagePicker.onSelection(
+      (exception, data) {
+        if (data is XFile) {
+          setState(() {
+            if (widget.onSelectedImage != null) {
+              widget.onSelectedImage!(data.path);
+            }
+            setState(() {
+              selectedAvatar = data.path;
+            });
+          });
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -51,21 +73,28 @@ class _AvatarWidgetState extends State<AvatarWidget> {
                   );
                 },
               ),
-              onTapImage: widget.onSelectedImage != null
-                  ? () {
-                      // selectImage();
-                    }
-                  : () {},
             ),
           ),
           Visibility(
             visible: widget.onSelectedImage != null,
-            child: const Positioned(
-              right: 5,
-              bottom: 5,
-              child: Icon(
-                Icons.camera_alt,
-                color: AppTheme.primaryColor2,
+            child: Positioned(
+              right: 0,
+              bottom: -6,
+              child: IconButton(
+                onPressed: () {
+                  selectImage();
+                },
+                style: const ButtonStyle(
+                  padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                  visualDensity: VisualDensity.compact,
+                  backgroundColor:
+                      MaterialStatePropertyAll(AppTheme.primaryColor1),
+                ),
+                icon: const Icon(
+                  Icons.camera_alt_outlined,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
           )

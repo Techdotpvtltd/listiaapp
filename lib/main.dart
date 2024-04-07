@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:listi_shop/blocs/auth/auth_bloc.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
+import 'package:listi_shop/blocs/user/user_bloc.dart';
 import 'package:listi_shop/managers/app_bloc_observer.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 
@@ -44,6 +45,7 @@ class _WasteApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => DrawerCubit()),
+        BlocProvider(create: (context) => UserBloc()),
       ],
       child: const _WasteMaterialApp(),
     );

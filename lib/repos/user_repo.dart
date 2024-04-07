@@ -100,7 +100,6 @@ class UserRepo {
     required String name,
     required String email,
     required String phone,
-    required String apartment,
     String? imagePath,
   }) async {
     try {
@@ -132,7 +131,6 @@ class UserRepo {
         name: name,
         email: email,
         avatar: imagePath,
-        apartment: apartment,
         phoneNumber: phone,
       );
 
@@ -143,6 +141,7 @@ class UserRepo {
       _userModel = updatedModel;
       return _userModel!;
     } catch (e) {
+      debugPrint(e.toString());
       throw thrownAppException(e: e);
     }
   }
@@ -160,7 +159,7 @@ class UserRepo {
           ? throwAuthException(errorCode: e.code)
           : throwDataException(errorCode: e.code);
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
       throw DataExceptionUnknown(message: e.toString());
     }
   }

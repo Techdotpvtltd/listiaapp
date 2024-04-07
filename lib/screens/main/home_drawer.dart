@@ -28,6 +28,8 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/dialogs/dialogs.dart';
+import '../../blocs/user/user_bloc.dart';
+import '../../blocs/user/user_state.dart';
 import '../../models/drawer_model.dart';
 
 final List<DrawerModel> drawerItems = [
@@ -143,32 +145,45 @@ class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// Profile Widget
-              Container(
-                width: 86,
-                height: 86,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: AvatarWidget(
-                  avatarUrl: user.avatar,
-                  placeholderChar: user.name.isNotEmpty ? user.name[0] : 'U',
-                  backgroundColor: AppTheme.primaryColor2,
-                ),
-              ),
-              gapH6,
+              BlocSelector<UserBloc, UserState, UserModel?>(selector: (state) {
+                if (state is UserStateProfileUpdated) {
+                  return UserRepo().currentUser;
+                }
+                return null;
+              }, builder: (context, userState) {
+                return Column(
+                  children: [
+                    Container(
+                      width: 86,
+                      height: 86,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: AvatarWidget(
+                        avatarUrl: (userState ?? user).avatar,
+                        placeholderChar: (userState ?? user).name.isNotEmpty
+                            ? (userState ?? user).name[0]
+                            : 'U',
+                        backgroundColor: AppTheme.primaryColor2,
+                      ),
+                    ),
+                    gapH6,
 
-              /// Named Widget
-              Text(
-                user.name,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
-                ),
-              ),
+                    /// Named Widget
+                    Text(
+                      (userState ?? user).name,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                );
+              }),
               gapH50,
 
               /// Menu Widgets

@@ -61,5 +61,10 @@
 	<string>47515538677-qbuut6edh134tafgg3iinflvg8a8mljv.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera in order to capture images for your profile.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library in order to upload images for your profile.</string>
 </dict>
 </plist>

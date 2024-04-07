@@ -8,6 +8,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/user/user_bloc.dart';
+import 'package:listi_shop/blocs/user/user_state.dart';
 import 'package:listi_shop/models/user_model.dart';
 import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
@@ -64,55 +66,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             /// Profile Widget
-            SizedBox(
-              width: 100,
-              height: 80,
-              child: Stack(
-                children: [
-                  AvatarWidget(
-                    avatarUrl: user.avatar,
-                    placeholderChar: user.name.isNotEmpty ? user.name[0] : 'U',
-                    width: 80,
-                    height: 80,
-                    backgroundColor: AppTheme.primaryColor2,
-                  ),
-                  Positioned(
-                    right: -0,
-                    bottom: 8,
-                    child: SizedBox(
-                      width: 26,
-                      height: 26,
-                      child: IconButton(
-                        onPressed: () {
-                          NavigationService.go(const EditProfileScreen());
-                        },
-                        style: const ButtonStyle(
-                          padding: MaterialStatePropertyAll(EdgeInsets.zero),
-                          visualDensity: VisualDensity.compact,
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.white),
-                        ),
-                        icon: const Icon(
-                          Icons.edit_outlined,
-                          color: AppTheme.primaryColor1,
-                          size: 18,
-                        ),
+            BlocSelector<UserBloc, UserState, UserModel?>(
+              selector: (state) {
+                if (state is UserStateProfileUpdated) {
+                  return UserRepo().currentUser;
+                }
+                return null;
+              },
+              builder: (context, stateUser) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 80,
+                      child: Stack(
+                        children: [
+                          AvatarWidget(
+                            avatarUrl: (stateUser ?? user).avatar,
+                            placeholderChar: (stateUser ?? user).name.isNotEmpty
+                                ? (stateUser ?? user).name[0]
+                                : 'U',
+                            width: 80,
+                            height: 80,
+                            backgroundColor: AppTheme.primaryColor2,
+                          ),
+                          Positioned(
+                            right: -0,
+                            bottom: 8,
+                            child: SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: IconButton(
+                                onPressed: () {
+                                  NavigationService.go(
+                                      const EditProfileScreen());
+                                },
+                                style: const ButtonStyle(
+                                  padding:
+                                      MaterialStatePropertyAll(EdgeInsets.zero),
+                                  visualDensity: VisualDensity.compact,
+                                  backgroundColor:
+                                      MaterialStatePropertyAll(Colors.white),
+                                ),
+                                icon: const Icon(
+                                  Icons.edit_outlined,
+                                  color: AppTheme.primaryColor1,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            gapH8,
+                    gapH8,
 
-            /// Name Text
-            Text(
-              user.name,
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+                    /// Name Text
+                    Text(
+                      (stateUser ?? user).name,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             /// Email Text
