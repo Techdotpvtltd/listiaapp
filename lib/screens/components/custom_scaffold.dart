@@ -13,18 +13,20 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import '../../utils/constants/app_assets.dart';
 
 class CustomScaffold extends StatelessWidget {
-  const CustomScaffold(
-      {super.key,
-      required this.title,
-      this.body,
-      this.actions,
-      this.backButtonPressed,
-      this.backButtonIcon,
-      this.middleWidget,
-      this.floatingActionButton,
-      this.endDrawer,
-      this.floatingActionButtonLocation,
-      this.scaffoldkey});
+  const CustomScaffold({
+    super.key,
+    required this.title,
+    this.body,
+    this.actions,
+    this.backButtonPressed,
+    this.backButtonIcon,
+    this.middleWidget,
+    this.floatingActionButton,
+    this.endDrawer,
+    this.floatingActionButtonLocation,
+    this.scaffoldkey,
+    this.resizeToAvoidBottomInset,
+  });
   final String title;
   final Widget? body;
   final List<Widget>? actions;
@@ -35,6 +37,7 @@ class CustomScaffold extends StatelessWidget {
   final Widget? endDrawer;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final GlobalKey<ScaffoldState>? scaffoldkey;
+  final bool? resizeToAvoidBottomInset;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -46,6 +49,7 @@ class CustomScaffold extends StatelessWidget {
         Positioned.fill(
           child: Scaffold(
             key: scaffoldkey,
+            resizeToAvoidBottomInset: resizeToAvoidBottomInset,
             backgroundColor: Colors.transparent,
             floatingActionButton: floatingActionButton,
             floatingActionButtonLocation: floatingActionButtonLocation,

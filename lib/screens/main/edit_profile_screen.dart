@@ -111,6 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
       child: CustomScaffold(
         title: "Edit Profile",
+        resizeToAvoidBottomInset: false,
         body: CustomScrollView(
           slivers: [
             SliverFillRemaining(
