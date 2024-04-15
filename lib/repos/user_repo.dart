@@ -159,7 +159,7 @@ class UserRepo {
           ? throwAuthException(errorCode: e.code)
           : throwDataException(errorCode: e.code);
     } catch (e) {
-      // debugPrint(e.toString());
+      debugPrint(e.toString());
       throw DataExceptionUnknown(message: e.toString());
     }
   }

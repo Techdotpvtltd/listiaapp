@@ -59,7 +59,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     emailController.text = user.email;
     nameController.text = user.name;
     phoneController.text = user.phoneNumber;
-    selctedAvatar = user.avatar;
   }
 
   void triggerUpdateProfileEvent(UserBloc bloc) {
@@ -125,7 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       width: 125,
                       height: 112,
                       child: AvatarWidget(
-                        avatarUrl: selctedAvatar ?? "",
+                        avatarUrl: selctedAvatar ?? user.avatar,
                         placeholderChar:
                             user.name.isNotEmpty ? user.name[0] : 'U',
                         width: 112,
