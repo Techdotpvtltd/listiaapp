@@ -29,6 +29,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           }
 
           emit(UserStateProfileUpdating());
+
           final UserModel updatedModel = await UserRepo().update(
             name: event.name,
             email: event.email,

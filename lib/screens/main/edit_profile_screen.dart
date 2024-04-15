@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:listi_shop/blocs/user/user_state.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
@@ -20,6 +21,7 @@ import '../../repos/user_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../components/avatar_widget.dart';
+import '../components/my_image_picker.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -34,6 +36,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   int? errorCode;
   String? errorMessage;
   String? selctedAvatar;
+
+  void selectImage() {
+    final MyImagePicker imagePicker = MyImagePicker();
+    imagePicker.pick();
+    imagePicker.onSelection(
+      (exception, data) {
+        if (data is XFile) {
+          setState(() {
+            selctedAvatar = data.path;
+          });
+        }
+      },
+    );
+  }
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -114,8 +130,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: 112,
                         height: 112,
                         backgroundColor: AppTheme.primaryColor2,
-                        onSelectedImage: (url) {
-                          selctedAvatar = url;
+                        onEditPressed: () {
+                          selectImage();
                         },
                       ),
                     ),

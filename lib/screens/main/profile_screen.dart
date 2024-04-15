@@ -69,9 +69,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             BlocSelector<UserBloc, UserState, UserModel?>(
               selector: (state) {
                 if (state is UserStateProfileUpdated) {
-                  return UserRepo().currentUser;
+                  return state.user;
                 }
-                return null;
+                return UserRepo().currentUser;
               },
               builder: (context, stateUser) {
                 return Column(
