@@ -62,9 +62,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
       case 2:
         return const ProfileScreen();
       case 3:
-        return const ContactUsScreen();
+        return const ContactUsScreen(isShowMenu: true);
       case 4:
-        return const SubscriptionPlanScreen();
+        return const SubscriptionPlanScreen(isShowMenu: true);
       default:
         return const HomeScreen();
     }
@@ -78,31 +78,29 @@ class _HomeDrawerState extends State<HomeDrawer> {
         return Scaffold(
           body: Stack(
             children: [
-              Image.asset(
-                AppAssets.background,
-                fit: BoxFit.cover,
+              Positioned.fill(
+                child: Image.asset(
+                  AppAssets.background,
+                  fit: BoxFit.cover,
+                ),
               ),
               Positioned.fill(
-                child: Stack(
-                  children: [
-                    ZoomDrawer(
-                      controller: bloc.zoomDrawerController,
-                      menuScreen: _DrawerMenuScreen(
-                        onItemTap: (index) {
-                          setState(() {
-                            currentIndex = index;
-                          });
-                          bloc.closeDrawer();
-                        },
-                      ),
-                      mainScreen: currentScreen(),
-                      borderRadius: 30,
-                      showShadow: true,
-                      slideWidth: 260,
-                      mainScreenScale: 0.23,
-                      menuBackgroundColor: Colors.transparent,
-                    ),
-                  ],
+                child: ZoomDrawer(
+                  controller: bloc.zoomDrawerController,
+                  menuScreen: _DrawerMenuScreen(
+                    onItemTap: (index) {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                      bloc.closeDrawer();
+                    },
+                  ),
+                  mainScreen: currentScreen(),
+                  borderRadius: 30,
+                  showShadow: true,
+                  slideWidth: 260,
+                  mainScreenScale: 0.23,
+                  menuBackgroundColor: Colors.transparent,
                 ),
               ),
             ],

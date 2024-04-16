@@ -42,9 +42,12 @@ class CustomScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
-          AppAssets.background,
-          fit: BoxFit.cover,
+        SizedBox(
+          width: SCREEN_WIDTH,
+          child: Image.asset(
+            AppAssets.background,
+            fit: BoxFit.cover,
+          ),
         ),
         Positioned.fill(
           child: Scaffold(

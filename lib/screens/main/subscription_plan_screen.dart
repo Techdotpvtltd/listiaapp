@@ -54,8 +54,8 @@ final List<SubscriptionModel> subscriptions = [
 ];
 
 class SubscriptionPlanScreen extends StatefulWidget {
-  const SubscriptionPlanScreen({super.key});
-
+  const SubscriptionPlanScreen({super.key, this.isShowMenu = false});
+  final bool isShowMenu;
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
 }
@@ -67,13 +67,17 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       title: "Subscription Plan",
-      backButtonIcon: const Icon(
-        Icons.menu,
-        color: Colors.white,
-      ),
-      backButtonPressed: () {
-        context.read<DrawerCubit>().openDrawer();
-      },
+      backButtonIcon: widget.isShowMenu
+          ? const Icon(
+              Icons.menu,
+              color: Colors.white,
+            )
+          : null,
+      backButtonPressed: widget.isShowMenu
+          ? () {
+              context.read<DrawerCubit>().openDrawer();
+            }
+          : null,
       body: HVPadding(
         verticle: 10,
         child: ListView.builder(
