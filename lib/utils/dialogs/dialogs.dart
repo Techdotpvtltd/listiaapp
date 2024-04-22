@@ -3,11 +3,28 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import '../../main.dart';
+import '../../screens/components/custom_button.dart';
+import '../../screens/components/custom_title_textfiled.dart';
+import '../../screens/components/paddings.dart';
 import '../constants/constants.dart';
+import '../extensions/navigation_service.dart';
 import 'rounded_button.dart';
 
 class CustomDilaogs {
-  void _genericDilaog({
+  void _genericDialog({
+    Widget? child,
+  }) {
+    showDialog(
+      context: navKey.currentContext!,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: child,
+      ),
+    );
+  }
+
+  void _genericAlertDilaog({
     required IconData icon,
     required String title,
     required String message,
@@ -85,7 +102,7 @@ class CustomDilaogs {
   }
 
   void errorBox({String? message}) {
-    _genericDilaog(
+    _genericAlertDilaog(
       icon: Icons.close,
       title: "Error",
       titleColor: Colors.red,
@@ -111,7 +128,7 @@ class CustomDilaogs {
     IconData? icon,
     bool showNegative = true,
   }) {
-    _genericDilaog(
+    _genericAlertDilaog(
       icon: icon ?? Icons.warning,
       title: title ?? "Alert!",
       message: message ?? "Alet",
@@ -166,7 +183,7 @@ class CustomDilaogs {
     String? positiveTitle,
     bool barrierDismissible = true,
   }) {
-    _genericDilaog(
+    _genericAlertDilaog(
       icon: Icons.check,
       title: title ?? "Success",
       barrierDismissible: barrierDismissible,
@@ -181,6 +198,60 @@ class CustomDilaogs {
             onPositivePressed();
           }
         },
+      ),
+    );
+  }
+
+  void showTextField({
+    required String title,
+    required String tfHint,
+    required Function(String) onDone,
+  }) {
+    final TextEditingController controller = TextEditingController();
+    final FocusNode focusNode = FocusNode(canRequestFocus: true);
+    focusNode.requestFocus();
+    _genericDialog(
+      child: Container(
+        height: SCREEN_HEIGHT * 0.3,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        child: HVPadding(
+          verticle: 0,
+          horizontal: 20,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              gapH20,
+              CustomTextFiled(
+                controller: controller,
+                hintText: tfHint,
+                focusNode: focusNode,
+                onSubmitted: (value) {
+                  onDone(value);
+                  controller.clear();
+                  focusNode.requestFocus();
+                },
+              ),
+              gapH20,
+              CustomButton(
+                title: "Close",
+                onPressed: () {
+                  NavigationService.back();
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

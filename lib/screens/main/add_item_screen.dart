@@ -30,7 +30,7 @@ class AddItemScreen extends StatelessWidget {
           children: [
             /// Create New List Label
             Text(
-              "Create New List",
+              "Add New List",
               style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w700,
                 fontSize: 22,
@@ -39,7 +39,7 @@ class AddItemScreen extends StatelessWidget {
             ),
             gapH2,
             Text(
-              "Please fill the information to create the list",
+              "Please fill the information to add new item in the list.",
               style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w400,
                 fontSize: 9,

@@ -21,6 +21,7 @@ class CustomTextFiled extends StatefulWidget {
     this.fieldId,
     this.errorCode,
     this.onSubmitted,
+    this.focusNode,
   });
   final String? titleText;
   final String hintText;
@@ -35,6 +36,7 @@ class CustomTextFiled extends StatefulWidget {
   final int? minLines;
   final int? fieldId;
   final int? errorCode;
+  final FocusNode? focusNode;
   final Function(String)? onSubmitted;
 
   @override
@@ -44,7 +46,7 @@ class CustomTextFiled extends StatefulWidget {
 class _CustomTextFiledState extends State<CustomTextFiled> {
   late bool _isReadOnly;
   bool isFocused = false;
-  final FocusNode textFieldFocus = FocusNode();
+  late final FocusNode textFieldFocus;
   bool isShowPassword = true;
 
   IconData? getTextFiledPrefixIcon() {
@@ -66,7 +68,7 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
   void initState() {
     super.initState();
     _isReadOnly = widget.isReadyOnly;
-
+    textFieldFocus = widget.focusNode ?? FocusNode();
     textFieldFocus.addListener(() {
       setState(() {
         isFocused = textFieldFocus.hasFocus;
@@ -98,6 +100,7 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
         ),
         if (widget.titleText != null) gapH10,
         TextField(
+          canRequestFocus: true,
           focusNode: textFieldFocus,
           controller: widget.controller,
           obscureText: widget.keyboardType == TextInputType.visiblePassword &&

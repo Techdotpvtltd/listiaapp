@@ -60,6 +60,7 @@ class CustomScaffold extends StatelessWidget {
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(60),
               child: AppBar(
+                centerTitle: false,
                 title: Text(
                   title,
                   style: GoogleFonts.plusJakartaSans(
