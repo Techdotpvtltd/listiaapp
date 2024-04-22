@@ -11,17 +11,22 @@ import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/main/components/profiles_widget.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/extensions/date_extension.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ItemList extends StatefulWidget {
-  const ItemList({super.key, required this.onItemTap});
-  final Function(int) onItemTap;
+import '../../../models/list_model.dart';
 
+class ItemList extends StatefulWidget {
+  const ItemList({super.key, required this.onItemTap, required this.lists});
+  final Function(int) onItemTap;
+  final List<ListModel> lists;
   @override
   State<ItemList> createState() => _ItemListState();
 }
 
 class _ItemListState extends State<ItemList> {
+  late final List<ListModel> items = widget.lists;
+
   Color pointGraphValueColor(dynamic datum, int index) {
     if (datum['value'] < 1) {
       return Colors.transparent;
@@ -49,8 +54,10 @@ class _ItemListState extends State<ItemList> {
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.only(top: 18, bottom: 80),
-      itemCount: 5,
+      itemCount: items.length,
       itemBuilder: (context, index) {
+        final ListModel list = items[index];
+
         return CustomInkWell(
           onTap: () => widget.onItemTap(index),
           child: Container(
@@ -85,7 +92,7 @@ class _ItemListState extends State<ItemList> {
                           series: [
                             RadialBarSeries(
                               dataSource: const [
-                                {"x": 0, "value": 20}
+                                {"x": 0, "value": 0}
                               ],
                               xValueMapper: (data, _) => data['x'],
                               yValueMapper: (data, _) => data['value'],
@@ -107,7 +114,7 @@ class _ItemListState extends State<ItemList> {
                           children: [
                             /// Title Text
                             Text(
-                              "Aplha List",
+                              list.title,
                               maxLines: 2,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 16,
@@ -119,7 +126,7 @@ class _ItemListState extends State<ItemList> {
 
                             /// Number Of items text
                             Text(
-                              "1 / 5",
+                              "0 / 0",
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -129,7 +136,7 @@ class _ItemListState extends State<ItemList> {
 
                             /// Date Label
                             Text(
-                              "5 March 2023",
+                              list.createdAt.dateToString("dd MMMM yyyy"),
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w700,
@@ -150,15 +157,9 @@ class _ItemListState extends State<ItemList> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       /// Profile Widget
-                      const ProfilesWidget(
+                      ProfilesWidget(
                         height: 44,
-                        avatarts: [
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
-                          "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
-                          "https://static.jobscan.co/blog/uploads/How-To-Write-A-LinkedIn-Summary.png",
-                          "https://media.istockphoto.com/id/1317804578/photo/one-businesswoman-headshot-smiling-at-the-camera.jpg?s=612x612&w=0&k=20&c=EqR2Lffp4tkIYzpqYh8aYIPRr-gmZliRHRxcQC5yylY=",
-                        ],
+                        avatarts: list.sharedUsers,
                       ),
 
                       /// Created By Text

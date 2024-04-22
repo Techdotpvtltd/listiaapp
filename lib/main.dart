@@ -15,6 +15,7 @@ import 'package:listi_shop/blocs/user/user_bloc.dart';
 import 'package:listi_shop/managers/app_bloc_observer.dart';
 import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 
+import 'blocs/list/list_bloc.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -46,6 +47,7 @@ class _WasteApp extends StatelessWidget {
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => DrawerCubit()),
         BlocProvider(create: (context) => UserBloc()),
+        BlocProvider(create: (context) => ListBloc()),
       ],
       child: const _WasteMaterialApp(),
     );

@@ -29,6 +29,7 @@ class CompleteListScreen extends StatelessWidget {
       body: HorizontalPadding(
         child: ItemList(
           onItemTap: (index) {},
+          lists: const [],
         ),
       ),
     );

@@ -160,6 +160,11 @@ class AuthExceptionRequiredAddress extends AuthException {
       {super.message = "Please add address.", super.errorCode = 1042});
 }
 
+//  Field Required Required  ====================================
+class AuthExceptionRequiredField extends AuthException {
+  AuthExceptionRequiredField({required super.message, super.errorCode});
+}
+
 //  Unknown Error ====================================
 class AuthExceptionUnknown extends AuthException {
   AuthExceptionUnknown({required super.message});

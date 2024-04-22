@@ -16,6 +16,19 @@ class DataValidation {
     }
   }
 
+  static Future<void> createList(
+      {String? title, required List<String> categories}) async {
+    if (title == "" || title == null) {
+      throw AuthExceptionRequiredField(
+          message: "Please Enter list name.", errorCode: 1);
+    }
+
+    if (categories.isEmpty) {
+      throw AuthExceptionRequiredField(
+          message: "Please select at least 1 category");
+    }
+  }
+
   static Future<void> createUser({
     String? name,
     String? password,
