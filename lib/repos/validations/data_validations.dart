@@ -29,6 +29,18 @@ class DataValidation {
     }
   }
 
+  static Future<void> addItem(
+      {required String title, required String category}) async {
+    if (title == "") {
+      throw AuthExceptionRequiredField(
+          message: "Please Enter item name.", errorCode: 1);
+    }
+
+    if (category == "") {
+      throw AuthExceptionRequiredField(message: "Please select a category");
+    }
+  }
+
   static Future<void> createUser({
     String? name,
     String? password,

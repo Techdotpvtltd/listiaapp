@@ -60,11 +60,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               });
               return;
             }
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
 
           if (state is AuthStateSentForgotEmail) {
-            CustomDilaogs().successBox(
+            CustomDialogs().successBox(
               message:
                   "We've just sent you an email containing a password reset link.\nPlease check your mail.",
               title: "Mail Sent!",

@@ -11,7 +11,10 @@ import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
 class ItemTypeList extends StatefulWidget {
-  const ItemTypeList({super.key});
+  const ItemTypeList(
+      {super.key, required this.categories, required this.onSelectedCategory});
+  final List<String> categories;
+  final Function(String) onSelectedCategory;
 
   @override
   State<ItemTypeList> createState() => _ItemTypeListState();
@@ -19,7 +22,15 @@ class ItemTypeList extends StatefulWidget {
 
 class _ItemTypeListState extends State<ItemTypeList> {
   int selectedIndex = 0;
-  final List<String> items = ["All", "Milk", "Meat", "Vegetables", "Fruites"];
+  late final List<String> items;
+
+  @override
+  void initState() {
+    items = widget.categories;
+    items.insert(0, "All");
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -31,6 +42,7 @@ class _ItemTypeListState extends State<ItemTypeList> {
             setState(() {
               selectedIndex = index;
             });
+            widget.onSelectedCategory(items[selectedIndex]);
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 5),

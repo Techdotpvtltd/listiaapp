@@ -57,7 +57,7 @@ class UserRepo {
       _userModel = userModel;
       debugPrint("user id = $_userModel");
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -91,7 +91,7 @@ class UserRepo {
       _userModel = UserModel.fromMap(data);
     } catch (e) {
       debugPrint(e.toString());
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -142,7 +142,7 @@ class UserRepo {
       return _userModel!;
     } catch (e) {
       debugPrint(e.toString());
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -179,7 +179,7 @@ class UserRepo {
       }
       throw throwAuthException(errorCode: 'user-not-found');
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 }

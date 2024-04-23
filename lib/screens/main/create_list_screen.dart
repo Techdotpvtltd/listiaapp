@@ -59,11 +59,11 @@ class _CreateListScreenState extends State<CreateListScreen> {
               });
               return;
             }
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
 
           if (state is ListStateCreated) {
-            CustomDilaogs().successBox(
+            CustomDialogs().successBox(
               message: "Your list has been successfully created.",
               title: "List Created",
               positiveTitle: "Go back",
@@ -200,13 +200,13 @@ class _CategoryBubbleState extends State<_CategoryBubble> {
         // Add More Button
         CustomInkWell(
           onTap: () {
-            CustomDilaogs().showTextField(
+            CustomDialogs().showTextField(
               title: "Add Category",
               tfHint: "Enter Category Name:",
               onDone: (value) {
                 final nitems = items.map((e) => e.toLowerCase()).toList();
                 if (nitems.contains(value.toLowerCase())) {
-                  CustomDilaogs().errorBox(message: "Category Already existed");
+                  CustomDialogs().errorBox(message: "Category Already existed");
                   return;
                 }
                 setState(() {

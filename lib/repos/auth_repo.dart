@@ -21,7 +21,7 @@ class AuthRepo {
           .login(withEmail: withEmail, withPassword: withPassword);
       await UserRepo().fetch();
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -29,7 +29,7 @@ class AuthRepo {
     try {
       await FirebaseAuthService().sendEmailVerifcationLink();
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -61,7 +61,7 @@ class AuthRepo {
         phoneNumber: phoenNumber,
       );
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -104,7 +104,7 @@ class AuthRepo {
           .loginWithCredentials(credential: authCredential);
       await _fetchOrCreateUser();
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -127,13 +127,13 @@ class AuthRepo {
                 email: user.email ?? "");
             _fetchOrCreateUser();
           } else {
-            throw thrownAppException(e: e);
+            throw throwAppException(e: e);
           }
           userFetchFailureCount += 1;
         }
         return;
       }
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -152,7 +152,7 @@ class AuthRepo {
       await FirebaseAuthService().loginWithCredentials(credential: credential);
       await _fetchOrCreateUser();
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 }

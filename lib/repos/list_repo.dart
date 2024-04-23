@@ -46,7 +46,7 @@ class ListRepo {
               data: uploadingList.toMap(),
               docIdFiled: 'id');
     } catch (e) {
-      throw thrownAppException(e: e);
+      throw throwAppException(e: e);
     }
   }
 
@@ -59,7 +59,7 @@ class ListRepo {
     await FirestoreService().fetchWithListener(
       collection: FIREBASE_COLLECTION_LISTS,
       onError: (e) {
-        onError(thrownAppException(e: e));
+        onError(throwAppException(e: e));
       },
       onData: (Map<String, dynamic> data) {
         final ListModel model = ListModel.fromMap(data);

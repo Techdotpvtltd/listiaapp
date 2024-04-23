@@ -80,11 +80,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               });
               return;
             }
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
 
           if (state is AuthStateRegistered) {
-            CustomDilaogs().successBox(
+            CustomDialogs().successBox(
               message:
                   "We've sent you an email verification link to ${emailController.text}. Please verify your email by clicking the link before logging in.",
               positiveTitle: "Go to Login",

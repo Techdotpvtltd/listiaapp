@@ -24,26 +24,33 @@ import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
-class ListItemDetailScreen extends StatefulWidget {
-  const ListItemDetailScreen({super.key});
+import '../../models/list_model.dart';
 
+class ListItemDetailScreen extends StatefulWidget {
+  const ListItemDetailScreen({super.key, required this.list});
+  final ListModel list;
   @override
   State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
 }
 
 class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-
+  late final ListModel list = widget.list;
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: "",
+      title: list.title,
       scaffoldkey: scaffoldKey,
       floatingActionButton: HorizontalPadding(
         child: CustomButton(
           title: "Add new item",
           onPressed: () {
-            NavigationService.go(const AddItemScreen());
+            NavigationService.go(
+              AddItemScreen(
+                listId: widget.list.id,
+                categories: widget.list.categories,
+              ),
+            );
           },
         ),
       ),
@@ -99,7 +106,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                   children: [
                     /// List Title
                     Text(
-                      "Aplha List",
+                      list.title,
                       style: GoogleFonts.plusJakartaSans(
                         color: AppTheme.titleColor1,
                         fontSize: 22,
@@ -155,9 +162,12 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             gapH20,
 
             /// Item Type List
-            const SizedBox(
+            SizedBox(
               height: 30,
-              child: ItemTypeList(),
+              child: ItemTypeList(
+                categories: List.from(list.categories),
+                onSelectedCategory: (selectedCategory) {},
+              ),
             ),
             gapH20,
             Text(

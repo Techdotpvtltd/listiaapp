@@ -11,7 +11,7 @@ import 'data_exceptions.dart';
 /// Date:        27-02-24 19:00:27 -- Tuesday
 /// Description:
 
-AppException thrownAppException({required Object e}) {
+AppException throwAppException({required Object e}) {
   if (e is FirebaseAuthException) {
     return throwAuthException(errorCode: e.code, message: e.message);
   }

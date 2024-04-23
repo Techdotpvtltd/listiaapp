@@ -10,7 +10,7 @@ import '../constants/constants.dart';
 import '../extensions/navigation_service.dart';
 import 'rounded_button.dart';
 
-class CustomDilaogs {
+class CustomDialogs {
   void _genericDialog({
     Widget? child,
   }) {
@@ -180,7 +180,9 @@ class CustomDilaogs {
     String? title,
     required String message,
     VoidCallback? onPositivePressed,
+    VoidCallback? onNegativePressed,
     String? positiveTitle,
+    String? negativeTitle,
     bool barrierDismissible = true,
   }) {
     _genericAlertDilaog(
@@ -189,15 +191,35 @@ class CustomDilaogs {
       barrierDismissible: barrierDismissible,
       message: message,
       maxSubLines: 6,
-      bottomWidget: RoundedButton(
-        title: positiveTitle ?? "Done",
-        height: 50,
-        onPressed: () {
-          Navigator.of(navKey.currentContext!).pop();
-          if (onPositivePressed != null) {
-            onPositivePressed();
-          }
-        },
+      bottomWidget: Column(
+        children: [
+          Column(
+            children: [
+              RoundedButton(
+                title: positiveTitle ?? "Done",
+                height: 50,
+                onPressed: () {
+                  Navigator.of(navKey.currentContext!).pop();
+                  if (onPositivePressed != null) {
+                    onPositivePressed();
+                  }
+                },
+              ),
+              if (negativeTitle != null) gapH6,
+              if (negativeTitle != null)
+                RoundedButton(
+                  title: negativeTitle,
+                  height: 50,
+                  onPressed: () {
+                    Navigator.of(navKey.currentContext!).pop();
+                    if (onNegativePressed != null) {
+                      onNegativePressed();
+                    }
+                  },
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

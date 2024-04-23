@@ -99,11 +99,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               });
               return;
             }
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
 
           if (state is UserStateProfileUpdated) {
-            CustomDilaogs()
+            CustomDialogs()
                 .successBox(message: "Profiled updated.", title: "Congrats");
           }
         }

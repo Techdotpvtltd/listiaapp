@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (state is ListStateFetchFailure) {
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
         }
       },
@@ -187,7 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : ItemList(
                       onItemTap: (index) {
-                        NavigationService.go(const ListItemDetailScreen());
+                        NavigationService.go(
+                            ListItemDetailScreen(list: lists[index]));
                       },
                       lists: lists,
                     ),

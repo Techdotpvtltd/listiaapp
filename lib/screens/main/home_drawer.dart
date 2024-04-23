@@ -123,7 +123,7 @@ class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
   late final UserModel user = UserRepo().currentUser;
 
   void trigegrLogoutEvent(AuthBloc bloc) {
-    CustomDilaogs().alertBox(
+    CustomDialogs().alertBox(
       title: "Logout Action",
       message: "Are you sure to logout this account?",
       negativeTitle: "No",

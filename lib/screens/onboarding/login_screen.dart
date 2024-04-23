@@ -94,11 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
                 return;
               }
-              CustomDilaogs().errorBox(message: state.exception.message);
+              CustomDialogs().errorBox(message: state.exception.message);
             }
 
             if (state is AuthStateEmailVerificationRequired) {
-              CustomDilaogs().alertBox(
+              CustomDialogs().alertBox(
                 message:
                     "Please verify your email by clicking on the link provided in the email we've sent you.",
                 title: "Email Verification Required",
@@ -128,11 +128,11 @@ class _LoginScreenState extends State<LoginScreen> {
           state.isLoading ? Loader().show() : NavigationService.back();
 
           if (state is AuthStateSendingMailVerificationFailure) {
-            CustomDilaogs().errorBox(message: state.exception.message);
+            CustomDialogs().errorBox(message: state.exception.message);
           }
 
           if (state is AuthStateSentMailVerification) {
-            CustomDilaogs().successBox(
+            CustomDialogs().successBox(
                 message:
                     "We've sent you an email verification link to ${emailController.text}. Please verify your email by clicking the link before logging in.");
           }
