@@ -22,6 +22,7 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
+import '../components/custom_dropdown.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen(
@@ -97,7 +98,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   nameController.clear();
                   celeriesController.clear();
                   macrosController.clear();
-                  selectedCategory = null;
+                  selectedCategory = "";
                 });
               },
             );
@@ -142,6 +143,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
 
               gapH20,
+
+              /// Select Category Filed
+              CustomDropdown(
+                hintText: "Select Category",
+                titleText: "Select Category",
+                selectedCategory: selectedCategory,
+                items: widget.categories,
+                onSelectedItem: (category) {
+                  if (selectedCategory != "") {
+                    selectedCategory = category;
+                  }
+                },
+              ),
+              gapH20,
+
               Row(
                 children: [
                   /// Item Name text Filed

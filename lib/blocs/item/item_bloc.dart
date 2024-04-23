@@ -23,6 +23,8 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
             itemName: event.itemName,
             listId: event.listId,
             category: event.category,
+            macros: event.macros,
+            celeries: event.celeries,
           );
           emit(ItemStateAdded());
         } on AppException catch (e) {

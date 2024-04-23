@@ -42,6 +42,8 @@ class ItemRepo {
         itemName: itemName,
         category: category,
         listId: listId,
+        celeries: celeries,
+        macros: macros,
       );
       final Map<String, dynamic> _ = await FirestoreService()
           .saveWithSpecificIdFiled(

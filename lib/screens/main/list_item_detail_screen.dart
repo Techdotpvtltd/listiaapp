@@ -48,7 +48,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             NavigationService.go(
               AddItemScreen(
                 listId: widget.list.id,
-                categories: widget.list.categories,
+                categories: List.from(widget.list.categories),
               ),
             );
           },
