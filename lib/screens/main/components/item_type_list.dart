@@ -10,17 +10,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
-class ItemTypeList extends StatefulWidget {
-  const ItemTypeList(
+class CategoryListView extends StatefulWidget {
+  const CategoryListView(
       {super.key, required this.categories, required this.onSelectedCategory});
   final List<String> categories;
   final Function(String) onSelectedCategory;
 
   @override
-  State<ItemTypeList> createState() => _ItemTypeListState();
+  State<CategoryListView> createState() => _CategoryListViewState();
 }
 
-class _ItemTypeListState extends State<ItemTypeList> {
+class _CategoryListViewState extends State<CategoryListView> {
   int selectedIndex = 0;
   late final List<String> items;
 

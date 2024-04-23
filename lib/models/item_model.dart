@@ -12,6 +12,12 @@ import 'item_complete_model.dart';
 // Date:        23-04-24 13:20:02 -- Tuesday
 // Description:
 
+class CategorizeItemsModel {
+  final String category;
+  final List<ItemModel> items;
+  CategorizeItemsModel({required this.category, required this.items});
+}
+
 class ItemModel {
   final String id;
   final DateTime createdAt;
@@ -81,7 +87,9 @@ class ItemModel {
       category: map['category'] as String,
       celeries: map['celeries'] != null ? map['celeries'] as int : null,
       macros: map['macros'] != null ? map['macros'] as int : null,
-      completedBy: ItemCompleteModel.fromMap(map['completedBy']),
+      completedBy: map['completedBy'] != null
+          ? ItemCompleteModel.fromMap(map['completedBy'])
+          : null,
       listId: map['listId'] as String,
     );
   }

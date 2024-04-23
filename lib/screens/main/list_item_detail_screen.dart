@@ -6,6 +6,7 @@
 // Description:
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
@@ -24,7 +25,11 @@ import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
+import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_state.dart';
+import '../../models/item_model.dart';
 import '../../models/list_model.dart';
+import '../../repos/item_repo.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen({super.key, required this.list});
@@ -36,6 +41,23 @@ class ListItemDetailScreen extends StatefulWidget {
 class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   late final ListModel list = widget.list;
+  late List<CategorizeItemsModel> categoryItems = [];
+  String selectedCategory = "All";
+
+  void filteredItems() {
+    categoryItems = ItemRepo().getCategoriesItemsBy(
+        categories: selectedCategory.toLowerCase() == "all"
+            ? widget.list.categories
+            : [selectedCategory],
+        listId: widget.list.id);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filteredItems();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -118,14 +140,20 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                       children: [
                         SvgPicture.asset(AppAssets.menuIcon),
                         gapW4,
-                        Text(
-                          "List 1/7 Completed",
-                          style: GoogleFonts.plusJakartaSans(
-                            color: const Color(0xFF6C6C6C),
-                            fontSize: 9,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                        BlocSelector<ItemBloc, ItemState, bool?>(
+                            selector: (state) {
+                          return state is ItemStateFetched ||
+                              state is ItemStateFetchedAll;
+                        }, builder: (context, _) {
+                          return Text(
+                            "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(0xFF6C6C6C),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ],
@@ -164,23 +192,35 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             /// Item Type List
             SizedBox(
               height: 30,
-              child: ItemTypeList(
+              child: CategoryListView(
                 categories: List.from(list.categories),
-                onSelectedCategory: (selectedCategory) {},
+                onSelectedCategory: (category) {
+                  setState(() {
+                    selectedCategory = category;
+                    filteredItems();
+                  });
+                },
               ),
             ),
             gapH20,
-            Text(
-              "Meat",
-              style: GoogleFonts.plusJakartaSans(
-                color: AppTheme.titleColor1,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+            for (final CategorizeItemsModel categoryItem in categoryItems)
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryItem.category,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppTheme.titleColor1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    gapH10,
+                    _ItemList(categoryItem.items),
+                  ],
+                ),
               ),
-            ),
-            const Expanded(
-              child: _ItemList(),
-            ),
           ],
         ),
       ),
@@ -189,105 +229,206 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 }
 
 class _ItemList extends StatefulWidget {
-  const _ItemList();
-
+  const _ItemList(this.items);
+  final List<ItemModel> items;
   @override
   State<_ItemList> createState() => _ItemListState();
 }
 
 class _ItemListState extends State<_ItemList> {
   int? selectedIndex;
-
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.only(top: 14, bottom: 100),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        final bool isSelected = selectedIndex == index;
+    return Column(
+      children: [
+        for (int index = 0; index < widget.items.length; index++)
+          Builder(builder: (context) {
+            bool isSelected = selectedIndex == index;
+            return CustomInkWell(
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                decoration: BoxDecoration(
+                  gradient: isSelected
+                      ? LinearGradient(
+                          begin: const Alignment(0.99, -0.10),
+                          end: const Alignment(-0.99, 0.1),
+                          colors: [
+                            const Color(0xFF30A94A).withOpacity(0.02),
+                            const Color(0x002EA346).withOpacity(0.09),
+                          ],
+                        )
+                      : null,
+                  border: Border.all(
+                    color: isSelected
+                        ? AppTheme.primaryColor2
+                        : const Color(0xFFF3F3F3),
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(24)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        /// Check Box
+                        CustomCheckBox(isChecked: isSelected),
+                        gapW10,
+                        // Title Text
+                        Text(
+                          widget.items[index].itemName,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppTheme.titleColor1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
 
-        return CustomInkWell(
-          onTap: () {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            decoration: BoxDecoration(
-              gradient: isSelected
-                  ? LinearGradient(
-                      begin: const Alignment(0.99, -0.10),
-                      end: const Alignment(-0.99, 0.1),
-                      colors: [
-                        const Color(0xFF30A94A).withOpacity(0.02),
-                        const Color(0x002EA346).withOpacity(0.09),
+                    ///
+                    Row(
+                      children: [
+                        if (widget.items[index].celeries != null)
+                          SvgPicture.asset(AppAssets.fireIcon),
+                        if (widget.items[index].celeries != null) gapW4,
+                        if (widget.items[index].celeries != null)
+                          Text(
+                            "${widget.items[index].celeries} ${(widget.items[index].celeries ?? 0) > 1 ? "celeries" : "celery"}",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(0xFF676767),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              decoration: isSelected
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        if (widget.items[index].macros != null) gapW10,
+                        if (widget.items[index].macros != null)
+                          SvgPicture.asset(AppAssets.electricIcon),
+                        if (widget.items[index].macros != null) gapW4,
+                        if (widget.items[index].macros != null)
+                          Text(
+                            "${widget.items[index].macros} ${(widget.items[index].macros ?? 0) > 1 ? "macros" : "macro"}",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(0xFF676767),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              decoration: isSelected
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
                       ],
                     )
-                  : null,
-              border: Border.all(
-                color: isSelected
-                    ? AppTheme.primaryColor2
-                    : const Color(0xFFF3F3F3),
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(24)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    /// Check Box
-                    CustomCheckBox(isChecked: isSelected),
-                    gapW10,
-                    // Title Text
-                    Text(
-                      "Chicken",
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppTheme.titleColor1,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
                   ],
                 ),
-
-                ///
-                Row(
-                  children: [
-                    SvgPicture.asset(AppAssets.fireIcon),
-                    gapW4,
-                    Text(
-                      "23 celeries",
-                      style: GoogleFonts.plusJakartaSans(
-                        color: const Color(0xFF676767),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        decoration:
-                            isSelected ? TextDecoration.lineThrough : null,
-                      ),
-                    ),
-                    gapW10,
-                    SvgPicture.asset(AppAssets.electricIcon),
-                    gapW4,
-                    Text(
-                      "64 macros",
-                      style: GoogleFonts.plusJakartaSans(
-                        color: const Color(0xFF676767),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        decoration:
-                            isSelected ? TextDecoration.lineThrough : null,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          })
+      ],
     );
+
+    // ListView.builder(
+    //   physics: const NeverScrollableScrollPhysics(),
+    //   padding: const EdgeInsets.only(top: 14),
+    //   itemCount: items.length,
+    //   itemBuilder: (context, index) {
+    //     final bool isSelected = selectedIndex == index;
+
+    //     return CustomInkWell(
+    //       onTap: () {
+    //         setState(() {
+    //           selectedIndex = index;
+    //         });
+    //       },
+    //       child: Container(
+    //         margin: const EdgeInsets.symmetric(vertical: 4),
+    //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+    //         decoration: BoxDecoration(
+    //           gradient: isSelected
+    //               ? LinearGradient(
+    //                   begin: const Alignment(0.99, -0.10),
+    //                   end: const Alignment(-0.99, 0.1),
+    //                   colors: [
+    //                     const Color(0xFF30A94A).withOpacity(0.02),
+    //                     const Color(0x002EA346).withOpacity(0.09),
+    //                   ],
+    //                 )
+    //               : null,
+    //           border: Border.all(
+    //             color: isSelected
+    //                 ? AppTheme.primaryColor2
+    //                 : const Color(0xFFF3F3F3),
+    //           ),
+    //           borderRadius: const BorderRadius.all(Radius.circular(24)),
+    //         ),
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //           children: [
+    //             Row(
+    //               children: [
+    //                 /// Check Box
+    //                 CustomCheckBox(isChecked: isSelected),
+    //                 gapW10,
+    //                 // Title Text
+    //                 Text(
+    //                   items[index].itemName,
+    //                   style: GoogleFonts.plusJakartaSans(
+    //                     color: AppTheme.titleColor1,
+    //                     fontSize: 14,
+    //                     fontWeight: FontWeight.w700,
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+
+    //             ///
+    //             Row(
+    //               children: [
+    //                 if (items[index].celeries != null)
+    //                   SvgPicture.asset(AppAssets.fireIcon),
+    //                 if (items[index].celeries != null) gapW4,
+    //                 if (items[index].celeries != null)
+    //                   Text(
+    //                     "${items[index].celeries} ${(items[index].celeries ?? 0) > 1 ? "celeries" : "celery"}",
+    //                     style: GoogleFonts.plusJakartaSans(
+    //                       color: const Color(0xFF676767),
+    //                       fontSize: 10,
+    //                       fontWeight: FontWeight.w500,
+    //                       decoration:
+    //                           isSelected ? TextDecoration.lineThrough : null,
+    //                     ),
+    //                   ),
+    //                 if (items[index].macros != null) gapW10,
+    //                 if (items[index].macros != null)
+    //                   SvgPicture.asset(AppAssets.electricIcon),
+    //                 if (items[index].macros != null) gapW4,
+    //                 if (items[index].macros != null)
+    //                   Text(
+    //                     "${items[index].macros} ${(items[index].macros ?? 0) > 1 ? "macros" : "macro"}",
+    //                     style: GoogleFonts.plusJakartaSans(
+    //                       color: const Color(0xFF676767),
+    //                       fontSize: 10,
+    //                       fontWeight: FontWeight.w500,
+    //                       decoration:
+    //                           isSelected ? TextDecoration.lineThrough : null,
+    //                     ),
+    //                   ),
+    //               ],
+    //             )
+    //           ],
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
   }
 }

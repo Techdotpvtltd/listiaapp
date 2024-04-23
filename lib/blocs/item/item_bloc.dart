@@ -32,6 +32,19 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         }
       },
     );
-    on<ItemEventFetch>((event, emit) async {});
+    on<ItemEventFetch>((event, emit) async {
+      emit(ItemStateFetching());
+      await ItemRepo().fetchItems(
+        onGetAll: () {
+          emit(ItemStateFetchedAll());
+        },
+        onGetData: () {
+          emit(ItemStateFetched());
+        },
+        onError: (e) {
+          emit(ItemStateFetchFailure(exception: e));
+        },
+      );
+    });
   }
 }

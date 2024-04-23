@@ -5,6 +5,9 @@
 // Date:        23-04-24 13:34:19 -- Tuesday
 // Description:
 
+import 'package:flutter/material.dart';
+
+import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
 import '../models/item_model.dart';
 import '../models/user_model.dart';
@@ -21,10 +24,65 @@ class ItemRepo {
 
   // ===========================Properties================================
   final List<ItemModel> _items = [];
-  List<ItemModel> get items => _items;
 
   // ===========================Methods================================
+  int getNumberOfItemsBy({String? listId}) {
+    return listId == null
+        ? _items.length
+        : _items.where((element) => element.listId == listId).length;
+  }
 
+  int getNumberOfCompletedItemsBy({String? listId}) {
+    return listId == null
+        ? _items.where((element) => element.completedBy != null).length
+        : _items
+            .where((element) =>
+                element.listId == listId && element.completedBy != null)
+            .length;
+  }
+
+  List<CategorizeItemsModel> _categoriesItems({required String listId}) {
+    final List<CategorizeItemsModel> categories;
+    final List<ItemModel> items =
+        _items.where((element) => element.listId == listId).toList();
+    Map<String, List<ItemModel>> groupedItems =
+        items.fold({}, (Map<String, List<ItemModel>> map, item) {
+      map[item.category] = [...(map[item.category] ?? []), item];
+      return map;
+    });
+
+    categories = groupedItems.entries.map((entry) {
+      return CategorizeItemsModel(category: entry.key, items: entry.value);
+    }).toList();
+
+    return categories;
+  }
+
+  List<CategorizeItemsModel> getCategoriesItemsBy(
+      {required List<String> categories, required String listId}) {
+    final List<CategorizeItemsModel> categoryItems = [];
+    final List<CategorizeItemsModel> items = _categoriesItems(listId: listId);
+    for (final String category in categories) {
+      final int index = items.indexWhere((element) =>
+          element.category.toLowerCase() == category.toLowerCase());
+      if (index > -1) {
+        categoryItems.add(items[index]);
+      }
+    }
+    return categoryItems;
+  }
+
+  List<ItemModel> getItemsBy(
+      {required String category, required String listId}) {
+    final items = _items
+        .where((element) =>
+            element.category.toLowerCase() == category.toLowerCase())
+        .toList();
+    debugPrint(items.toString());
+    return items;
+  }
+
+  // ===========================API Methods================================
   // Add New Item Method
   Future<void> addItem(
       {required String itemName,
@@ -56,5 +114,29 @@ class ItemRepo {
   }
 
   // Fetch All Items Method
-  Future<void> fetchItems() async {}
+  Future<void> fetchItems({
+    required VoidCallback onGetAll,
+    required VoidCallback onGetData,
+    required Function(AppException) onError,
+  }) async {
+    await FirestoreService().fetchWithListener(
+      collection: FIREBASE_COLLECTION_ITEMS,
+      onError: (e) => throwAppException(e: e),
+      onData: (data) {
+        final ItemModel model = ItemModel.fromMap(data);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          // If Item Already existed
+          _items[index] = model;
+        } else {
+          _items.add(model);
+        }
+        onGetData();
+      },
+      onAllDataGet: onGetAll,
+      onCompleted: (listener) {},
+      queries: [],
+    );
+  }
 }

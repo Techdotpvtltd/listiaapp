@@ -20,10 +20,14 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_event.dart';
+import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
 import '../../models/list_model.dart';
+import '../../repos/item_repo.dart';
 import '../../repos/list_repo.dart';
 import '../../repos/user_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
@@ -41,12 +45,18 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
   List<ListModel> lists = ListRepo().lists;
 
+  void triggerFetchListEvent(ListBloc bloc) {
+    bloc.add(ListEventFetch(forUser: UserRepo().currentUser.uid));
+  }
+
+  void triggerFetchItemEvent(ItemBloc bloc) {
+    bloc.add(ItemEventFetch());
+  }
+
   @override
   void initState() {
     super.initState();
-    context
-        .read<ListBloc>()
-        .add(ListEventFetch(forUser: UserRepo().currentUser.uid));
+    triggerFetchListEvent(context.read<ListBloc>());
   }
 
   @override
@@ -68,7 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (state is ListStateFetched) {
-            setState(() {});
+            // setState(() {});
+            triggerFetchItemEvent(context.read<ItemBloc>());
           }
 
           if (state is ListStateFetchFailure) {
@@ -142,22 +153,40 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "1 of 5",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            BlocSelector<ItemBloc, ItemState, bool>(
+                              selector: (state) {
+                                return state is ItemStateFetched ||
+                                        state is ItemStateFetchedAll
+                                    ? true
+                                    : false;
+                              },
+                              builder: (context, _) {
+                                return Text(
+                                  "${ItemRepo().getNumberOfCompletedItemsBy()} of ${ItemRepo().getNumberOfItemsBy()}",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              },
                             ),
-                            Text(
-                              "Product in 9 lists",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: const Color(0xFFD3D3D3),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
+                            BlocSelector<ItemBloc, ItemState, bool>(
+                                selector: (state) {
+                              return state is ListStateFetched ||
+                                      state is ListStateNewAdded
+                                  ? true
+                                  : false;
+                            }, builder: (context, _) {
+                              return Text(
+                                "Product in ${lists.length} lists",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(0xFFD3D3D3),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              );
+                            }),
                           ],
                         ),
                       ],
