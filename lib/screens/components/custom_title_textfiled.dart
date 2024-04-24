@@ -21,6 +21,7 @@ class CustomTextFiled extends StatefulWidget {
     this.fieldId,
     this.errorCode,
     this.onSubmitted,
+    this.onChange,
     this.focusNode,
   });
   final String? titleText;
@@ -38,6 +39,7 @@ class CustomTextFiled extends StatefulWidget {
   final int? errorCode;
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
+  final Function(String)? onChange;
 
   @override
   State<CustomTextFiled> createState() => _CustomTextFiledState();
@@ -117,6 +119,11 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
           },
           keyboardType: widget.keyboardType,
           readOnly: _isReadOnly,
+          onChanged: (value) {
+            if (widget.onChange != null) {
+              widget.onChange!(value);
+            }
+          },
           maxLines: widget.maxLines,
           minLines: widget.minLines,
           style: GoogleFonts.plusJakartaSans(

@@ -46,8 +46,9 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late List<CategorizeItemsModel> categoryItems = [];
   String selectedCategory = "All";
 
-  void filteredItems() {
-    categoryItems = ItemRepo().getCategoriesItemsBy(
+  void filteredItems({String? searchText}) {
+    categoryItems = ItemRepo().filteredItems(
+        searchText: searchText,
         categories: selectedCategory.toLowerCase() == "all"
             ? widget.list.categories
             : [selectedCategory],
@@ -198,9 +199,14 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
               gapH12,
 
               /// Search Text Field,
-              const CustomTextFiled(
+              CustomTextFiled(
                 hintText: "Search",
-                prefixWidget: Icon(
+                onChange: (value) {
+                  setState(() {
+                    filteredItems(searchText: value);
+                  });
+                },
+                prefixWidget: const Icon(
                   Icons.search,
                   color: AppTheme.primaryColor2,
                 ),
@@ -280,6 +286,8 @@ class _ItemListState extends State<_ItemList> {
           Builder(builder: (context) {
             final ItemModel item = widget.items[index];
             bool isSelected = item.completedBy != null;
+            bool isBought = item.boughtBy != null;
+
             return CustomInkWell(
               onTap: () {
                 setState(() {
@@ -299,7 +307,8 @@ class _ItemListState extends State<_ItemList> {
                           end: const Alignment(-0.99, 0.1),
                           colors: [
                             const Color(0xFF30A94A).withOpacity(0.02),
-                            const Color(0x002EA346).withOpacity(0.09),
+                            const Color(0x002EA346)
+                                .withOpacity(isBought ? 0.3 : 0.09),
                           ],
                         )
                       : null,

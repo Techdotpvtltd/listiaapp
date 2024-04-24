@@ -45,9 +45,26 @@ class ItemRepo {
             .length;
   }
 
-  List<CategorizeItemsModel> _categoriesItems({required String listId}) {
+  List<CategorizeItemsModel> filteredItems(
+      {required String listId, String? searchText, List<String>? categories}) {
+    if (searchText == "" || searchText == null) {
+      return _getCategoriesItemsBy(
+          listId: listId, categories: categories ?? []);
+    }
+    List<ItemModel> searchedItems = getItemsBy(listId: listId, category: "All");
+    debugPrint(searchedItems.toString());
+
+    final filteredItems = searchedItems
+        .where((element) =>
+            element.itemName.toLowerCase().contains(searchText.toLowerCase()))
+        .toList();
+    return _categoriesItems(listId: listId, filteredItems: filteredItems);
+  }
+
+  List<CategorizeItemsModel> _categoriesItems(
+      {required String listId, List<ItemModel>? filteredItems}) {
     final List<CategorizeItemsModel> categories;
-    final List<ItemModel> items =
+    final List<ItemModel> items = filteredItems ??
         _items.where((element) => element.listId == listId).toList();
     Map<String, List<ItemModel>> groupedItems =
         items.fold({}, (Map<String, List<ItemModel>> map, item) {
@@ -62,7 +79,7 @@ class ItemRepo {
     return categories;
   }
 
-  List<CategorizeItemsModel> getCategoriesItemsBy(
+  List<CategorizeItemsModel> _getCategoriesItemsBy(
       {required List<String> categories, required String listId}) {
     final List<CategorizeItemsModel> categoryItems = [];
     final List<CategorizeItemsModel> items = _categoriesItems(listId: listId);
@@ -88,13 +105,12 @@ class ItemRepo {
     return items;
   }
 
-  List<ItemModel> getItemsBy(
-      {required String category, required String listId}) {
+  List<ItemModel> getItemsBy({String? category, required String listId}) {
     final items = _items
         .where((element) =>
-            element.category.toLowerCase() == category.toLowerCase())
+            element.category.toLowerCase() == category?.toLowerCase() ||
+            element.listId == listId)
         .toList();
-    debugPrint(items.toString());
     return items;
   }
 
