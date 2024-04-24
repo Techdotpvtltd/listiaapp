@@ -108,7 +108,12 @@ class _ItemListState extends State<ItemList> {
                               series: [
                                 RadialBarSeries(
                                   dataSource: [
-                                    {"x": 0, "value": numberOfCompletedItems}
+                                    {
+                                      "x": 0,
+                                      "value": (numberOfCompletedItems /
+                                              numberOfItems) *
+                                          100
+                                    }
                                   ],
                                   xValueMapper: (data, _) => data['x'],
                                   yValueMapper: (data, _) => data['value'],
@@ -116,7 +121,7 @@ class _ItemListState extends State<ItemList> {
                                       pointGraphValueColor(datum, index),
                                   radius: "100%",
                                   innerRadius: "70%",
-                                  maximumValue: numberOfItems.toDouble(),
+                                  maximumValue: 100,
                                 )
                               ],
                             ),

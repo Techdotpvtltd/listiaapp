@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
+import '../models/item_complete_model.dart';
 import '../models/item_model.dart';
 import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
@@ -138,5 +139,20 @@ class ItemRepo {
       onCompleted: (listener) {},
       queries: [],
     );
+  }
+
+  /// Mark Item Complete
+  Future<void> markItemComplete({required String itemId}) async {
+    try {
+      final UserModel currentUser = UserRepo().currentUser;
+      final ItemCompleteModel completedModel = ItemCompleteModel(
+          completeBy: currentUser.uid, completedAt: DateTime.now());
+      FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_ITEMS,
+          docId: itemId,
+          data: {"completedBy": completedModel.toMap()});
+    } catch (e) {
+      throwAppException(e: e);
+    }
   }
 }

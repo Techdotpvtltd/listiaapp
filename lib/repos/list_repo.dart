@@ -28,6 +28,7 @@ class ListRepo {
 
 // ===========================Methods================================
 
+  /// Craete List
   Future<void> createList(
       {required String title, required List<String> categories}) async {
     try {
@@ -50,6 +51,7 @@ class ListRepo {
     }
   }
 
+  /// Fetch Lists
   Future<void> fetchLists(
       {required VoidCallback onData,
       required VoidCallback onAllDataGet,

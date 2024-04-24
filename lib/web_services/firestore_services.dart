@@ -44,20 +44,12 @@ class FirestoreService {
     return data;
   }
 
-  /// Update Whole Document with document id
-  Future<Map<String, dynamic>> updateWithDocId(
-      {required String path,
-      required String docId,
-      required Map<String, dynamic> data}) async {
-    await _firestore.collection(path).doc(docId).update(data);
-    return data;
-  }
-
   /// Update Data with document id
-  Future<Map<String, dynamic>> updateDataWithDocId(
-      {required String path,
-      required String docId,
-      required Map<String, dynamic> data}) async {
+  Future<Map<String, dynamic>> updateWithDocId({
+    required String path,
+    required String docId,
+    required Map<String, dynamic> data,
+  }) async {
     await _firestore
         .collection(path)
         .doc(docId)

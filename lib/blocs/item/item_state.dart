@@ -46,3 +46,6 @@ class ItemStateFetchFailure extends ItemState {
 class ItemStateFetchedAll extends ItemState {}
 
 class ItemStateFetched extends ItemState {}
+
+// ===========================Complete Item States================================
+class ItemStateMarkCompleted extends ItemState {}

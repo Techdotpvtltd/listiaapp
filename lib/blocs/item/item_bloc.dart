@@ -5,6 +5,7 @@
 // Date:        23-04-24 13:12:25 -- Tuesday
 // Description:
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../exceptions/app_exceptions.dart';
@@ -14,7 +15,7 @@ import 'item_state.dart';
 
 class ItemBloc extends Bloc<ItemEvent, ItemState> {
   ItemBloc() : super(ItemStateInitial()) {
-    // Fetc
+    // Add New Item List
     on<ItemEventAddNew>(
       (event, emit) async {
         try {
@@ -32,6 +33,8 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         }
       },
     );
+
+    /// Fetch item Event
     on<ItemEventFetch>((event, emit) async {
       emit(ItemStateFetching());
       await ItemRepo().fetchItems(
@@ -46,5 +49,17 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         },
       );
     });
+
+    /// Mark Item Complete Event
+    on<ItemEventMarkComplete>(
+      (event, emit) async {
+        try {
+          ItemRepo().markItemComplete(itemId: event.itemId);
+          emit(ItemStateMarkCompleted());
+        } on AppException catch (e) {
+          debugPrint(e.toString());
+        }
+      },
+    );
   }
 }

@@ -26,6 +26,7 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
@@ -52,6 +53,11 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         listId: widget.list.id);
   }
 
+  void triggerMarkCompleteItemEvent(ItemBloc bloc,
+      {required String selectedItemId}) {
+    bloc.add(ItemEventMarkComplete(itemId: selectedItemId));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +68,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ItemBloc, ItemState>(
       listener: (context, state) {
-        if (state is ItemStateAdded) {
+        if (state is ItemStateAdded || state is ItemStateFetchedAll) {
           setState(() {
             filteredItems();
           });
@@ -230,7 +236,14 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                               ),
                             ),
                             gapH10,
-                            _ItemList(categoryItem.items),
+                            _ItemList(
+                              categoryItem.items,
+                              (selectedItem) {
+                                triggerMarkCompleteItemEvent(
+                                    context.read<ItemBloc>(),
+                                    selectedItemId: selectedItem.id);
+                              },
+                            ),
                           ],
                         ),
                     ],
@@ -246,8 +259,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 }
 
 class _ItemList extends StatefulWidget {
-  const _ItemList(this.items);
+  const _ItemList(this.items, this.onItemSelected);
   final List<ItemModel> items;
+  final Function(ItemModel) onItemSelected;
+
   @override
   State<_ItemList> createState() => _ItemListState();
 }
@@ -263,7 +278,11 @@ class _ItemListState extends State<_ItemList> {
             bool isSelected = item.completedBy != null;
             return CustomInkWell(
               onTap: () {
-                setState(() {});
+                setState(() {
+                  if (!isSelected) {
+                    widget.onItemSelected(item);
+                  }
+                });
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 4),
@@ -350,100 +369,5 @@ class _ItemListState extends State<_ItemList> {
           })
       ],
     );
-
-    // ListView.builder(
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   padding: const EdgeInsets.only(top: 14),
-    //   itemCount: items.length,
-    //   itemBuilder: (context, index) {
-    //     final bool isSelected = selectedIndex == index;
-
-    //     return CustomInkWell(
-    //       onTap: () {
-    //         setState(() {
-    //           selectedIndex = index;
-    //         });
-    //       },
-    //       child: Container(
-    //         margin: const EdgeInsets.symmetric(vertical: 4),
-    //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-    //         decoration: BoxDecoration(
-    //           gradient: isSelected
-    //               ? LinearGradient(
-    //                   begin: const Alignment(0.99, -0.10),
-    //                   end: const Alignment(-0.99, 0.1),
-    //                   colors: [
-    //                     const Color(0xFF30A94A).withOpacity(0.02),
-    //                     const Color(0x002EA346).withOpacity(0.09),
-    //                   ],
-    //                 )
-    //               : null,
-    //           border: Border.all(
-    //             color: isSelected
-    //                 ? AppTheme.primaryColor2
-    //                 : const Color(0xFFF3F3F3),
-    //           ),
-    //           borderRadius: const BorderRadius.all(Radius.circular(24)),
-    //         ),
-    //         child: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: [
-    //             Row(
-    //               children: [
-    //                 /// Check Box
-    //                 CustomCheckBox(isChecked: isSelected),
-    //                 gapW10,
-    //                 // Title Text
-    //                 Text(
-    //                   items[index].itemName,
-    //                   style: GoogleFonts.plusJakartaSans(
-    //                     color: AppTheme.titleColor1,
-    //                     fontSize: 14,
-    //                     fontWeight: FontWeight.w700,
-    //                   ),
-    //                 ),
-    //               ],
-    //             ),
-
-    //             ///
-    //             Row(
-    //               children: [
-    //                 if (items[index].celeries != null)
-    //                   SvgPicture.asset(AppAssets.fireIcon),
-    //                 if (items[index].celeries != null) gapW4,
-    //                 if (items[index].celeries != null)
-    //                   Text(
-    //                     "${items[index].celeries} ${(items[index].celeries ?? 0) > 1 ? "celeries" : "celery"}",
-    //                     style: GoogleFonts.plusJakartaSans(
-    //                       color: const Color(0xFF676767),
-    //                       fontSize: 10,
-    //                       fontWeight: FontWeight.w500,
-    //                       decoration:
-    //                           isSelected ? TextDecoration.lineThrough : null,
-    //                     ),
-    //                   ),
-    //                 if (items[index].macros != null) gapW10,
-    //                 if (items[index].macros != null)
-    //                   SvgPicture.asset(AppAssets.electricIcon),
-    //                 if (items[index].macros != null) gapW4,
-    //                 if (items[index].macros != null)
-    //                   Text(
-    //                     "${items[index].macros} ${(items[index].macros ?? 0) > 1 ? "macros" : "macro"}",
-    //                     style: GoogleFonts.plusJakartaSans(
-    //                       color: const Color(0xFF676767),
-    //                       fontSize: 10,
-    //                       fontWeight: FontWeight.w500,
-    //                       decoration:
-    //                           isSelected ? TextDecoration.lineThrough : null,
-    //                     ),
-    //                   ),
-    //               ],
-    //             )
-    //           ],
-    //         ),
-    //       ),
-    //     );
-    //   },
-    // );
   }
 }
