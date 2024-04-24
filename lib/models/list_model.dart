@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 // Project: 	   listi_shop
 // File:    	   list_model
@@ -49,7 +50,7 @@ class ListModel {
     return <String, dynamic>{
       'id': id,
       'createdBy': createdBy,
-      'title': title,
+      'title': title.capitalizeFirstCharacter(),
       'categories': categories,
       'sharedUsers': sharedUsers,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -62,7 +63,7 @@ class ListModel {
       createdBy: map['createdBy'] as String,
       title: map['title'] as String,
       categories: (map['categories'] as List<dynamic>)
-          .map((e) => e.toString())
+          .map((e) => e.toString().capitalizeFirstCharacter())
           .toList(),
       sharedUsers: (map['sharedUsers'] as List<dynamic>)
           .map((e) => e.toString())

@@ -49,3 +49,23 @@ class ItemStateFetched extends ItemState {}
 
 // ===========================Complete Item States================================
 class ItemStateMarkCompleted extends ItemState {}
+
+class ItemStateItemRemoveFromCompleted extends ItemState {
+  final String itemId;
+
+  ItemStateItemRemoveFromCompleted({required this.itemId});
+}
+
+// ===========================Mark As Bought Items States================================
+class ItemStateMarkingItemBought extends ItemState {
+  ItemStateMarkingItemBought(
+      {super.isLoading = true, super.loadingText = "Marking items bought"});
+}
+
+class ItemStateMarkItemBoughtFailure extends ItemState {
+  final AppException exception;
+
+  ItemStateMarkItemBoughtFailure({required this.exception});
+}
+
+class ItemStateMarkedItemBought extends ItemState {}

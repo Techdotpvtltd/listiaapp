@@ -2,7 +2,9 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
+import 'item_bought_model.dart';
 import 'item_complete_model.dart';
 
 // Project: 	   listi_shop
@@ -28,6 +30,7 @@ class ItemModel {
   final int? macros;
   final ItemCompleteModel? completedBy;
   final String listId;
+  final ItemBoughtModel? boughtBy;
   ItemModel({
     required this.id,
     required this.createdAt,
@@ -37,6 +40,7 @@ class ItemModel {
     required this.listId,
     this.celeries,
     this.macros,
+    this.boughtBy,
     this.completedBy,
   });
 
@@ -50,6 +54,7 @@ class ItemModel {
     int? celeries,
     int? macros,
     ItemCompleteModel? completedBy,
+    ItemBoughtModel? boughtBy,
   }) {
     return ItemModel(
       id: id ?? this.id,
@@ -61,6 +66,7 @@ class ItemModel {
       macros: macros ?? this.macros,
       completedBy: completedBy ?? this.completedBy,
       listId: listId ?? this.listId,
+      boughtBy: boughtBy ?? this.boughtBy,
     );
   }
 
@@ -69,26 +75,28 @@ class ItemModel {
       'id': id,
       'createdAt': Timestamp.fromDate(createdAt),
       'createdBy': createdBy,
-      'itemName': itemName,
+      'itemName': itemName.capitalizeFirstCharacter(),
       'category': category,
       'celeries': celeries,
       'macros': macros,
-      'completedBy': completedBy,
       'listId': listId,
     };
   }
 
   factory ItemModel.fromMap(Map<String, dynamic> map) {
     return ItemModel(
-      id: map['id'] as String,
+      id: map['id'] as String? ?? "",
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       createdBy: map['createdBy'] as String,
-      itemName: map['itemName'] as String,
+      itemName: (map['itemName'] as String).capitalizeFirstCharacter(),
       category: map['category'] as String,
       celeries: map['celeries'] != null ? map['celeries'] as int : null,
       macros: map['macros'] != null ? map['macros'] as int : null,
       completedBy: map['completedBy'] != null
           ? ItemCompleteModel.fromMap(map['completedBy'])
+          : null,
+      boughtBy: map['boughtBy'] != null
+          ? ItemBoughtModel.fromMap(map['boughtBy'])
           : null,
       listId: map['listId'] as String,
     );
@@ -101,7 +109,7 @@ class ItemModel {
 
   @override
   String toString() {
-    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, celeries: $celeries, macros: $macros, completedBy: $completedBy)';
+    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, celeries: $celeries, macros: $macros, completedBy: $completedBy, boughtBy: $boughtBy)';
   }
 
   @override
@@ -116,6 +124,7 @@ class ItemModel {
         other.celeries == celeries &&
         other.macros == macros &&
         other.listId == listId &&
+        other.boughtBy == boughtBy &&
         completedBy == other.completedBy;
   }
 
@@ -129,6 +138,7 @@ class ItemModel {
         celeries.hashCode ^
         macros.hashCode ^
         listId.hashCode ^
+        boughtBy.hashCode ^
         completedBy.hashCode;
   }
 }

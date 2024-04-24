@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 // Project: 	   listi_shop
 // File:    	   category_model
@@ -42,7 +43,7 @@ class CategoryModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'item': item,
+      'item': item.capitalizeFirstCharacter(),
       'createdAt': Timestamp.fromDate(createdAt),
       'createdBy': createdBy,
       'isCreatedByAdmin': isCreatedByAdmin,
@@ -52,7 +53,7 @@ class CategoryModel {
 
   factory CategoryModel.fromMap(Map<String, dynamic> map) {
     return CategoryModel(
-      item: map['item'] as String,
+      item: (map['item'] as String).capitalizeFirstCharacter(),
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       createdBy: map['createdBy'] as String,
       isCreatedByAdmin: map['isCreatedByAdmin'] as bool,

@@ -170,7 +170,7 @@ class FirestoreService {
   /// Fetch With Listener
   Future<void> fetchWithListener({
     required String collection,
-    required Function(Error) onError,
+    required Function(dynamic) onError,
     required Function(Map<String, dynamic>) onData,
     required VoidCallback onAllDataGet,
     required Function(
@@ -186,21 +186,24 @@ class FirestoreService {
     Completer<void> completer = Completer<void>();
 
     final listener = query.snapshots().listen(
-          (querySnapshot) {
-            for (final change in querySnapshot.docChanges) {
-              final Map<String, dynamic>? data = change.doc.data();
-              if (data != null) {
-                onData(data);
-              }
-            }
-            onAllDataGet();
-          },
-          onError: (e) => onError(e),
-          onDone: () {
-            completer.complete();
-            onCompleted(null);
-          },
-        );
+      (querySnapshot) {
+        for (final change in querySnapshot.docChanges) {
+          final Map<String, dynamic>? data = change.doc.data();
+          if (data != null) {
+            onData(data);
+          }
+        }
+        onAllDataGet();
+      },
+      onError: (e) {
+        debugPrint(e.toString());
+        onError(e);
+      },
+      onDone: () {
+        completer.complete();
+        onCompleted(null);
+      },
+    );
     // Wait for the operation to complete before returning
     await completer.future;
     onCompleted(listener);

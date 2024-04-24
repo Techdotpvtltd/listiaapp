@@ -9,11 +9,14 @@ import 'package:flutter/material.dart';
 
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
+import '../models/item_bought_model.dart';
 import '../models/item_complete_model.dart';
 import '../models/item_model.dart';
 import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/firestore_services.dart';
+import '../web_services/query_model.dart';
+import 'list_repo.dart';
 import 'user_repo.dart';
 import 'validations/data_validations.dart';
 
@@ -70,7 +73,19 @@ class ItemRepo {
         categoryItems.add(items[index]);
       }
     }
+    categoryItems.sort((a, b) => a.category.compareTo(b.category));
     return categoryItems;
+  }
+
+  List<ItemModel> getCompletedItemsBy({required String listId}) {
+    final items = _items
+        .where((element) =>
+            element.listId == listId && element.completedBy != null)
+        .toList();
+    items.sort((a, b) => (b.completedBy?.completedAt.millisecondsSinceEpoch ??
+            0)
+        .compareTo((a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)));
+    return items;
   }
 
   List<ItemModel> getItemsBy(
@@ -133,11 +148,22 @@ class ItemRepo {
         } else {
           _items.add(model);
         }
+        _items.sort((a, b) {
+          return (a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)
+              .compareTo(0);
+        });
         onGetData();
       },
       onAllDataGet: onGetAll,
       onCompleted: (listener) {},
-      queries: [],
+      queries: [
+        QueryModel(
+          field: "listId",
+          value: ListRepo().lists.map((e) => e.id).toList(),
+          type: QueryType.whereIn,
+        ),
+        QueryModel(field: "createdAt", value: false, type: QueryType.orderBy),
+      ],
     );
   }
 
@@ -151,6 +177,35 @@ class ItemRepo {
           path: FIREBASE_COLLECTION_ITEMS,
           docId: itemId,
           data: {"completedBy": completedModel.toMap()});
+    } catch (e) {
+      throwAppException(e: e);
+    }
+  }
+
+  /// Mark Item Complete
+  Future<void> removeItemComplete({required String itemId}) async {
+    try {
+      FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_ITEMS,
+          docId: itemId,
+          data: {"completedBy": null});
+    } catch (e) {
+      throwAppException(e: e);
+    }
+  }
+
+  /// Mark Items Bought
+  Future<void> markItemsBought({required List<String> items}) async {
+    try {
+      final UserModel currentUser = UserRepo().currentUser;
+      for (final String item in items) {
+        final ItemBoughtModel boughtModel = ItemBoughtModel(
+            boughtBy: currentUser.uid, boughtAt: DateTime.now());
+        await FirestoreService().updateWithDocId(
+            path: FIREBASE_COLLECTION_ITEMS,
+            docId: item,
+            data: {"boughtBy": boughtModel.toMap()});
+      }
     } catch (e) {
       throwAppException(e: e);
     }

@@ -32,3 +32,16 @@ class ItemEventMarkComplete extends ItemEvent {
 
   ItemEventMarkComplete({required this.itemId});
 }
+
+// Mark Un Complete Event
+class ItemEventRemoveItemComplete extends ItemEvent {
+  final String itemId;
+
+  ItemEventRemoveItemComplete({required this.itemId});
+}
+
+class ItemEventMarkItemsBought extends ItemEvent {
+  final List<String> items;
+
+  ItemEventMarkItemsBought({required this.items});
+}

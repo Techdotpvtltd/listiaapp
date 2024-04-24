@@ -61,5 +61,30 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         }
       },
     );
+
+    /// Remoev Item Complete Event
+    on<ItemEventRemoveItemComplete>(
+      (event, emit) async {
+        try {
+          ItemRepo().removeItemComplete(itemId: event.itemId);
+          emit(ItemStateItemRemoveFromCompleted(itemId: event.itemId));
+        } on AppException catch (e) {
+          debugPrint(e.toString());
+        }
+      },
+    );
+
+    /// Mark Item Bought'
+    on<ItemEventMarkItemsBought>(
+      (event, emit) async {
+        try {
+          emit(ItemStateMarkingItemBought());
+          await ItemRepo().markItemsBought(items: event.items);
+          emit(ItemStateMarkedItemBought());
+        } on AppException catch (e) {
+          emit(ItemStateMarkItemBoughtFailure(exception: e));
+        }
+      },
+    );
   }
 }

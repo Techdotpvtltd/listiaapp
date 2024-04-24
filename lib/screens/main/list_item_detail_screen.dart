@@ -24,6 +24,7 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
@@ -96,7 +97,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFFEFEFE).withOpacity(0.87),
           ),
-          child: CartScreen(scaffoldKey: scaffoldKey),
+          child: CartScreen(
+            scaffoldKey: scaffoldKey,
+            listId: widget.list.id,
+          ),
         ),
         actions: [
           const ProfilesWidget(
@@ -228,7 +232,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              categoryItem.category,
+                              categoryItem.category.capitalizeFirstCharacter(),
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.titleColor1,
                                 fontSize: 16,
