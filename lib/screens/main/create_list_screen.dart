@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
@@ -172,7 +173,7 @@ class _CategoryBubbleState extends State<_CategoryBubble> {
                       return;
                     }
                     selectedItems.add(item);
-                    widget.onItemsUpdated(items);
+                    widget.onItemsUpdated(selectedItems);
                   });
                 },
                 child: Container(
@@ -204,14 +205,21 @@ class _CategoryBubbleState extends State<_CategoryBubble> {
               title: "Add Category",
               tfHint: "Enter Category Name:",
               onDone: (value) {
-                final nitems = items.map((e) => e.toLowerCase()).toList();
-                if (nitems.contains(value.toLowerCase())) {
-                  CustomDialogs().errorBox(message: "Category Already existed");
-                  return;
+                if (value.isValidString()) {
+                  final nitems = items.map((e) => e.toLowerCase()).toList();
+                  if (nitems.contains(value.toLowerCase())) {
+                    CustomDialogs()
+                        .errorBox(message: "Category Already existed");
+                    return;
+                  }
+                  setState(() {
+                    items.add(value);
+                  });
+                } else {
+                  CustomDialogs().errorBox(
+                      message:
+                          "Category should not contain any special characters or spaces.");
                 }
-                setState(() {
-                  items.add(value);
-                });
               },
             );
           },

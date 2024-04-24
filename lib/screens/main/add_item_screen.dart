@@ -98,7 +98,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   nameController.clear();
                   celeriesController.clear();
                   macrosController.clear();
-                  selectedCategory = "";
                 });
               },
             );
@@ -148,7 +147,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
               CustomDropdown(
                 hintText: "Select Category",
                 titleText: "Select Category",
-                selectedCategory: selectedCategory,
                 items: widget.categories,
                 onSelectedItem: (category) {
                   if (selectedCategory != "") {

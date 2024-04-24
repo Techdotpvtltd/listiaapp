@@ -40,7 +40,7 @@ class ListItemDetailScreen extends StatefulWidget {
 
 class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  late final ListModel list = widget.list;
+  late ListModel list = widget.list;
   late List<CategorizeItemsModel> categoryItems = [];
   String selectedCategory = "All";
 
@@ -60,168 +60,185 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffold(
-      title: list.title,
-      scaffoldkey: scaffoldKey,
-      floatingActionButton: HorizontalPadding(
-        child: CustomButton(
-          title: "Add new item",
-          onPressed: () {
-            NavigationService.go(
-              AddItemScreen(
-                listId: widget.list.id,
-                categories: List.from(widget.list.categories),
-              ),
-            );
-          },
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      endDrawer: Container(
-        width: SCREEN_WIDTH * 0.7,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFEFEFE).withOpacity(0.87),
-        ),
-        child: CartScreen(scaffoldKey: scaffoldKey),
-      ),
-      actions: [
-        const ProfilesWidget(
-          avatarts: [
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
-            "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
-          ],
-          height: 50,
-        ),
-        gapW10,
-
-        /// Add User Button
-        CustomInkWell(
-          onTap: () {
-            NavigationService.go(const ShareScreen());
-          },
-          child: Container(
-            height: 25,
-            width: 25,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 12,
-            ),
+    return BlocListener<ItemBloc, ItemState>(
+      listener: (context, state) {
+        if (state is ItemStateAdded) {
+          setState(() {
+            filteredItems();
+          });
+        }
+      },
+      child: CustomScaffold(
+        title: list.title,
+        scaffoldkey: scaffoldKey,
+        floatingActionButton: HorizontalPadding(
+          child: CustomButton(
+            title: "Add new item",
+            onPressed: () {
+              NavigationService.go(
+                AddItemScreen(
+                  listId: widget.list.id,
+                  categories: List.from(widget.list.categories),
+                ),
+              );
+            },
           ),
         ),
-        gapW20,
-      ],
-      body: HVPadding(
-        verticle: 19,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// List Title
-                    Text(
-                      list.title,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppTheme.titleColor1,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    gapH4,
-                    Row(
-                      children: [
-                        SvgPicture.asset(AppAssets.menuIcon),
-                        gapW4,
-                        BlocSelector<ItemBloc, ItemState, bool?>(
-                            selector: (state) {
-                          return state is ItemStateFetched ||
-                              state is ItemStateFetchedAll;
-                        }, builder: (context, _) {
-                          return Text(
-                            "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFF6C6C6C),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ],
-                ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        endDrawer: Container(
+          width: SCREEN_WIDTH * 0.7,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFEFEFE).withOpacity(0.87),
+          ),
+          child: CartScreen(scaffoldKey: scaffoldKey),
+        ),
+        actions: [
+          const ProfilesWidget(
+            avatarts: [
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
+              "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
+            ],
+            height: 50,
+          ),
+          gapW10,
 
-                /// Bucket Button
-                Builder(
-                  builder: (context) {
-                    return IconButton(
-                      onPressed: () {
-                        scaffoldKey.currentState!.openEndDrawer();
-                      },
-                      style: const ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(Color(0xFFF8F8F8)),
-                        padding: MaterialStatePropertyAll(EdgeInsets.all(14)),
+          /// Add User Button
+          CustomInkWell(
+            onTap: () {
+              NavigationService.go(const ShareScreen());
+            },
+            child: Container(
+              height: 25,
+              width: 25,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 12,
+              ),
+            ),
+          ),
+          gapW20,
+        ],
+        body: HVPadding(
+          verticle: 19,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// List Title
+                      Text(
+                        list.title,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: AppTheme.titleColor1,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      icon: SvgPicture.asset(AppAssets.bucketIcon),
-                    );
+                      gapH4,
+                      Row(
+                        children: [
+                          SvgPicture.asset(AppAssets.menuIcon),
+                          gapW4,
+                          BlocSelector<ItemBloc, ItemState, bool?>(
+                              selector: (state) {
+                            return state is ItemStateFetched ||
+                                state is ItemStateFetchedAll;
+                          }, builder: (context, _) {
+                            return Text(
+                              "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFF6C6C6C),
+                                fontSize: 9,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  /// Bucket Button
+                  Builder(
+                    builder: (context) {
+                      return IconButton(
+                        onPressed: () {
+                          scaffoldKey.currentState!.openEndDrawer();
+                        },
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Color(0xFFF8F8F8)),
+                          padding: MaterialStatePropertyAll(EdgeInsets.all(14)),
+                        ),
+                        icon: SvgPicture.asset(AppAssets.bucketIcon),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              gapH12,
+
+              /// Search Text Field,
+              const CustomTextFiled(
+                hintText: "Search",
+                prefixWidget: Icon(
+                  Icons.search,
+                  color: AppTheme.primaryColor2,
+                ),
+              ),
+              gapH20,
+
+              /// Item Type List
+              SizedBox(
+                height: 30,
+                child: CategoryListView(
+                  categories: List.from(list.categories),
+                  onSelectedCategory: (category) {
+                    setState(() {
+                      selectedCategory = category;
+                      filteredItems();
+                    });
                   },
                 ),
-              ],
-            ),
-            gapH12,
-
-            /// Search Text Field,
-            const CustomTextFiled(
-              hintText: "Search",
-              prefixWidget: Icon(
-                Icons.search,
-                color: AppTheme.primaryColor2,
               ),
-            ),
-            gapH20,
-
-            /// Item Type List
-            SizedBox(
-              height: 30,
-              child: CategoryListView(
-                categories: List.from(list.categories),
-                onSelectedCategory: (category) {
-                  setState(() {
-                    selectedCategory = category;
-                    filteredItems();
-                  });
-                },
-              ),
-            ),
-            gapH20,
-            for (final CategorizeItemsModel categoryItem in categoryItems)
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      categoryItem.category,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppTheme.titleColor1,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    gapH10,
-                    _ItemList(categoryItem.items),
-                  ],
+              gapH20,
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 100),
+                  child: Column(
+                    children: [
+                      for (final CategorizeItemsModel categoryItem
+                          in categoryItems)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              categoryItem.category,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppTheme.titleColor1,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            gapH10,
+                            _ItemList(categoryItem.items),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -236,19 +253,17 @@ class _ItemList extends StatefulWidget {
 }
 
 class _ItemListState extends State<_ItemList> {
-  int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         for (int index = 0; index < widget.items.length; index++)
           Builder(builder: (context) {
-            bool isSelected = selectedIndex == index;
+            final ItemModel item = widget.items[index];
+            bool isSelected = item.completedBy != null;
             return CustomInkWell(
               onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
+                setState(() {});
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 4),
@@ -282,7 +297,7 @@ class _ItemListState extends State<_ItemList> {
                         gapW10,
                         // Title Text
                         Text(
-                          widget.items[index].itemName,
+                          item.itemName,
                           style: GoogleFonts.plusJakartaSans(
                             color: AppTheme.titleColor1,
                             fontSize: 14,
@@ -295,12 +310,12 @@ class _ItemListState extends State<_ItemList> {
                     ///
                     Row(
                       children: [
-                        if (widget.items[index].celeries != null)
+                        if (item.celeries != null)
                           SvgPicture.asset(AppAssets.fireIcon),
-                        if (widget.items[index].celeries != null) gapW4,
-                        if (widget.items[index].celeries != null)
+                        if (item.celeries != null) gapW4,
+                        if (item.celeries != null)
                           Text(
-                            "${widget.items[index].celeries} ${(widget.items[index].celeries ?? 0) > 1 ? "celeries" : "celery"}",
+                            "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(0xFF676767),
                               fontSize: 10,
@@ -310,13 +325,13 @@ class _ItemListState extends State<_ItemList> {
                                   : null,
                             ),
                           ),
-                        if (widget.items[index].macros != null) gapW10,
-                        if (widget.items[index].macros != null)
+                        if (item.macros != null) gapW10,
+                        if (item.macros != null)
                           SvgPicture.asset(AppAssets.electricIcon),
-                        if (widget.items[index].macros != null) gapW4,
-                        if (widget.items[index].macros != null)
+                        if (item.macros != null) gapW4,
+                        if (item.macros != null)
                           Text(
-                            "${widget.items[index].macros} ${(widget.items[index].macros ?? 0) > 1 ? "macros" : "macro"}",
+                            "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
                             style: GoogleFonts.plusJakartaSans(
                               color: const Color(0xFF676767),
                               fontSize: 10,

@@ -19,13 +19,11 @@ class CustomDropdown extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.onSelectedItem,
-    this.selectedCategory,
   });
   final String? titleText;
   final String hintText;
   final List<String> items;
   final Function(String) onSelectedItem;
-  final String? selectedCategory;
 
   @override
   State<CustomDropdown> createState() => _CustomDropdownState();
@@ -34,7 +32,7 @@ class CustomDropdown extends StatefulWidget {
 class _CustomDropdownState extends State<CustomDropdown> {
   bool isShowPassword = true;
   List<String> items = [];
-  late String? selectedItem = widget.selectedCategory;
+  String? selectedItem;
 
   @override
   void initState() {
