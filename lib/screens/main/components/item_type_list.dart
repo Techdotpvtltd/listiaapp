@@ -10,11 +10,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
+import '../../../models/category_model.dart';
+import '../../../repos/category_repo.dart';
+
 class CategoryListView extends StatefulWidget {
   const CategoryListView(
       {super.key, required this.categories, required this.onSelectedCategory});
   final List<String> categories;
-  final Function(String) onSelectedCategory;
+  final Function(CategoryModel) onSelectedCategory;
 
   @override
   State<CategoryListView> createState() => _CategoryListViewState();
@@ -22,19 +25,23 @@ class CategoryListView extends StatefulWidget {
 
 class _CategoryListViewState extends State<CategoryListView> {
   int selectedIndex = 0;
-  late final List<String> items;
+  late final List<CategoryModel> categories;
 
   @override
   void initState() {
-    items = widget.categories;
-    items.insert(0, "All");
+    categories =
+        CategoryRepo().getCategoriesFrom(categoryIds: widget.categories);
+    categories.insert(
+        0,
+        CategoryModel(
+            id: "all", item: "All", createdAt: DateTime.now(), createdBy: ""));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: categories.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         return CustomInkWell(
@@ -42,7 +49,7 @@ class _CategoryListViewState extends State<CategoryListView> {
             setState(() {
               selectedIndex = index;
             });
-            widget.onSelectedCategory(items[selectedIndex]);
+            widget.onSelectedCategory(categories[selectedIndex]);
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -58,7 +65,7 @@ class _CategoryListViewState extends State<CategoryListView> {
             ),
             child: Center(
               child: Text(
-                items[index],
+                categories[index].item,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,

@@ -24,13 +24,13 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
-import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
+import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
@@ -220,7 +220,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                   categories: List.from(list.categories),
                   onSelectedCategory: (category) {
                     setState(() {
-                      selectedCategory = category;
+                      selectedCategory = category.id;
                       filteredItems();
                     });
                   },
@@ -238,7 +238,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              categoryItem.category.capitalizeFirstCharacter(),
+                              CategoryRepo()
+                                  .getCategoryFrom(
+                                      categoryId: categoryItem.category)
+                                  .item,
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.titleColor1,
                                 fontSize: 16,

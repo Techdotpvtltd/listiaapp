@@ -52,7 +52,6 @@ class ItemRepo {
           listId: listId, categories: categories ?? []);
     }
     List<ItemModel> searchedItems = getItemsBy(listId: listId, category: "All");
-    debugPrint(searchedItems.toString());
 
     final filteredItems = searchedItems
         .where((element) =>

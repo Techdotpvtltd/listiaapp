@@ -7,7 +7,7 @@
 
 extension CustomStr on String {
   bool isValidString() {
-    RegExp regex = RegExp(r'^[a-zA-Z0-9]+$');
+    RegExp regex = RegExp(r'^\s*[a-zA-Z0-9]+\s*(?: [a-zA-Z0-9]+)*\s*$');
     return regex.hasMatch(this);
   }
 

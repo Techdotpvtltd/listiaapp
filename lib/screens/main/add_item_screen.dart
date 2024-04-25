@@ -20,6 +20,8 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../models/category_model.dart';
+import '../../repos/category_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
 import '../components/custom_dropdown.dart';
@@ -39,6 +41,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   int? errorCode;
   String? errorMessage;
   String? selectedCategory;
+  late final List<CategoryModel> categories =
+      CategoryRepo().getCategoriesFrom(categoryIds: widget.categories);
   TextEditingController nameController = TextEditingController();
   TextEditingController celeriesController = TextEditingController();
   TextEditingController macrosController = TextEditingController();
@@ -147,10 +151,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
               CustomDropdown(
                 hintText: "Select Category",
                 titleText: "Select Category",
-                items: widget.categories,
+                items: categories.map((e) => e.item).toList(),
                 onSelectedItem: (category) {
                   if (selectedCategory != "") {
-                    selectedCategory = category;
+                    selectedCategory = categories
+                        .firstWhere((element) =>
+                            element.item.toLowerCase() ==
+                            category.toLowerCase())
+                        .id;
                   }
                 },
               ),

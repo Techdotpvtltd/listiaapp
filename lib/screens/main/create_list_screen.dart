@@ -9,11 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
-import 'package:listi_shop/utils/extensions/string_extension.dart';
 
+import '../../blocs/category/category_bloc.dart';
+import '../../blocs/category/category_event.dart';
+import '../../blocs/category/category_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
+import '../../models/category_model.dart';
+import '../../repos/category_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
@@ -124,7 +128,7 @@ class _CreateListScreenState extends State<CreateListScreen> {
               gapH10,
               _CategoryBubble(
                 onItemsUpdated: (items) {
-                  selectedCategories = items;
+                  selectedCategories = items.map((e) => e.id).toList();
                 },
               ),
               const Spacer(),
@@ -145,101 +149,109 @@ class _CreateListScreenState extends State<CreateListScreen> {
 
 class _CategoryBubble extends StatefulWidget {
   const _CategoryBubble({required this.onItemsUpdated});
-  final Function(List<String>) onItemsUpdated;
+  final Function(List<CategoryModel>) onItemsUpdated;
   @override
   State<_CategoryBubble> createState() => _CategoryBubbleState();
 }
 
 class _CategoryBubbleState extends State<_CategoryBubble> {
-  final items = <String>[];
-  final selectedItems = <String>[];
+  List<CategoryModel> items = CategoryRepo().categories;
+  final selectedItems = <CategoryModel>[];
+
+  void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
+    bloc.add(CategoryEventAdd(category: categoryName));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 10,
-      children: [
-        for (String item in items)
-          Builder(
-            builder: (context) {
-              final bool isSelected = selectedItems.contains(item);
-              return CustomInkWell(
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      selectedItems.remove(item);
+    return BlocListener<CategoryBloc, CategoryState>(
+      listener: (context, state) {
+        if (state is CategoryStateAddFailure ||
+            state is CategoryStateAdded ||
+            state is CategoryStateAdding) {
+          if (state is CategoryStateAddFailure) {
+            CustomDialogs().errorBox(message: state.exception.message);
+          }
+
+          if (state is CategoryStateAdded) {
+            setState(() {
+              items = CategoryRepo().categories;
+            });
+          }
+        }
+      },
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 10,
+        children: [
+          for (final CategoryModel item in items)
+            Builder(
+              builder: (context) {
+                final bool isSelected = selectedItems.contains(item);
+                return CustomInkWell(
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        selectedItems.remove(item);
+                        widget.onItemsUpdated(selectedItems);
+                        return;
+                      }
+                      selectedItems.add(item);
                       widget.onItemsUpdated(selectedItems);
-                      return;
-                    }
-                    selectedItems.add(item);
-                    widget.onItemsUpdated(selectedItems);
-                  });
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppTheme.primaryColor1 : Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    border: Border.all(color: AppTheme.primaryColor1),
-                  ),
-                  child: Text(
-                    item,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: isSelected ? Colors.white : AppTheme.primaryColor1,
-                      fontSize: 14,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                    });
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppTheme.primaryColor1 : Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(color: AppTheme.primaryColor1),
+                    ),
+                    child: Text(
+                      item.item,
+                      style: GoogleFonts.plusJakartaSans(
+                        color:
+                            isSelected ? Colors.white : AppTheme.primaryColor1,
+                        fontSize: 14,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                      ),
                     ),
                   ),
-                ),
+                );
+              },
+            ),
+
+          // Add More Button
+          CustomInkWell(
+            onTap: () {
+              CustomDialogs().showTextField(
+                title: "Add Category",
+                tfHint: "Enter Category Name:",
+                onDone: (value) {
+                  triggerAddCategoryEvent(context.read<CategoryBloc>(), value);
+                },
               );
             },
-          ),
-
-        // Add More Button
-        CustomInkWell(
-          onTap: () {
-            CustomDialogs().showTextField(
-              title: "Add Category",
-              tfHint: "Enter Category Name:",
-              onDone: (value) {
-                if (value.isValidString()) {
-                  final nitems = items.map((e) => e.toLowerCase()).toList();
-                  if (nitems.contains(value.toLowerCase())) {
-                    CustomDialogs()
-                        .errorBox(message: "Category Already existed");
-                    return;
-                  }
-                  setState(() {
-                    items.add(value);
-                  });
-                } else {
-                  CustomDialogs().errorBox(
-                      message:
-                          "Category should not contain any special characters or spaces.");
-                }
-              },
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            decoration: const BoxDecoration(
-              color: AppTheme.primaryColor1,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            child: Text(
-              "Add Category",
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              decoration: const BoxDecoration(
+                color: AppTheme.primaryColor1,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              child: Text(
+                "Add Category",
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

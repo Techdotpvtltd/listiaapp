@@ -20,6 +20,8 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../blocs/category/category_bloc.dart';
+import '../../blocs/category/category_event.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
@@ -53,10 +55,15 @@ class _HomeScreenState extends State<HomeScreen> {
     bloc.add(ItemEventFetch());
   }
 
+  void triggerFetchCategoriesEvent(CategoryBloc bloc) {
+    bloc.add(CategoryEventFetch());
+  }
+
   @override
   void initState() {
     super.initState();
     triggerFetchListEvent(context.read<ListBloc>());
+    triggerFetchCategoriesEvent(context.read<CategoryBloc>());
   }
 
   @override

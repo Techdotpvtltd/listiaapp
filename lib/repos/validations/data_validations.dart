@@ -1,5 +1,9 @@
+import 'package:listi_shop/utils/extensions/string_extension.dart';
+
 import '../../exceptions/auth_exceptions.dart';
+import '../../exceptions/data_exceptions.dart';
 import '../../utils/utils.dart';
+import '../category_repo.dart';
 
 class DataValidation {
   static Future<void> loginUser({String? email, String? password}) async {
@@ -100,6 +104,25 @@ class DataValidation {
 
     if (phone == null || phone == "") {
       throw AuthExceptionRequiredPhone();
+    }
+  }
+
+  static Future<void> createCategory({
+    required String name,
+  }) async {
+    if (!name.isValidString()) {
+      throw DataExceptionRequiredField(
+          message:
+              "Category is invalid.\nRules:\n1. Category doesn't contain special character.\n2. Category must not be empty.",
+          errorCode: 1000);
+    }
+
+    if (CategoryRepo()
+        .categories
+        .map((e) => e.item.toLowerCase())
+        .contains(name.toLowerCase())) {
+      throw DataExceptionRequiredField(
+          message: "Category is already added.", errorCode: 1000);
     }
   }
 }

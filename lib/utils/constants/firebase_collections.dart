@@ -11,3 +11,5 @@ const String FIREBASE_COLLECTION_LISTS =
 
 const String FIREBASE_COLLECTION_ITEMS =
     "${kReleaseMode ? "Rel-" : "Dev-"}Items";
+const FIREBASE_COLLECTION_CATEGORY =
+    "${kReleaseMode ? "Rel-" : "Dev-"}Categories";
