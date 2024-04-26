@@ -193,7 +193,9 @@ class _ItemListState extends State<ItemList> {
                               text: "Created by ",
                               children: [
                                 TextSpan(
-                                  text: "You",
+                                  text: list.createdBy == "admin"
+                                      ? "Listia"
+                                      : "You",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: const Color(0xFF676767),
                                     fontWeight: FontWeight.w700,

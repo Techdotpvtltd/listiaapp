@@ -83,8 +83,8 @@ class ListRepo {
       queries: [
         QueryModel(
             field: "sharedUsers",
-            value: user.uid,
-            type: QueryType.arrayContains),
+            value: [user.uid, "admin"],
+            type: QueryType.arrayContainsAny),
         QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
       ],
     );

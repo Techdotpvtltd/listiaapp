@@ -54,15 +54,29 @@ android {
     }
 
     buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
         debug {
             minifyEnabled true
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+       
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('/Users/pro-akbar/Desktop/Ali Akbar/Office/listi_shop/android/app/listia.ks')
+            storePassword 'qwhd-gw34b'
+            keyAlias 'key0'
+            keyPassword 'qwhd-gw34b'
+        }
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            storeFile file('/Users/pro-akbar/Desktop/Ali Akbar/Office/listi_shop/android/app/listia.ks')
+            storePassword 'qwhd-gw34b'
+            keyAlias 'key0'
+            keyPassword 'qwhd-gw34b'
         }
     }
 }
