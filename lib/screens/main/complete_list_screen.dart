@@ -12,24 +12,45 @@ import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
 
-class CompleteListScreen extends StatelessWidget {
+import '../../blocs/list/list_bloc.dart';
+import '../../blocs/list/list_state.dart';
+import '../../models/list_model.dart';
+import '../../repos/list_repo.dart';
+import '../../utils/extensions/navigation_service.dart';
+import 'list_item_detail_screen.dart';
+
+class CompleteListScreen extends StatefulWidget {
   const CompleteListScreen({super.key});
 
   @override
+  State<CompleteListScreen> createState() => _CompleteListScreenState();
+}
+
+class _CompleteListScreenState extends State<CompleteListScreen> {
+  final List<ListModel> lists = ListRepo().completedLists();
+  @override
   Widget build(BuildContext context) {
-    return CustomScaffold(
-      title: "Complete List",
-      backButtonIcon: const Icon(
-        Icons.menu,
-        color: Colors.white,
-      ),
-      backButtonPressed: () {
-        context.read<DrawerCubit>().openDrawer();
-      },
-      body: HorizontalPadding(
-        child: ItemList(
-          onItemTap: (index) {},
-          lists: const [],
+    return BlocListener<ListBloc, ListState>(
+      listener: (context, state) {},
+      child: CustomScaffold(
+        title: "Bought Items",
+        backButtonIcon: const Icon(
+          Icons.menu,
+          color: Colors.white,
+        ),
+        backButtonPressed: () {
+          context.read<DrawerCubit>().openDrawer();
+        },
+        body: HorizontalPadding(
+          child: ItemList(
+            onItemTap: (index) {
+              NavigationService.go(ListItemDetailScreen(
+                list: lists[index],
+                isBoughtScreen: true,
+              ));
+            },
+            lists: lists,
+          ),
         ),
       ),
     );

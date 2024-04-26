@@ -19,6 +19,7 @@ class ListModel {
   final List<String> categories;
   final List<String> sharedUsers;
   final DateTime createdAt;
+  final bool isCompleted;
   ListModel({
     required this.id,
     required this.createdBy,
@@ -26,6 +27,7 @@ class ListModel {
     required this.categories,
     required this.sharedUsers,
     required this.createdAt,
+    required this.isCompleted,
   });
 
   ListModel copyWith({
@@ -35,9 +37,11 @@ class ListModel {
     List<String>? categories,
     List<String>? sharedUsers,
     DateTime? createdAt,
+    bool? isCompleted,
   }) {
     return ListModel(
       id: id ?? this.id,
+      isCompleted: isCompleted ?? this.isCompleted,
       createdBy: createdBy ?? this.createdBy,
       title: title ?? this.title,
       categories: categories ?? this.categories,
@@ -54,6 +58,7 @@ class ListModel {
       'categories': categories,
       'sharedUsers': sharedUsers,
       'createdAt': Timestamp.fromDate(createdAt),
+      'isCompleted': isCompleted,
     };
   }
 
@@ -61,6 +66,7 @@ class ListModel {
     return ListModel(
       id: map['id'] as String,
       createdBy: map['createdBy'] as String,
+      isCompleted: map['isCompleted'] as bool? ?? false,
       title: map['title'] as String,
       categories: (map['categories'] as List<dynamic>)
           .map((e) => e.toString().capitalizeFirstCharacter())
@@ -91,7 +97,8 @@ class ListModel {
         other.title == title &&
         listEquals(other.categories, categories) &&
         listEquals(other.sharedUsers, sharedUsers) &&
-        other.createdAt == createdAt;
+        other.createdAt == createdAt &&
+        other.isCompleted == isCompleted;
   }
 
   @override
@@ -101,6 +108,7 @@ class ListModel {
         title.hashCode ^
         categories.hashCode ^
         sharedUsers.hashCode ^
+        isCompleted.hashCode ^
         createdAt.hashCode;
   }
 }

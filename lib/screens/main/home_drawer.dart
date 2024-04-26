@@ -37,7 +37,7 @@ import 'edit_profile_screen.dart';
 
 final List<DrawerModel> drawerItems = [
   DrawerModel(id: 0, title: "Home", asset: AppAssets.homeIcon),
-  DrawerModel(id: 1, title: "Complete List", asset: AppAssets.listIcon),
+  DrawerModel(id: 1, title: "Bought Items", asset: AppAssets.listIcon),
   DrawerModel(id: 2, title: "Profile", asset: AppAssets.userIcon),
   DrawerModel(id: 3, title: "Contact Us", asset: AppAssets.chatIcon),
   DrawerModel(id: 4, title: "Subscription", asset: AppAssets.historyIcon),

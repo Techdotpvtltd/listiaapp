@@ -46,25 +46,44 @@ class ItemRepo {
   }
 
   List<CategorizeItemsModel> filteredItems(
-      {required String listId, String? searchText, List<String>? categories}) {
+      {required String listId,
+      String? searchText,
+      List<String>? categories,
+      required bool isShowBoughtItemsOnly}) {
+    /// When Search text is empty
     if (searchText == "" || searchText == null) {
       return _getCategoriesItemsBy(
-          listId: listId, categories: categories ?? []);
+          listId: listId,
+          categories: categories ?? [],
+          isShowBoughtItemsOnly: isShowBoughtItemsOnly);
     }
-    List<ItemModel> searchedItems = getItemsBy(listId: listId, category: "All");
+    List<ItemModel> items = getItemsBy(
+        listId: listId,
+        category: "All",
+        isShowBoughtItemsOnly: isShowBoughtItemsOnly);
 
-    final filteredItems = searchedItems
+    final filteredItems = items
         .where((element) =>
             element.itemName.toLowerCase().contains(searchText.toLowerCase()))
         .toList();
-    return _categoriesItems(listId: listId, filteredItems: filteredItems);
+    return _categorizeItems(
+        listId: listId,
+        filteredItems: filteredItems,
+        isShowBoughtItemsOnly: isShowBoughtItemsOnly);
   }
 
-  List<CategorizeItemsModel> _categoriesItems(
-      {required String listId, List<ItemModel>? filteredItems}) {
+  List<CategorizeItemsModel> _categorizeItems(
+      {required String listId,
+      List<ItemModel>? filteredItems,
+      required bool isShowBoughtItemsOnly}) {
     final List<CategorizeItemsModel> categories;
     final List<ItemModel> items = filteredItems ??
-        _items.where((element) => element.listId == listId).toList();
+        _items
+            .where((element) => element.listId == listId)
+            .where((element) => isShowBoughtItemsOnly
+                ? element.boughtBy != null
+                : element.boughtBy == null)
+            .toList();
     Map<String, List<ItemModel>> groupedItems =
         items.fold({}, (Map<String, List<ItemModel>> map, item) {
       map[item.category] = [...(map[item.category] ?? []), item];
@@ -79,9 +98,12 @@ class ItemRepo {
   }
 
   List<CategorizeItemsModel> _getCategoriesItemsBy(
-      {required List<String> categories, required String listId}) {
+      {required List<String> categories,
+      required String listId,
+      required bool isShowBoughtItemsOnly}) {
     final List<CategorizeItemsModel> categoryItems = [];
-    final List<CategorizeItemsModel> items = _categoriesItems(listId: listId);
+    final List<CategorizeItemsModel> items = _categorizeItems(
+        listId: listId, isShowBoughtItemsOnly: isShowBoughtItemsOnly);
     for (final String category in categories) {
       final int index = items.indexWhere((element) =>
           element.category.toLowerCase() == category.toLowerCase());
@@ -104,8 +126,14 @@ class ItemRepo {
     return items;
   }
 
-  List<ItemModel> getItemsBy({String? category, required String listId}) {
+  List<ItemModel> getItemsBy(
+      {String? category,
+      required String listId,
+      required bool isShowBoughtItemsOnly}) {
     final items = _items
+        .where((element) => isShowBoughtItemsOnly
+            ? element.boughtBy != null
+            : element.boughtBy == null)
         .where((element) =>
             element.category.toLowerCase() == category?.toLowerCase() ||
             element.listId == listId)
@@ -210,7 +238,8 @@ class ItemRepo {
   }
 
   /// Mark Items Bought
-  Future<void> markItemsBought({required List<String> items}) async {
+  Future<void> markItemsBought(
+      {required List<String> items, required String listId}) async {
     try {
       final UserModel currentUser = UserRepo().currentUser;
       for (final String item in items) {
@@ -221,6 +250,7 @@ class ItemRepo {
             docId: item,
             data: {"boughtBy": boughtModel.toMap()});
       }
+      ListRepo().markListComplete(listId: listId);
     } catch (e) {
       throwAppException(e: e);
     }

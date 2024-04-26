@@ -34,8 +34,11 @@ import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
-  const ListItemDetailScreen({super.key, required this.list});
+  const ListItemDetailScreen(
+      {super.key, required this.list, this.isBoughtScreen = false});
   final ListModel list;
+  final bool isBoughtScreen;
+
   @override
   State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
 }
@@ -52,7 +55,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         categories: selectedCategory.toLowerCase() == "all"
             ? widget.list.categories
             : [selectedCategory],
-        listId: widget.list.id);
+        listId: widget.list.id,
+        isShowBoughtItemsOnly: widget.isBoughtScreen);
   }
 
   void triggerMarkCompleteItemEvent(ItemBloc bloc,
@@ -79,17 +83,20 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       child: CustomScaffold(
         title: list.title,
         scaffoldkey: scaffoldKey,
-        floatingActionButton: HorizontalPadding(
-          child: CustomButton(
-            title: "Add new item",
-            onPressed: () {
-              NavigationService.go(
-                AddItemScreen(
-                  listId: widget.list.id,
-                  categories: List.from(widget.list.categories),
-                ),
-              );
-            },
+        floatingActionButton: Visibility(
+          visible: !widget.isBoughtScreen,
+          child: HorizontalPadding(
+            child: CustomButton(
+              title: "Add new item",
+              onPressed: () {
+                NavigationService.go(
+                  AddItemScreen(
+                    listId: widget.list.id,
+                    categories: List.from(widget.list.categories),
+                  ),
+                );
+              },
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -114,24 +121,25 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           gapW10,
 
           /// Add User Button
-          CustomInkWell(
-            onTap: () {
-              NavigationService.go(const ShareScreen());
-            },
-            child: Container(
-              height: 25,
-              width: 25,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 12,
+          if (!widget.isBoughtScreen)
+            CustomInkWell(
+              onTap: () {
+                NavigationService.go(const ShareScreen());
+              },
+              child: Container(
+                height: 25,
+                width: 25,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 12,
+                ),
               ),
             ),
-          ),
           gapW20,
         ],
         body: HVPadding(
@@ -155,45 +163,48 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                         ),
                       ),
                       gapH4,
-                      Row(
-                        children: [
-                          SvgPicture.asset(AppAssets.menuIcon),
-                          gapW4,
-                          BlocSelector<ItemBloc, ItemState, bool?>(
-                              selector: (state) {
-                            return state is ItemStateFetched ||
-                                state is ItemStateFetchedAll;
-                          }, builder: (context, _) {
-                            return Text(
-                              "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: const Color(0xFF6C6C6C),
-                                fontSize: 9,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            );
-                          }),
-                        ],
-                      ),
+                      if (!widget.isBoughtScreen)
+                        Row(
+                          children: [
+                            SvgPicture.asset(AppAssets.menuIcon),
+                            gapW4,
+                            BlocSelector<ItemBloc, ItemState, bool?>(
+                                selector: (state) {
+                              return state is ItemStateFetched ||
+                                  state is ItemStateFetchedAll;
+                            }, builder: (context, _) {
+                              return Text(
+                                "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(0xFF6C6C6C),
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
                     ],
                   ),
 
                   /// Bucket Button
-                  Builder(
-                    builder: (context) {
-                      return IconButton(
-                        onPressed: () {
-                          scaffoldKey.currentState!.openEndDrawer();
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Color(0xFFF8F8F8)),
-                          padding: MaterialStatePropertyAll(EdgeInsets.all(14)),
-                        ),
-                        icon: SvgPicture.asset(AppAssets.bucketIcon),
-                      );
-                    },
-                  ),
+                  if (!widget.isBoughtScreen)
+                    Builder(
+                      builder: (context) {
+                        return IconButton(
+                          onPressed: () {
+                            scaffoldKey.currentState!.openEndDrawer();
+                          },
+                          style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Color(0xFFF8F8F8)),
+                            padding:
+                                MaterialStatePropertyAll(EdgeInsets.all(14)),
+                          ),
+                          icon: SvgPicture.asset(AppAssets.bucketIcon),
+                        );
+                      },
+                    ),
                 ],
               ),
               gapH12,

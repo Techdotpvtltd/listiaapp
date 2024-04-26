@@ -21,7 +21,11 @@ import '../../../models/list_model.dart';
 import '../../../repos/item_repo.dart';
 
 class ItemList extends StatefulWidget {
-  const ItemList({super.key, required this.onItemTap, required this.lists});
+  const ItemList({
+    super.key,
+    required this.onItemTap,
+    required this.lists,
+  });
   final Function(int) onItemTap;
   final List<ListModel> lists;
   @override
@@ -189,7 +193,7 @@ class _ItemListState extends State<ItemList> {
                               text: "Created by ",
                               children: [
                                 TextSpan(
-                                  text: "Ali Akbar",
+                                  text: "You",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: const Color(0xFF676767),
                                     fontWeight: FontWeight.w700,

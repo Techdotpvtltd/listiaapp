@@ -79,7 +79,8 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       (event, emit) async {
         try {
           emit(ItemStateMarkingItemBought());
-          await ItemRepo().markItemsBought(items: event.items);
+          await ItemRepo()
+              .markItemsBought(items: event.items, listId: event.listId);
           emit(ItemStateMarkedItemBought());
         } on AppException catch (e) {
           emit(ItemStateMarkItemBoughtFailure(exception: e));

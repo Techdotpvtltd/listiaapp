@@ -42,6 +42,6 @@ class ItemEventRemoveItemComplete extends ItemEvent {
 
 class ItemEventMarkItemsBought extends ItemEvent {
   final List<String> items;
-
-  ItemEventMarkItemsBought({required this.items});
+  final String listId;
+  ItemEventMarkItemsBought({required this.listId, required this.items});
 }

@@ -52,7 +52,8 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void triggerMarkItemsBought(ItemBloc bloc) {
-    bloc.add(ItemEventMarkItemsBought(items: itemsToBeBought));
+    bloc.add(ItemEventMarkItemsBought(
+        items: itemsToBeBought, listId: widget.listId));
   }
 
   @override

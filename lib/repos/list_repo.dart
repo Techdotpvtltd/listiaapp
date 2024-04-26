@@ -5,7 +5,7 @@
 // Date:        22-04-24 17:49:29 -- Monday
 // Description:
 
-import 'dart:ui';
+import 'package:flutter/widgets.dart';
 
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
@@ -27,6 +27,10 @@ class ListRepo {
   List<ListModel> get lists => _lists;
 
 // ===========================Methods================================
+  /// Get Completed Lists
+  List<ListModel> completedLists() {
+    return _lists.where((element) => element.isCompleted == true).toList();
+  }
 
   /// Craete List
   Future<void> createList(
@@ -39,6 +43,7 @@ class ListRepo {
           createdBy: user.uid,
           title: title,
           categories: categories,
+          isCompleted: false,
           sharedUsers: [user.uid],
           createdAt: DateTime.now());
       final Map<String, dynamic> _ = await FirestoreService()
@@ -83,5 +88,20 @@ class ListRepo {
         QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
       ],
     );
+  }
+
+  /// Mark complete
+  Future<void> markListComplete({required String listId}) async {
+    final int index = _lists.indexWhere((element) => element.id == listId);
+    if (index > -1) {
+      final ListModel list = _lists[index];
+      if (!list.isCompleted) {
+        FirestoreService().updateWithDocId(
+            path: FIREBASE_COLLECTION_LISTS,
+            docId: listId,
+            data: {"isCompleted": true});
+        debugPrint("Marking $listId list to complete");
+      }
+    }
   }
 }
