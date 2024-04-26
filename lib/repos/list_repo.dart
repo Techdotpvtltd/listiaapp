@@ -80,6 +80,7 @@ class ListRepo {
             field: "sharedUsers",
             value: user.uid,
             type: QueryType.arrayContains),
+        QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
       ],
     );
   }
