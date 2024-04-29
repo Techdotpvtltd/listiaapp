@@ -65,3 +65,20 @@ class ListStateAdminFetchFailure extends ListState {
 class ListStateAdminFetched extends ListState {}
 
 class ListStateNewAdminAdded extends ListState {}
+
+// ===========================Move List States================================
+class ListStateMoving extends ListState {
+  final String listId;
+  ListStateMoving(
+      {super.isLoading = true,
+      super.loadingText = "Moving...",
+      required this.listId});
+}
+
+class ListStateMoveFailure extends ListState {
+  final AppException exception;
+
+  ListStateMoveFailure({required this.exception});
+}
+
+class ListStateMoved extends ListState {}

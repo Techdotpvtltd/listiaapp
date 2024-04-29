@@ -210,6 +210,22 @@ class ItemRepo {
     );
   }
 
+  // Move Items to User Items
+  Future<void> moveItemsToUser(
+      {required String fromList, required String forList}) async {
+    final List<ItemModel> itemsToBeMoved =
+        _items.where((element) => element.listId == fromList).toList();
+    for (final ItemModel item in itemsToBeMoved) {
+      await addItem(
+        itemName: item.itemName,
+        listId: forList,
+        category: item.category,
+        celeries: item.celeries,
+        macros: item.macros,
+      );
+    }
+  }
+
   // Fetch All Items For Admin List Method
   Future<void> fetchAdminItems({
     required VoidCallback onGetAll,

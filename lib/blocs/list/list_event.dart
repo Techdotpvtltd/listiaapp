@@ -25,3 +25,10 @@ class ListEventFetch extends ListEvent {
 class ListEventAdminFetch extends ListEvent {
   ListEventAdminFetch();
 }
+
+/// Move list to User Event
+class ListEventMove extends ListEvent {
+  final String listId;
+
+  ListEventMove({required this.listId});
+}

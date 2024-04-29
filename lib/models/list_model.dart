@@ -20,6 +20,9 @@ class ListModel {
   final List<String> sharedUsers;
   final DateTime createdAt;
   final bool isCompleted;
+  String? referBy;
+  String? referListId;
+
   ListModel({
     required this.id,
     required this.createdBy,
@@ -28,6 +31,8 @@ class ListModel {
     required this.sharedUsers,
     required this.createdAt,
     required this.isCompleted,
+    this.referBy,
+    this.referListId,
   });
 
   ListModel copyWith({
@@ -38,6 +43,8 @@ class ListModel {
     List<String>? sharedUsers,
     DateTime? createdAt,
     bool? isCompleted,
+    String? referBy,
+    String? referListId,
   }) {
     return ListModel(
       id: id ?? this.id,
@@ -47,6 +54,8 @@ class ListModel {
       categories: categories ?? this.categories,
       sharedUsers: sharedUsers ?? this.sharedUsers,
       createdAt: createdAt ?? this.createdAt,
+      referBy: referBy ?? this.referBy,
+      referListId: referListId ?? this.referListId,
     );
   }
 
@@ -59,6 +68,8 @@ class ListModel {
       'sharedUsers': sharedUsers,
       'createdAt': Timestamp.fromDate(createdAt),
       'isCompleted': isCompleted,
+      'referBy': referBy,
+      'referListId': referListId,
     };
   }
 
@@ -66,6 +77,8 @@ class ListModel {
     return ListModel(
       id: map['id'] as String,
       createdBy: map['createdBy'] as String,
+      referBy: map['referBy'] as String?,
+      referListId: map['referListId'] as String?,
       isCompleted: map['isCompleted'] as bool? ?? false,
       title: map['title'] as String,
       categories: (map['categories'] as List<dynamic>)
@@ -85,7 +98,7 @@ class ListModel {
 
   @override
   String toString() {
-    return 'ListModel(id: $id, createdBy: $createdBy, title: $title, categories: $categories, sharedUsers: $sharedUsers, createdAt: $createdAt)';
+    return 'ListModel(id: $id, createdBy: $createdBy, title: $title, categories: $categories, sharedUsers: $sharedUsers, createdAt: $createdAt, referBy: $referBy, referListId: $referListId)';
   }
 
   @override

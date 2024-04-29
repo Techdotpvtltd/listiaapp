@@ -17,6 +17,9 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../blocs/item/item_bloc.dart';
 import '../../../blocs/item/item_state.dart';
+import '../../../blocs/list/list_bloc.dart';
+import '../../../blocs/list/list_event.dart';
+import '../../../blocs/list/list_state.dart';
 import '../../../models/list_model.dart';
 import '../../../repos/item_repo.dart';
 import '../../components/custom_button.dart';
@@ -117,20 +120,28 @@ class _ItemListState extends State<ItemList> {
   }
 }
 
-class _ItemWidget extends StatelessWidget {
+class _ItemWidget extends StatefulWidget {
   const _ItemWidget(this.list, this.onItemTapped);
   final ListModel list;
   final VoidCallback onItemTapped;
 
   @override
+  State<_ItemWidget> createState() => _ItemWidgetState();
+}
+
+class _ItemWidgetState extends State<_ItemWidget> {
+  bool isAddingPressed = false;
+  String? movingListId;
+
+  @override
   Widget build(BuildContext context) {
     return CustomInkWell(
-      onTap: onItemTapped,
+      onTap: widget.onItemTapped,
       child: BlocSelector<ItemBloc, ItemState, List<int>>(
         selector: (state) {
           return [
-            ItemRepo().getNumberOfItemsBy(listId: list.id),
-            ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)
+            ItemRepo().getNumberOfItemsBy(listId: widget.list.id),
+            ItemRepo().getNumberOfCompletedItemsBy(listId: widget.list.id)
           ];
         },
         builder: (context, value) {
@@ -196,7 +207,7 @@ class _ItemWidget extends StatelessWidget {
                           children: [
                             /// Title Text
                             Text(
-                              list.title,
+                              widget.list.title,
                               maxLines: 2,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 16,
@@ -218,7 +229,8 @@ class _ItemWidget extends StatelessWidget {
 
                             /// Date Label
                             Text(
-                              list.createdAt.dateToString("dd MMMM yyyy"),
+                              widget.list.createdAt
+                                  .dateToString("dd MMMM yyyy"),
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w700,
@@ -234,12 +246,34 @@ class _ItemWidget extends StatelessWidget {
 
                 /// Most Right Widgets
                 Flexible(
-                  child: list.createdBy == "admin"
-                      ? CustomButton(
-                          width: 100,
-                          height: 40,
-                          title: "Add",
-                          onPressed: () {},
+                  child: widget.list.createdBy == "admin"
+                      ? BlocListener<ListBloc, ListState>(
+                          listener: (context, state) {
+                            if (state is ListStateMoveFailure ||
+                                state is ListStateMoved ||
+                                state is ListStateMoving) {
+                              if (state is ListStateMoving) {
+                                setState(() {
+                                  movingListId = state.listId;
+                                });
+                              }
+                              setState(() {
+                                isAddingPressed = state.isLoading;
+                              });
+                            }
+                          },
+                          child: CustomButton(
+                            isLoading: movingListId == widget.list.id &&
+                                isAddingPressed,
+                            width: 100,
+                            height: 40,
+                            title: "Add",
+                            onPressed: () {
+                              context
+                                  .read<ListBloc>()
+                                  .add(ListEventMove(listId: widget.list.id));
+                            },
+                          ),
                         )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,7 +282,7 @@ class _ItemWidget extends StatelessWidget {
                             /// Profile Widget
                             ProfilesWidget(
                               height: 44,
-                              avatarts: list.sharedUsers,
+                              avatarts: widget.list.sharedUsers,
                             ),
 
                             /// Created By Text
@@ -257,7 +291,7 @@ class _ItemWidget extends StatelessWidget {
                                 text: "Created by ",
                                 children: [
                                   TextSpan(
-                                    text: list.createdBy == "admin"
+                                    text: widget.list.createdBy == "admin"
                                         ? "ListiShop"
                                         : "You",
                                     style: GoogleFonts.plusJakartaSans(

@@ -43,19 +43,34 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     });
 
     // Fetch Admin List Event
-    on<ListEventAdminFetch>((event, emit) async {
-      emit(ListStateAdminFetching());
-      await ListRepo().fetchAdminLists(
-        onData: () {
-          emit(ListStateNewAdminAdded());
-        },
-        onAllDataGet: () {
-          emit(ListStateAdminFetched());
-        },
-        onError: (e) {
-          emit(ListStateAdminFetchFailure(exception: e));
-        },
-      );
-    });
+    on<ListEventAdminFetch>(
+      (event, emit) async {
+        emit(ListStateAdminFetching());
+        await ListRepo().fetchAdminLists(
+          onData: () {
+            emit(ListStateNewAdminAdded());
+          },
+          onAllDataGet: () {
+            emit(ListStateAdminFetched());
+          },
+          onError: (e) {
+            emit(ListStateAdminFetchFailure(exception: e));
+          },
+        );
+      },
+    );
+
+    // Move List to User Event
+    on<ListEventMove>(
+      (event, emit) async {
+        try {
+          emit(ListStateMoving(listId: event.listId));
+          await ListRepo().moveListToUser(listId: event.listId);
+          emit(ListStateMoved());
+        } on AppException catch (e) {
+          emit(ListStateMoveFailure(exception: e));
+        }
+      },
+    );
   }
 }

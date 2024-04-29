@@ -28,6 +28,8 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../blocs/list/list_bloc.dart';
+import '../../blocs/list/list_state.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
@@ -52,6 +54,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late List<CategorizeItemsModel> categoryItems = [];
   String selectedCategory = "All";
   late final bool isAdminList = list.createdBy == "admin";
+  bool isAddListLoading = false;
 
   void filteredItems({String? searchText}) {
     categoryItems = ItemRepo().filteredItems(
@@ -90,23 +93,35 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         floatingActionButton: Visibility(
           visible: !widget.isBoughtScreen,
           child: HorizontalPadding(
-            child: CustomButton(
-              title: isAdminList ? "Add List" : "Add new item",
-              onPressed: () {
-                if (isAdminList) {
-                  if (widget.onAddListPressed != null) {
-                    widget.onAddListPressed!(widget.list);
-                  }
-                  return;
+            child: BlocListener<ListBloc, ListState>(
+              listener: (context, state) {
+                if (state is ListStateMoveFailure ||
+                    state is ListStateMoved ||
+                    state is ListStateMoving) {
+                  setState(() {
+                    isAddListLoading = state.isLoading;
+                  });
                 }
-
-                NavigationService.go(
-                  AddItemScreen(
-                    listId: widget.list.id,
-                    categories: List.from(widget.list.categories),
-                  ),
-                );
               },
+              child: CustomButton(
+                isLoading: isAddListLoading,
+                title: isAdminList ? "Add List" : "Add new item",
+                onPressed: () {
+                  if (isAdminList) {
+                    if (widget.onAddListPressed != null) {
+                      widget.onAddListPressed!(widget.list);
+                    }
+                    return;
+                  }
+
+                  NavigationService.go(
+                    AddItemScreen(
+                      listId: widget.list.id,
+                      categories: List.from(widget.list.categories),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -227,9 +242,11 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
               CustomTextFiled(
                 hintText: "Search",
                 onChange: (value) {
-                  setState(() {
-                    filteredItems(searchText: value);
-                  });
+                  setState(
+                    () {
+                      filteredItems(searchText: value);
+                    },
+                  );
                 },
                 prefixWidget: const Icon(
                   Icons.search,
@@ -244,10 +261,12 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                 child: CategoryListView(
                   categories: List.from(list.categories),
                   onSelectedCategory: (category) {
-                    setState(() {
-                      selectedCategory = category.id;
-                      filteredItems();
-                    });
+                    setState(
+                      () {
+                        selectedCategory = category.id;
+                        filteredItems();
+                      },
+                    );
                   },
                 ),
               ),

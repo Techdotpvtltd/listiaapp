@@ -14,6 +14,7 @@ import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/firestore_services.dart';
 import '../web_services/query_model.dart';
+import 'item_repo.dart';
 import 'user_repo.dart';
 import 'validations/data_validations.dart';
 
@@ -35,8 +36,12 @@ class ListRepo {
   }
 
   /// Craete List
-  Future<void> createList(
-      {required String title, required List<String> categories}) async {
+  Future<String?> createList({
+    required String title,
+    required List<String> categories,
+    String? referBy,
+    String? referListId,
+  }) async {
     try {
       final UserModel user = UserRepo().currentUser;
       await DataValidation.createList(categories: categories, title: title);
@@ -47,12 +52,15 @@ class ListRepo {
           categories: categories,
           isCompleted: false,
           sharedUsers: [user.uid],
+          referBy: referBy,
+          referListId: referListId,
           createdAt: DateTime.now());
-      final Map<String, dynamic> _ = await FirestoreService()
+      final Map<String, dynamic> mapped = await FirestoreService()
           .saveWithSpecificIdFiled(
               path: FIREBASE_COLLECTION_LISTS,
               data: uploadingList.toMap(),
               docIdFiled: 'id');
+      return mapped['id'];
     } catch (e) {
       throw throwAppException(e: e);
     }
@@ -79,6 +87,8 @@ class ListRepo {
         } else {
           _lists.add(model);
         }
+
+        onData();
       },
       onAllDataGet: onAllDataGet,
       onCompleted: (listener) {},
@@ -112,13 +122,33 @@ class ListRepo {
         } else {
           _adminLists.add(model);
         }
+        onData();
       },
       onAllDataGet: onAllDataGet,
       onCompleted: (listener) {},
       queries: [
-        QueryModel(field: "createdBy", value: "admin", type: QueryType.isEqual)
+        QueryModel(field: 'createdBy', value: 'admin', type: QueryType.isEqual),
       ],
     );
+  }
+
+  /// Move List To User
+  Future<void> moveListToUser({required String listId}) async {
+    try {
+      final ListModel movedList =
+          _adminLists.firstWhere((element) => element.id == listId);
+      final String? id = await createList(
+        title: movedList.title,
+        categories: movedList.categories,
+        referBy: "admin",
+        referListId: listId,
+      );
+      if (id != null) {
+        await ItemRepo().moveItemsToUser(fromList: listId, forList: id);
+      }
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
   }
 
   /// Mark complete

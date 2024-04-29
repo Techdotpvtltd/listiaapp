@@ -68,6 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
     bloc.add(CategoryEventFetch());
   }
 
+  void triggerMoveToUserEvent(ListBloc bloc, String id) {
+    bloc.add(ListEventMove(listId: id));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -245,9 +249,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       onItemTap: (index, isAdminList) {
                         NavigationService.go(
                           ListItemDetailScreen(
-                              list: isAdminList
-                                  ? adminLists[index]
-                                  : lists[index]),
+                            list:
+                                isAdminList ? adminLists[index] : lists[index],
+                            onAddListPressed: (list) {
+                              triggerMoveToUserEvent(
+                                  context.read<ListBloc>(), list.id);
+                            },
+                          ),
                         );
                       },
                       lists: lists,
