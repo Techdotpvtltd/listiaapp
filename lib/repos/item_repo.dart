@@ -32,7 +32,7 @@ class ItemRepo {
   // ===========================Methods================================
   int getNumberOfItemsBy({String? listId}) {
     return listId == null
-        ? _items.length
+        ? _items.where((element) => element.createdBy != "admin").length
         : _items.where((element) => element.listId == listId).length;
   }
 

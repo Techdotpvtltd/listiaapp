@@ -291,7 +291,7 @@ class _ItemWidgetState extends State<_ItemWidget> {
                                 text: "Created by ",
                                 children: [
                                   TextSpan(
-                                    text: widget.list.createdBy == "admin"
+                                    text: widget.list.referBy == "admin"
                                         ? "ListiShop"
                                         : "You",
                                     style: GoogleFonts.plusJakartaSans(
