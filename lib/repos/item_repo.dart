@@ -210,6 +210,44 @@ class ItemRepo {
     );
   }
 
+  // Fetch All Items For Admin List Method
+  Future<void> fetchAdminItems({
+    required VoidCallback onGetAll,
+    required VoidCallback onGetData,
+    required Function(AppException) onError,
+  }) async {
+    await FirestoreService().fetchWithListener(
+      collection: FIREBASE_COLLECTION_ITEMS_ADMIN,
+      onError: (e) => throwAppException(e: e),
+      onData: (data) {
+        final ItemModel model = ItemModel.fromMap(data);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          // If Item Already existed
+          _items[index] = model;
+        } else {
+          _items.add(model);
+        }
+        _items.sort((a, b) {
+          return (a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)
+              .compareTo(0);
+        });
+        onGetData();
+      },
+      onAllDataGet: onGetAll,
+      onCompleted: (listener) {},
+      queries: [
+        QueryModel(
+          field: "listId",
+          value: ListRepo().adminLists.map((e) => e.id).toList(),
+          type: QueryType.whereIn,
+        ),
+        QueryModel(field: "createdAt", value: false, type: QueryType.orderBy),
+      ],
+    );
+  }
+
   /// Mark Item Complete
   Future<void> markItemComplete({required String itemId}) async {
     try {

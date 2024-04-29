@@ -35,10 +35,13 @@ import '../../repos/item_repo.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen(
-      {super.key, required this.list, this.isBoughtScreen = false});
+      {super.key,
+      required this.list,
+      this.isBoughtScreen = false,
+      this.onAddListPressed});
   final ListModel list;
   final bool isBoughtScreen;
-
+  final Function(ListModel)? onAddListPressed;
   @override
   State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
 }
@@ -48,6 +51,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late ListModel list = widget.list;
   late List<CategorizeItemsModel> categoryItems = [];
   String selectedCategory = "All";
+  late final bool isAdminList = list.createdBy == "admin";
 
   void filteredItems({String? searchText}) {
     categoryItems = ItemRepo().filteredItems(
@@ -87,8 +91,15 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           visible: !widget.isBoughtScreen,
           child: HorizontalPadding(
             child: CustomButton(
-              title: "Add new item",
+              title: isAdminList ? "Add List" : "Add new item",
               onPressed: () {
+                if (isAdminList) {
+                  if (widget.onAddListPressed != null) {
+                    widget.onAddListPressed!(widget.list);
+                  }
+                  return;
+                }
+
                 NavigationService.go(
                   AddItemScreen(
                     listId: widget.list.id,
@@ -111,17 +122,18 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           ),
         ),
         actions: [
-          const ProfilesWidget(
-            avatarts: [
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
-              "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
-            ],
-            height: 50,
-          ),
+          if (!isAdminList)
+            const ProfilesWidget(
+              avatarts: [
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
+                "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
+              ],
+              height: 50,
+            ),
           gapW10,
 
           /// Add User Button
-          if (!widget.isBoughtScreen)
+          if (!widget.isBoughtScreen && !isAdminList)
             CustomInkWell(
               onTap: () {
                 NavigationService.go(const ShareScreen());
@@ -169,26 +181,28 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             SvgPicture.asset(AppAssets.menuIcon),
                             gapW4,
                             BlocSelector<ItemBloc, ItemState, bool?>(
-                                selector: (state) {
-                              return state is ItemStateFetched ||
-                                  state is ItemStateFetchedAll;
-                            }, builder: (context, _) {
-                              return Text(
-                                "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: const Color(0xFF6C6C6C),
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              );
-                            }),
+                              selector: (state) {
+                                return state is ItemStateFetched ||
+                                    state is ItemStateFetchedAll;
+                              },
+                              builder: (context, _) {
+                                return Text(
+                                  "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(0xFF6C6C6C),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                     ],
                   ),
 
                   /// Bucket Button
-                  if (!widget.isBoughtScreen)
+                  if (!widget.isBoughtScreen && !isAdminList)
                     Builder(
                       builder: (context) {
                         return IconButton(
@@ -263,9 +277,11 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             _ItemList(
                               categoryItem.items,
                               (selectedItem) {
-                                triggerMarkCompleteItemEvent(
-                                    context.read<ItemBloc>(),
-                                    selectedItemId: selectedItem.id);
+                                if (!isAdminList) {
+                                  triggerMarkCompleteItemEvent(
+                                      context.read<ItemBloc>(),
+                                      selectedItemId: selectedItem.id);
+                                }
                               },
                             ),
                           ],

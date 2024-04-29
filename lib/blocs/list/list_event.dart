@@ -21,3 +21,7 @@ class ListEventFetch extends ListEvent {
 
   ListEventFetch({required this.forUser});
 }
+
+class ListEventAdminFetch extends ListEvent {
+  ListEventAdminFetch();
+}

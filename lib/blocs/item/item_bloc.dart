@@ -50,6 +50,22 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       );
     });
 
+    /// Fetch Admin item Event
+    on<ItemEventFetchAdmin>((event, emit) async {
+      emit(ItemStateFetching());
+      await ItemRepo().fetchAdminItems(
+        onGetAll: () {
+          emit(ItemStateFetchedAll());
+        },
+        onGetData: () {
+          emit(ItemStateFetched());
+        },
+        onError: (e) {
+          emit(ItemStateFetchFailure(exception: e));
+        },
+      );
+    });
+
     /// Mark Item Complete Event
     on<ItemEventMarkComplete>(
       (event, emit) async {

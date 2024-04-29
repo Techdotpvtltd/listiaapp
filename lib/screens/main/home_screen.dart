@@ -46,13 +46,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
   List<ListModel> lists = ListRepo().lists;
+  List<ListModel> adminLists = ListRepo().adminLists;
 
   void triggerFetchListEvent(ListBloc bloc) {
     bloc.add(ListEventFetch(forUser: UserRepo().currentUser.uid));
   }
 
+  void triggerAdminFetchListEvent(ListBloc bloc) {
+    bloc.add(ListEventAdminFetch());
+  }
+
   void triggerFetchItemEvent(ItemBloc bloc) {
     bloc.add(ItemEventFetch());
+  }
+
+  void triggerFetchAdminItemEvent(ItemBloc bloc) {
+    bloc.add(ItemEventFetchAdmin());
   }
 
   void triggerFetchCategoriesEvent(CategoryBloc bloc) {
@@ -63,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     triggerFetchListEvent(context.read<ListBloc>());
+    triggerAdminFetchListEvent(context.read<ListBloc>());
     triggerFetchCategoriesEvent(context.read<CategoryBloc>());
   }
 
@@ -73,7 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
         if (state is ListStateFetchFailure ||
             state is ListStateFetched ||
             state is ListStateFetching ||
-            state is ListStateNewAdded) {
+            state is ListStateNewAdded ||
+            state is ListStateAdminFetched) {
           setState(() {
             isLoading = state.isLoading;
           });
@@ -85,13 +96,22 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (state is ListStateFetched) {
-            // setState(() {});
             triggerFetchItemEvent(context.read<ItemBloc>());
+          }
+
+          if (state is ListStateAdminFetched) {
+            triggerFetchAdminItemEvent(context.read<ItemBloc>());
           }
 
           if (state is ListStateFetchFailure) {
             CustomDialogs().errorBox(message: state.exception.message);
           }
+        }
+
+        if (state is ListStateAdminFetched || state is ListStateNewAdded) {
+          setState(() {
+            adminLists = ListRepo().adminLists;
+          });
         }
       },
       child: Scaffold(
@@ -222,11 +242,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text("No Lists."),
                     )
                   : ItemList(
-                      onItemTap: (index) {
+                      onItemTap: (index, isAdminList) {
                         NavigationService.go(
-                            ListItemDetailScreen(list: lists[index]));
+                          ListItemDetailScreen(
+                              list: isAdminList
+                                  ? adminLists[index]
+                                  : lists[index]),
+                        );
                       },
                       lists: lists,
+                      adminLists: adminLists,
                     ),
             ),
           ),

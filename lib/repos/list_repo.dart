@@ -24,6 +24,8 @@ class ListRepo {
   factory ListRepo() => _instance;
   // ==============================Properties=============================
   final List<ListModel> _lists = [];
+  final List<ListModel> _adminLists = [];
+  List<ListModel> get adminLists => _adminLists;
   List<ListModel> get lists => _lists;
 
 // ===========================Methods================================
@@ -83,9 +85,38 @@ class ListRepo {
       queries: [
         QueryModel(
             field: "sharedUsers",
-            value: [user.uid, "admin"],
+            value: [user.uid],
             type: QueryType.arrayContainsAny),
         QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
+      ],
+    );
+  }
+
+  /// Fetch Lists
+  Future<void> fetchAdminLists(
+      {required VoidCallback onData,
+      required VoidCallback onAllDataGet,
+      required Function(AppException) onError,
+      required}) async {
+    await FirestoreService().fetchWithListener(
+      collection: FIREBASE_COLLECTION_LISTS_ADMIN,
+      onError: (e) {
+        onError(throwAppException(e: e));
+      },
+      onData: (Map<String, dynamic> data) {
+        final ListModel model = ListModel.fromMap(data);
+        final int index =
+            _adminLists.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _adminLists[index] = model;
+        } else {
+          _adminLists.add(model);
+        }
+      },
+      onAllDataGet: onAllDataGet,
+      onCompleted: (listener) {},
+      queries: [
+        QueryModel(field: "createdBy", value: "admin", type: QueryType.isEqual)
       ],
     );
   }

@@ -43,12 +43,15 @@ class _CompleteListScreenState extends State<CompleteListScreen> {
         },
         body: HorizontalPadding(
           child: ItemList(
-            onItemTap: (index) {
-              NavigationService.go(ListItemDetailScreen(
-                list: lists[index],
-                isBoughtScreen: true,
-              ));
+            onItemTap: (index, _) {
+              NavigationService.go(
+                ListItemDetailScreen(
+                  list: lists[index],
+                  isBoughtScreen: true,
+                ),
+              );
             },
+            adminLists: const [],
             lists: lists,
           ),
         ),

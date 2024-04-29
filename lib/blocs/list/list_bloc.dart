@@ -41,5 +41,21 @@ class ListBloc extends Bloc<ListEvent, ListState> {
         },
       );
     });
+
+    // Fetch Admin List Event
+    on<ListEventAdminFetch>((event, emit) async {
+      emit(ListStateAdminFetching());
+      await ListRepo().fetchAdminLists(
+        onData: () {
+          emit(ListStateNewAdminAdded());
+        },
+        onAllDataGet: () {
+          emit(ListStateAdminFetched());
+        },
+        onError: (e) {
+          emit(ListStateAdminFetchFailure(exception: e));
+        },
+      );
+    });
   }
 }

@@ -13,3 +13,9 @@ const String FIREBASE_COLLECTION_ITEMS =
     "${kReleaseMode ? "Rel-" : "Dev-"}Items";
 const FIREBASE_COLLECTION_CATEGORY =
     "${kReleaseMode ? "Rel-" : "Dev-"}Categories";
+
+const String FIREBASE_COLLECTION_LISTS_ADMIN =
+    "${kReleaseMode ? "Rel-" : "Dev-"}Admin-Lists";
+
+const String FIREBASE_COLLECTION_ITEMS_ADMIN =
+    "${kReleaseMode ? "Rel-" : "Dev-"}Admin-Items";

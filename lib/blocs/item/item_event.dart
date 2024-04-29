@@ -26,6 +26,8 @@ class ItemEventAddNew extends ItemEvent {
 // Fetch Items Event
 class ItemEventFetch extends ItemEvent {}
 
+class ItemEventFetchAdmin extends ItemEvent {}
+
 // Mark Complete Event
 class ItemEventMarkComplete extends ItemEvent {
   final String itemId;

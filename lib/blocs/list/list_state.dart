@@ -48,3 +48,20 @@ class ListStateFetchFailure extends ListState {
 class ListStateFetched extends ListState {}
 
 class ListStateNewAdded extends ListState {}
+
+// ===========================Fetching List States================================
+
+class ListStateAdminFetching extends ListState {
+  ListStateAdminFetching(
+      {super.isLoading = true, super.loadingText = "Fetching..."});
+}
+
+class ListStateAdminFetchFailure extends ListState {
+  final AppException exception;
+
+  ListStateAdminFetchFailure({required this.exception});
+}
+
+class ListStateAdminFetched extends ListState {}
+
+class ListStateNewAdminAdded extends ListState {}
