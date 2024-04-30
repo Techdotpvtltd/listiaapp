@@ -16,7 +16,7 @@ import 'validations/data_validations.dart';
 
 class CategoryRepo {
   // ===========================Signleton Instance================================
-  static final CategoryRepo _instance = CategoryRepo._internal();
+  static CategoryRepo _instance = CategoryRepo._internal();
   CategoryRepo._internal();
   factory CategoryRepo() => _instance;
 
@@ -25,6 +25,10 @@ class CategoryRepo {
   List<CategoryModel> get categories => _categories;
 
   // ===========================Methods================================
+
+  void reset() {
+    _instance = CategoryRepo._internal();
+  }
 
   List<CategoryModel> getCategoriesFrom({required List<String> categoryIds}) {
     final List<CategoryModel> nCategories = [];

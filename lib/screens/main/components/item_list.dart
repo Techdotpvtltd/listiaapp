@@ -21,7 +21,9 @@ import '../../../blocs/list/list_bloc.dart';
 import '../../../blocs/list/list_event.dart';
 import '../../../blocs/list/list_state.dart';
 import '../../../models/list_model.dart';
+import '../../../models/user_model.dart';
 import '../../../repos/item_repo.dart';
+import '../../../repos/user_repo.dart';
 import '../../components/custom_button.dart';
 
 Color pointGraphValueColor(dynamic datum, int index) {
@@ -282,31 +284,39 @@ class _ItemWidgetState extends State<_ItemWidget> {
                             /// Profile Widget
                             ProfilesWidget(
                               height: 44,
-                              avatarts: widget.list.sharedUsers,
+                              invitedUsers: widget.list.sharedUsers,
                             ),
 
                             /// Created By Text
-                            Text.rich(
-                              TextSpan(
-                                text: "Created by ",
-                                children: [
-                                  TextSpan(
-                                    text: widget.list.referBy == "admin"
-                                        ? "ListiShop"
-                                        : "You",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: const Color(0xFF676767),
-                                      fontWeight: FontWeight.w700,
+                            FutureBuilder<UserModel?>(
+                                future: UserRepo().fetchUser(
+                                    profileId: widget.list.createdBy),
+                                builder: (context, snapshot) {
+                                  return Text.rich(
+                                    TextSpan(
+                                      text: "Created by ",
+                                      children: [
+                                        TextSpan(
+                                          text: widget.list.referBy == "admin"
+                                              ? "ListiShop"
+                                              : snapshot.data?.uid ==
+                                                      UserRepo().currentUser.uid
+                                                  ? "You"
+                                                  : snapshot.data?.name,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(0xFF676767),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: AppTheme.subTitleColor1,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: AppTheme.subTitleColor1,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            )
+                                  );
+                                })
                           ],
                         ),
                 ),

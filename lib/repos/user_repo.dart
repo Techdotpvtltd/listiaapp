@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../exceptions/exception_parsing.dart';
 
@@ -21,7 +22,7 @@ class UserRepo {
   /// business layer.
   ///
 
-  static final UserRepo _instance = UserRepo._internal();
+  static UserRepo _instance = UserRepo._internal();
   UserModel? _userModel;
   UserModel get currentUser =>
       _userModel == null ? throw AuthExceptionUserNotFound() : _userModel!;
@@ -34,7 +35,7 @@ class UserRepo {
 
   /// Clear all
   void clearAll() {
-    _userModel = null;
+    _instance = UserRepo._internal();
   }
 
   /// Fetch user
@@ -164,20 +165,101 @@ class UserRepo {
     }
   }
 
-  // Fetch Profile
-  Future<UserModel> fetchUser({required String profileId}) async {
+  Future<void> sendInvite(
+      {required String listId, required List<String> invitedUserIds}) async {
     try {
-      final List<Map<String, dynamic>> data = await FirestoreService()
-          .fetchWithMultipleConditions(
-              collection: FIREBASE_COLLECTION_USER,
-              queries: [
-            QueryModel(field: "uid", value: profileId, type: QueryType.isEqual),
-          ]);
+      debugPrint(listId.toString());
+      await FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_LISTS,
+          docId: listId,
+          data: {'sharedUsers': invitedUserIds});
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  // Fetech Users with
+  Future<List<UserModel>> fetchUsersBy({required String searchText}) async {
+    try {
+      final List<QueryModel> queries = [];
+      if (searchText.isNumeric()) {
+        queries.add(QueryModel(
+            field: "phone", value: searchText, type: QueryType.isEqual));
+      } else if (searchText.isValidEmail()) {
+        queries.add(QueryModel(
+            field: "email", value: searchText, type: QueryType.isEqual));
+      } else {
+        queries.add(QueryModel(
+            field: "name",
+            value: searchText,
+            type: QueryType.isGreaterThanOrEqual));
+        queries.add(QueryModel(
+            field: "name",
+            value: "$searchText\uf8ff",
+            type: QueryType.isLessThanOrEqual));
+      }
+
+      final List<Map<String, dynamic>> listOfData =
+          await FirestoreService().fetchWithMultipleConditions(
+        collection: FIREBASE_COLLECTION_USER,
+        queries: queries,
+      );
+
+      final users = listOfData.map((e) => UserModel.fromMap(e)).toList();
+      users.removeWhere((element) =>
+          element.role == "admin" || element.uid == currentUser.uid);
+      return users;
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  // Fetch Profile
+  Future<UserModel?> fetchUser({required String profileId}) async {
+    try {
+      if (profileId == currentUser.uid) {
+        return currentUser;
+      }
+
+      if (profileId == "admin") {
+        return null;
+      }
+      final List<Map<String, dynamic>> data =
+          await FirestoreService().fetchWithMultipleConditions(
+        collection: FIREBASE_COLLECTION_USER,
+        queries: [
+          QueryModel(field: "uid", value: profileId, type: QueryType.isEqual),
+        ],
+      );
       // ignore: sdk_version_since
       if (data.firstOrNull != null) {
         return UserModel.fromMap(data.first);
       }
       throw throwAuthException(errorCode: 'user-not-found');
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  // Fetch Profile
+  Future<List<UserModel>> fetchUsers({required List<String> userIds}) async {
+    try {
+      final List<UserModel> users = [];
+      for (final String id in userIds) {
+        final List<Map<String, dynamic>> data =
+            await FirestoreService().fetchWithMultipleConditions(
+          collection: FIREBASE_COLLECTION_USER,
+          queries: [
+            QueryModel(field: "uid", value: id, type: QueryType.isEqual),
+          ],
+        );
+        // ignore: sdk_version_since
+        final UserModel user = UserModel.fromMap(data.first);
+        if (user.uid != currentUser.uid) {
+          users.add(user);
+        }
+      }
+      return users;
     } catch (e) {
       throw throwAppException(e: e);
     }

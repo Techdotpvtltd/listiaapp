@@ -3,7 +3,7 @@ import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import 'circle_network_image_widget.dart';
 
-class AvatarWidget extends StatelessWidget {
+class AvatarWidget extends StatefulWidget {
   const AvatarWidget({
     super.key,
     this.width,
@@ -21,22 +21,27 @@ class AvatarWidget extends StatelessWidget {
   final VoidCallback? onEditPressed;
 
   @override
+  State<AvatarWidget> createState() => _AvatarWidgetState();
+}
+
+class _AvatarWidgetState extends State<AvatarWidget> {
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Stack(
         children: [
           Positioned(
             child: CircleNetworkImage(
-              height: height ?? 115,
-              width: width ?? 115,
-              backgroundColor: placeholderChar != null
+              height: widget.height ?? 115,
+              width: widget.width ?? 115,
+              backgroundColor: widget.placeholderChar != null
                   ? AppTheme.primaryColor1
-                  : backgroundColor,
-              url: avatarUrl ?? "",
+                  : widget.backgroundColor,
+              url: widget.avatarUrl ?? "",
               placeholderWidget: LayoutBuilder(
                 builder: (context, constraints) {
                   return Text(
-                    placeholderChar ?? "U",
+                    widget.placeholderChar ?? "U",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: constraints.maxWidth * 0.6,
@@ -48,14 +53,14 @@ class AvatarWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: onEditPressed != null,
+            visible: widget.onEditPressed != null,
             child: Positioned(
               right: 0,
               bottom: -6,
               child: IconButton(
                 onPressed: () {
-                  if (onEditPressed != null) {
-                    onEditPressed!();
+                  if (widget.onEditPressed != null) {
+                    widget.onEditPressed!();
                   }
                 },
                 style: const ButtonStyle(

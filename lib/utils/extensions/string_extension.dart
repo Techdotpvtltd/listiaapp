@@ -11,6 +11,15 @@ extension CustomStr on String {
     return regex.hasMatch(this);
   }
 
+  bool isNumeric() {
+    try {
+      final _ = double.parse(this);
+    } on FormatException {
+      return false;
+    }
+    return true;
+  }
+
   String capitalizeFirstCharacter() {
     List<String> words = split(" "); // Split the string into words
     List<String> capitalizedWords = [];
@@ -25,5 +34,11 @@ extension CustomStr on String {
 
     return capitalizedWords
         .join(" "); // Join the words back into a single string
+  }
+
+  bool isValidEmail() {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(this);
   }
 }

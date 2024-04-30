@@ -22,7 +22,7 @@ import 'validations/data_validations.dart';
 
 class ItemRepo {
   // ===========================Singleton Instance================================
-  static final ItemRepo _instance = ItemRepo._internal();
+  static ItemRepo _instance = ItemRepo._internal();
   ItemRepo._internal();
   factory ItemRepo() => _instance;
 
@@ -30,6 +30,10 @@ class ItemRepo {
   final List<ItemModel> _items = [];
 
   // ===========================Methods================================
+  void reset() {
+    _instance = ItemRepo._internal();
+  }
+
   int getNumberOfItemsBy({String? listId}) {
     return listId == null
         ? _items.where((element) => element.createdBy != "admin").length

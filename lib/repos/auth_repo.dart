@@ -6,6 +6,9 @@ import '../exceptions/auth_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
 import '../utils/utils.dart';
 import '../web_services/firebase_auth_serivces.dart';
+import 'category_repo.dart';
+import 'item_repo.dart';
+import 'list_repo.dart';
 import 'user_repo.dart';
 import 'validations/data_validations.dart';
 
@@ -72,8 +75,11 @@ class AuthRepo {
 
   /// Perform Logout
   Future<void> performLogout() async {
-    await FirebaseAuthService().logoutUser();
+    FirebaseAuthService().logoutUser();
     UserRepo().clearAll();
+    ListRepo().reset();
+    ItemRepo().reset();
+    CategoryRepo().reset();
   }
 
   /// Perform Logout

@@ -16,7 +16,7 @@ class UserModel {
   final String avatar;
   final String phoneNumber;
   final DateTime createdAt;
-
+  final String? role;
   UserModel({
     required this.uid,
     required this.name,
@@ -24,6 +24,7 @@ class UserModel {
     required this.avatar,
     required this.createdAt,
     required this.phoneNumber,
+    this.role,
   });
 
   UserModel copyWith({
@@ -64,6 +65,7 @@ class UserModel {
       email: map['email'] as String? ?? "",
       avatar: map['avatar'] as String? ?? "",
       phoneNumber: map['phone'] as String? ?? "",
+      role: map['role'] as String?,
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
     );
   }

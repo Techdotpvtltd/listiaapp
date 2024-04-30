@@ -138,11 +138,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         ),
         actions: [
           if (!isAdminList)
-            const ProfilesWidget(
-              avatarts: [
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5B6V0mxFbSf25cnxc5QntGStilTtjimuC0N_OnfaHTQ&s",
-                "https://wallpapers.com/images/hd/professional-profile-pictures-1427-x-1920-txfewtw6mcg0y6hk.jpg",
-              ],
+            ProfilesWidget(
+              invitedUsers: widget.list.sharedUsers,
               height: 50,
             ),
           gapW10,
@@ -151,7 +148,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           if (!widget.isBoughtScreen && !isAdminList)
             CustomInkWell(
               onTap: () {
-                NavigationService.go(const ShareScreen());
+                NavigationService.go(ShareScreen(list: list));
               },
               child: Container(
                 height: 25,

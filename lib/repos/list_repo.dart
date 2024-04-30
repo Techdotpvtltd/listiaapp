@@ -20,7 +20,7 @@ import 'validations/data_validations.dart';
 
 class ListRepo {
   /// Singleton Instance
-  static final ListRepo _instance = ListRepo._internal();
+  static ListRepo _instance = ListRepo._internal();
   ListRepo._internal();
   factory ListRepo() => _instance;
   // ==============================Properties=============================
@@ -28,6 +28,10 @@ class ListRepo {
   final List<ListModel> _adminLists = [];
   List<ListModel> get adminLists => _adminLists;
   List<ListModel> get lists => _lists;
+
+  void reset() {
+    _instance = ListRepo._internal();
+  }
 
 // ===========================Methods================================
   /// Get Completed Lists

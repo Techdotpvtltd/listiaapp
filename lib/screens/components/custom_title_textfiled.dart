@@ -23,6 +23,7 @@ class CustomTextFiled extends StatefulWidget {
     this.onSubmitted,
     this.onChange,
     this.focusNode,
+    this.textInputAction,
   });
   final String? titleText;
   final String hintText;
@@ -40,7 +41,7 @@ class CustomTextFiled extends StatefulWidget {
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
   final Function(String)? onChange;
-
+  final TextInputAction? textInputAction;
   @override
   State<CustomTextFiled> createState() => _CustomTextFiledState();
 }
@@ -105,6 +106,7 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
           canRequestFocus: true,
           focusNode: textFieldFocus,
           controller: widget.controller,
+          textInputAction: widget.textInputAction,
           obscureText: widget.keyboardType == TextInputType.visiblePassword &&
               isShowPassword,
           onSubmitted: (value) {

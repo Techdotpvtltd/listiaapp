@@ -10,7 +10,7 @@ import 'package:listi_shop/utils/constants/app_theme.dart';
 /// Date:        28-02-24 15:39:43 -- Wednesday
 /// Description:
 
-class CustomNetworkImage extends StatelessWidget {
+class CustomNetworkImage extends StatefulWidget {
   const CustomNetworkImage(
       {super.key,
       required this.imageUrl,
@@ -27,11 +27,16 @@ class CustomNetworkImage extends StatelessWidget {
   final Widget? placeholderWidget;
 
   @override
+  State<CustomNetworkImage> createState() => _CustomNetworkImageState();
+}
+
+class _CustomNetworkImageState extends State<CustomNetworkImage> {
+  @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-      imageUrl: imageUrl,
-      width: width,
-      height: height,
+      imageUrl: widget.imageUrl,
+      width: widget.width,
+      height: widget.height,
       errorListener: (value) {},
       fit: BoxFit.cover,
       placeholder: (context, url) => const Center(
@@ -40,24 +45,24 @@ class CustomNetworkImage extends StatelessWidget {
         ),
       ),
       errorWidget: (context, url, error) => Container(
-        color: backgroundColor ?? Colors.blueGrey[50],
+        color: widget.backgroundColor ?? Colors.blueGrey[50],
         child: LayoutBuilder(
           builder: (context, constraints) {
             return url != "" &&
                     error.toString().contains("No host specified in URI")
                 ? Image.file(
-                    File(imageUrl),
-                    height: height,
-                    width: width,
+                    File(widget.imageUrl),
+                    height: widget.height,
+                    width: widget.width,
                     fit: BoxFit.cover,
                   )
                 : Visibility(
-                    visible: showPlaceholder,
+                    visible: widget.showPlaceholder,
                     child: Center(
-                      child: placeholderWidget ??
+                      child: widget.placeholderWidget ??
                           Icon(
                             Icons.image,
-                            size: (height ?? constraints.maxHeight) / 2,
+                            size: (widget.height ?? constraints.maxHeight) / 2,
                           ),
                     ),
                   );

@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'custom_network_image.dart';
 
-class CircleNetworkImage extends StatelessWidget {
+class CircleNetworkImage extends StatefulWidget {
   const CircleNetworkImage({
     super.key,
     required this.url,
@@ -28,25 +28,30 @@ class CircleNetworkImage extends StatelessWidget {
   final Widget? placeholderWidget;
 
   @override
+  State<CircleNetworkImage> createState() => _CircleNetworkImageState();
+}
+
+class _CircleNetworkImageState extends State<CircleNetworkImage> {
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? 50,
-      height: height ?? 50,
+      width: widget.width ?? 50,
+      height: widget.height ?? 50,
       child: InkWell(
-        onTap: onTapImage,
+        onTap: widget.onTapImage,
         child: Container(
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-            color: backgroundColor ?? Colors.blueGrey[50],
+            color: widget.backgroundColor ?? Colors.blueGrey[50],
             borderRadius: const BorderRadius.all(
               Radius.circular(300),
             ),
           ),
           child: CustomNetworkImage(
-            imageUrl: url,
-            backgroundColor: backgroundColor ?? Colors.transparent,
-            showPlaceholder: showPlaceholder,
-            placeholderWidget: placeholderWidget,
+            imageUrl: widget.url,
+            backgroundColor: widget.backgroundColor ?? Colors.transparent,
+            showPlaceholder: widget.showPlaceholder,
+            placeholderWidget: widget.placeholderWidget,
           ),
         ),
       ),
