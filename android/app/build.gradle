@@ -40,6 +40,21 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('listia.ks')
+            storePassword 'qw4hd-gw34b'
+            keyAlias 'key0'
+            keyPassword 'qw4hd-gw34b'
+        }
+        release {
+            storeFile file('listia.ks')
+            storePassword 'qw4hd-gw34b'
+            keyAlias 'key0'
+            keyPassword 'qw4hd-gw34b'
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.techdot.listiShop"
@@ -55,7 +70,7 @@ android {
 
     buildTypes {
         release {
-            // signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled true
@@ -65,20 +80,7 @@ android {
        
     }
 
-    signingConfigs {
-        debug {
-            storeFile file('/Users/pro-akbar/Desktop/Ali Akbar/Office/listi_shop/android/app/listia.ks')
-            storePassword 'qwhd-gw34b'
-            keyAlias 'key0'
-            keyPassword 'qwhd-gw34b'
-        }
-        release {
-            storeFile file('/Users/pro-akbar/Desktop/Ali Akbar/Office/listi_shop/android/app/listia.ks')
-            storePassword 'qwhd-gw34b'
-            keyAlias 'key0'
-            keyPassword 'qwhd-gw34b'
-        }
-    }
+
 }
 
 flutter {
