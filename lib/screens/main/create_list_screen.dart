@@ -81,6 +81,7 @@ class _CreateListScreenState extends State<CreateListScreen> {
       },
       child: CustomScaffold(
         title: "Create New List",
+        resizeToAvoidBottomInset: false,
         body: HVPadding(
           verticle: 30,
           child: Column(
@@ -229,6 +230,7 @@ class _CategoryBubbleState extends State<_CategoryBubble> {
               CustomDialogs().showTextField(
                 title: "Add Category",
                 tfHint: "Enter Category Name:",
+                buttonTitle: "Save",
                 onDone: (value) {
                   triggerAddCategoryEvent(context.read<CategoryBloc>(), value);
                 },

@@ -241,26 +241,21 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Skeleton(
               isLoading: isLoading,
               skeleton: const ListSkeleton(),
-              child: lists.isEmpty
-                  ? const Center(
-                      child: Text("No Lists."),
-                    )
-                  : ItemList(
-                      onItemTap: (index, isAdminList) {
-                        NavigationService.go(
-                          ListItemDetailScreen(
-                            list:
-                                isAdminList ? adminLists[index] : lists[index],
-                            onAddListPressed: (list) {
-                              triggerMoveToUserEvent(
-                                  context.read<ListBloc>(), list.id);
-                            },
-                          ),
-                        );
+              child: ItemList(
+                onItemTap: (index, isAdminList) {
+                  NavigationService.go(
+                    ListItemDetailScreen(
+                      list: isAdminList ? adminLists[index] : lists[index],
+                      onAddListPressed: (list) {
+                        triggerMoveToUserEvent(
+                            context.read<ListBloc>(), list.id);
                       },
-                      lists: lists,
-                      adminLists: adminLists,
                     ),
+                  );
+                },
+                lists: lists,
+                adminLists: adminLists,
+              ),
             ),
           ),
         ),

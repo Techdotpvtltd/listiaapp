@@ -70,11 +70,13 @@ class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 30, bottom: 100),
+      padding:
+          EdgeInsets.only(top: widget.lists.isNotEmpty ? 30 : 0, bottom: 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// user created lists
+
           for (int index = 0; index < items.length; index++)
             Builder(
               builder: (context) {

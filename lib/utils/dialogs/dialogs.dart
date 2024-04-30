@@ -228,13 +228,14 @@ class CustomDialogs {
     required String title,
     required String tfHint,
     required Function(String) onDone,
+    required String buttonTitle,
   }) {
     final TextEditingController controller = TextEditingController();
     final FocusNode focusNode = FocusNode(canRequestFocus: true);
     focusNode.requestFocus();
     _genericDialog(
       child: Container(
-        height: SCREEN_HEIGHT * 0.3,
+        height: SCREEN_HEIGHT * 0.4,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -260,11 +261,19 @@ class CustomDialogs {
                 focusNode: focusNode,
                 onSubmitted: (value) {
                   onDone(value);
-                  controller.clear();
                   focusNode.requestFocus();
                 },
               ),
               gapH20,
+              CustomButton(
+                title: buttonTitle,
+                onPressed: () {
+                  onDone(controller.text);
+                  controller.clear();
+                  focusNode.requestFocus();
+                },
+              ),
+              gapH10,
               CustomButton(
                 title: "Close",
                 onPressed: () {
