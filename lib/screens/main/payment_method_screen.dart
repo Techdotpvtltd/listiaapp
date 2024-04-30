@@ -15,16 +15,56 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 
-class PaymentMethodScreen extends StatelessWidget {
+import '../../managers/app_manager.dart';
+import '../../utils/dialogs/dialogs.dart';
+import '../../utils/extensions/navigation_service.dart';
+
+class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});
+
+  @override
+  State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
+}
+
+class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       floatingActionButton: HorizontalPadding(
         child: CustomButton(
-          title: "Pay Now",
-          onPressed: () {},
+          isLoading: isLoading,
+          isEnabled: !AppManager().isActiveSubscription,
+          title: "Subscribe",
+          onPressed: () {
+            CustomDialogs().alertBox(
+              title: "Subscription Alert",
+              message:
+                  "This is for test purpose. In Product subscription method may work different.",
+              positiveTitle: "Go and Subscribe",
+              onPositivePressed: () {
+                setState(() {
+                  isLoading = true;
+                });
+                Future.delayed(const Duration(seconds: 3), () {
+                  setState(() {
+                    isLoading = false;
+                    AppManager().isActiveSubscription = true;
+                  });
+
+                  CustomDialogs().successBox(
+                    message:
+                        "Subscription active successfully. Please Go to home screen to take effect of subscription.",
+                    positiveTitle: "Back",
+                    onPositivePressed: () {
+                      NavigationService.back();
+                    },
+                  );
+                });
+              },
+            );
+          },
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

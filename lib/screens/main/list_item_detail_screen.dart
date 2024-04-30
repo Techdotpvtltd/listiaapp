@@ -30,10 +30,12 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_state.dart';
+import '../../managers/app_manager.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
+import '../../repos/user_repo.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen(
@@ -333,7 +335,9 @@ class _ItemListState extends State<_ItemList> {
             final ItemModel item = widget.items[index];
             bool isSelected = item.completedBy != null;
             bool isBought = item.boughtBy != null;
-
+            final bool isShowAdditionalData =
+                AppManager().isActiveSubscription ||
+                    UserRepo().currentUser.uid == item.createdBy;
             return CustomInkWell(
               onTap: () {
                 setState(() {
@@ -386,41 +390,42 @@ class _ItemListState extends State<_ItemList> {
                     ),
 
                     ///
-                    Row(
-                      children: [
-                        if (item.celeries != null)
-                          SvgPicture.asset(AppAssets.fireIcon),
-                        if (item.celeries != null) gapW4,
-                        if (item.celeries != null)
-                          Text(
-                            "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFF676767),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              decoration: isSelected
-                                  ? TextDecoration.lineThrough
-                                  : null,
+                    if (isShowAdditionalData)
+                      Row(
+                        children: [
+                          if (item.celeries != null)
+                            SvgPicture.asset(AppAssets.fireIcon),
+                          if (item.celeries != null) gapW4,
+                          if (item.celeries != null)
+                            Text(
+                              "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFF676767),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                decoration: isSelected
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
                             ),
-                          ),
-                        if (item.macros != null) gapW10,
-                        if (item.macros != null)
-                          SvgPicture.asset(AppAssets.electricIcon),
-                        if (item.macros != null) gapW4,
-                        if (item.macros != null)
-                          Text(
-                            "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
-                            style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFF676767),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              decoration: isSelected
-                                  ? TextDecoration.lineThrough
-                                  : null,
+                          if (item.macros != null) gapW10,
+                          if (item.macros != null)
+                            SvgPicture.asset(AppAssets.electricIcon),
+                          if (item.macros != null) gapW4,
+                          if (item.macros != null)
+                            Text(
+                              "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFF676767),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                decoration: isSelected
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
                             ),
-                          ),
-                      ],
-                    )
+                        ],
+                      )
                   ],
                 ),
               ),

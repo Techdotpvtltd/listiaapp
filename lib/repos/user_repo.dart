@@ -9,6 +9,7 @@ import '../../exceptions/exception_parsing.dart';
 import '../../web_services/firestore_services.dart';
 import '../../exceptions/data_exceptions.dart';
 import '../exceptions/auth_exceptions.dart';
+import '../managers/app_manager.dart';
 import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/query_model.dart';
@@ -168,7 +169,9 @@ class UserRepo {
   Future<void> sendInvite(
       {required String listId, required List<String> invitedUserIds}) async {
     try {
-      debugPrint(listId.toString());
+      if (!AppManager().isActiveSubscription && invitedUserIds.length > 5) {
+        throw DataExceptionSubscriptionRequired();
+      }
       await FirestoreService().updateWithDocId(
           path: FIREBASE_COLLECTION_LISTS,
           docId: listId,

@@ -22,9 +22,12 @@ import 'package:skeletons/skeletons.dart';
 import '../../blocs/share_user/share_user_bloc.dart';
 import '../../blocs/share_user/share_user_event.dart';
 import '../../blocs/share_user/share_user_state.dart';
+import '../../exceptions/data_exceptions.dart';
 import '../../models/list_model.dart';
 import '../../models/user_model.dart';
 import '../../utils/dialogs/dialogs.dart';
+import '../../utils/extensions/navigation_service.dart';
+import 'payment_method_screen.dart';
 
 class ShareScreen extends StatefulWidget {
   const ShareScreen({super.key, required this.list});
@@ -84,6 +87,17 @@ class _ShareScreenState extends State<ShareScreen> {
           }
 
           if (state is ShareUserStateInviteFailure) {
+            if (state.exception is DataExceptionSubscriptionRequired) {
+              CustomDialogs().alertBox(
+                message:
+                    "You can send 5 invitations in free mode. Please upgrade your plan to send more invitations.",
+                positiveTitle: "Show Subscription Plan",
+                onPositivePressed: () {
+                  NavigationService.go(const PaymentMethodScreen());
+                },
+              );
+              return;
+            }
             CustomDialogs().errorBox(message: state.exception.message);
           }
         }

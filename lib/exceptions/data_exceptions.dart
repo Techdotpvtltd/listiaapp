@@ -71,6 +71,11 @@ class DataExceptionRequiredField extends DataException {
       {super.message = "Field Required.", required super.errorCode});
 }
 
+class DataExceptionSubscriptionRequired extends DataException {
+  DataExceptionSubscriptionRequired(
+      {super.message = "Please upgrade your plan to use this feature."});
+}
+
 DataException throwDataException({required String errorCode, String? message}) {
   switch (errorCode.toUpperCase()) {
     case 'ALREADY-EXISTS':

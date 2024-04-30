@@ -17,6 +17,7 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
+import '../../managers/app_manager.dart';
 import '../../models/subscription_model.dart';
 
 final List<SubscriptionModel> subscriptions = [
@@ -30,27 +31,27 @@ final List<SubscriptionModel> subscriptions = [
     price: 19.9,
     periodDuration: "month",
   ),
-  SubscriptionModel(
-    id: "1",
-    title: "Gold",
-    contents: [
-      "Add MORE Than 10 People",
-      "Also one boost weekly just for 24 hours",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-    price: 29.9,
-    periodDuration: "month",
-  ),
-  SubscriptionModel(
-    id: "0",
-    title: "Platinum",
-    contents: [
-      "Add unlimited People",
-      "Also one boost weekly just for 24 hours",
-    ],
-    price: 39.9,
-    periodDuration: "month",
-  ),
+  // SubscriptionModel(
+  //   id: "1",
+  //   title: "Gold",
+  //   contents: [
+  //     "Add MORE Than 10 People",
+  //     "Also one boost weekly just for 24 hours",
+  //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  //   ],
+  //   price: 29.9,
+  //   periodDuration: "month",
+  // ),
+  // SubscriptionModel(
+  //   id: "0",
+  //   title: "Platinum",
+  //   contents: [
+  //     "Add unlimited People",
+  //     "Also one boost weekly just for 24 hours",
+  //   ],
+  //   price: 39.9,
+  //   periodDuration: "month",
+  // ),
 ];
 
 class SubscriptionPlanScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class SubscriptionPlanScreen extends StatefulWidget {
 }
 
 class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
-  int? selectedIndex;
+  bool isActived = AppManager().isActiveSubscription;
 
   @override
   Widget build(BuildContext context) {
@@ -84,22 +85,22 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           itemCount: subscriptions.length,
           padding: const EdgeInsets.only(top: 40, bottom: 20),
           itemBuilder: (context, index) {
-            bool isSelected = selectedIndex == index;
             return CustomInkWell(
               onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
+                // setState(() {
+                //   selectedIndex = index;
+                // });
+                NavigationService.go(const PaymentMethodScreen());
               },
               child: Container(
                 padding: const EdgeInsets.only(
                     top: 37, bottom: 24, left: 24, right: 24),
                 margin: const EdgeInsets.symmetric(vertical: 9),
                 decoration: BoxDecoration(
-                  color: isSelected
+                  color: isActived
                       ? null
                       : const Color(0xFF5A7D65).withOpacity(0.08),
-                  gradient: isSelected ? AppTheme.primaryLinearGradient : null,
+                  gradient: isActived ? AppTheme.primaryLinearGradient : null,
                   border: Border.all(color: AppTheme.primaryColor2),
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
@@ -115,9 +116,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.titleColor1,
+                            color:
+                                isActived ? Colors.white : AppTheme.titleColor1,
                           ),
                         ),
 
@@ -127,9 +127,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.titleColor1,
+                            color:
+                                isActived ? Colors.white : AppTheme.titleColor1,
                           ),
                         ),
                       ],
@@ -145,7 +144,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                             width: 3,
                             height: 3,
                             decoration: BoxDecoration(
-                              color: isSelected
+                              color: isActived
                                   ? Colors.white
                                   : AppTheme.primaryColor2,
                               shape: BoxShape.circle,
@@ -158,7 +157,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
-                                color: isSelected
+                                color: isActived
                                     ? Colors.white
                                     : AppTheme.titleColor1,
                               ),
@@ -170,14 +169,15 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: CustomInkWell(
-                        onTap: () {
-                          NavigationService.go(const PaymentMethodScreen());
+                        onTap: () async {
+                          await NavigationService.go(
+                              const PaymentMethodScreen());
                         },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: isSelected
+                              color: isActived
                                   ? Colors.white
                                   : AppTheme.primaryColor2,
                             ),
@@ -185,7 +185,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                           ),
                           child: Icon(
                             Icons.arrow_forward,
-                            color: isSelected
+                            color: isActived
                                 ? Colors.white
                                 : AppTheme.primaryColor2,
                           ),
