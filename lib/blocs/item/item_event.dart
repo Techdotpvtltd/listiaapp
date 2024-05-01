@@ -38,6 +38,12 @@ class ItemEventUpdate extends ItemEvent {
       required this.category});
 }
 
+class ItemEventDeleted extends ItemEvent {
+  final String itemId;
+
+  ItemEventDeleted({required this.itemId});
+}
+
 // Fetch Items Event
 class ItemEventFetch extends ItemEvent {}
 

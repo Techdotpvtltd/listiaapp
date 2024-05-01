@@ -83,3 +83,6 @@ class ItemStateMarkItemBoughtFailure extends ItemState {
 }
 
 class ItemStateMarkedItemBought extends ItemState {}
+
+// ===========================Deleted States================================
+class ItemStateDeleted extends ItemState {}

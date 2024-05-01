@@ -140,7 +140,9 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ItemBloc, ItemState>(
       listener: (context, state) {
-        if (state is ItemStateAdded || state is ItemStateFetchedAll) {
+        if (state is ItemStateAdded ||
+            state is ItemStateFetchedAll ||
+            state is ItemStateDeleted) {
           setState(() {
             filteredItems();
           });
@@ -395,6 +397,15 @@ class _ItemListState extends State<_ItemList> {
     );
   }
 
+  void onDeleteMenuPressed(ItemModel model) {
+    CustomDialogs().deleteBox(
+        title: "Item Deletion",
+        message: "Are you sure to delete this ${model.itemName} item?.",
+        onPositivePressed: () {
+          context.read<ItemBloc>().add(ItemEventDeleted(itemId: model.id));
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -527,7 +538,9 @@ class _ItemListState extends State<_ItemList> {
                           onEditMenuPressed(item);
                         }
 
-                        if (value.toLowerCase() == "delete") {}
+                        if (value.toLowerCase() == "delete") {
+                          onDeleteMenuPressed(item);
+                        }
                       },
                     ),
                   ),

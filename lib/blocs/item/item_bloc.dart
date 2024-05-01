@@ -122,5 +122,15 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         }
       },
     );
+
+    /// Mark Deleted
+    on<ItemEventDeleted>((event, emit) async {
+      try {
+        await ItemRepo().deleteItem(itemId: event.itemId);
+        emit(ItemStateDeleted());
+      } on AppException catch (_) {
+        ///
+      }
+    });
   }
 }

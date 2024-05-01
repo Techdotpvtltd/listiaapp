@@ -67,7 +67,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
-  void triggerUpdateItemEvent(ItemBloc bloc, {required String ItemId}) {
+  void triggerUpdateItemEvent(ItemBloc bloc, {required String itemId}) {
     setState(() {
       errorCode = null;
     });
@@ -79,7 +79,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         itemName: nameController.text,
         celeries: celeries,
         macros: macros,
-        itemId: ItemId,
+        itemId: itemId,
         category: selectedCategory ?? "",
       ),
     );
@@ -256,7 +256,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onPressed: () {
                   item != null
                       ? triggerUpdateItemEvent(context.read<ItemBloc>(),
-                          ItemId: item!.id)
+                          itemId: item!.id)
                       : triggerAddItemEvent(context.read<ItemBloc>());
                 },
               ),

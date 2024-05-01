@@ -237,6 +237,17 @@ class ItemRepo {
     }
   }
 
+  Future<void> deleteItem({required String itemId}) async {
+    try {
+      await FirestoreService()
+          .delete(collection: FIREBASE_COLLECTION_ITEMS, docId: itemId);
+      _items.removeWhere(
+          (element) => element.id.toLowerCase() == itemId.toLowerCase());
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
   // Fetch All Items Method
   Future<void> fetchItems({
     required VoidCallback onGetAll,
