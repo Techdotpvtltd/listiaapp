@@ -176,6 +176,13 @@ class ItemRepo {
     return items;
   }
 
+  List<String> getItemsIdBy({required String listId}) {
+    return _items
+        .where((element) => element.listId == listId)
+        .map((e) => e.id)
+        .toList();
+  }
+
   // ===========================API Methods================================
   // Add New Item Method
   Future<void> addItem(

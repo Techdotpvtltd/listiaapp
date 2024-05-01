@@ -29,6 +29,7 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
+import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
 import '../../managers/app_manager.dart';
 import '../../models/item_model.dart';
@@ -36,6 +37,7 @@ import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
 import '../../repos/user_repo.dart';
+import '../../utils/dialogs/dialogs.dart';
 import '../components/custom_dropdown.dart';
 import 'create_list_screen.dart';
 
@@ -44,10 +46,12 @@ class ListItemDetailScreen extends StatefulWidget {
       {super.key,
       required this.list,
       this.isBoughtScreen = false,
-      this.onAddListPressed});
+      this.onAddListPressed,
+      this.onDeleteListPressed});
   final ListModel list;
   final bool isBoughtScreen;
   final Function(ListModel)? onAddListPressed;
+  final Function(ListModel)? onDeleteListPressed;
   @override
   State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
 }
@@ -74,6 +78,18 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
     return items;
   }
 
+  void triggerDeleteListEvent() {
+    CustomDialogs().deleteBox(
+        title: "Delete List",
+        message:
+            "Are you sure to delete this list? This will delete all the items and shared user data. This process will not be undo.",
+        onPositivePressed: () {
+          if (widget.onDeleteListPressed != null) {
+            widget.onDeleteListPressed!(list);
+          }
+        });
+  }
+
   void navigateToShareScreen() {
     NavigationService.go(ShareScreen(list: list));
   }
@@ -91,6 +107,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         navigateToUpdateList();
         break;
       case 'delete':
+        triggerDeleteListEvent();
         break;
     }
   }

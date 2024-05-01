@@ -33,6 +33,7 @@ import '../../repos/item_repo.dart';
 import '../../repos/list_repo.dart';
 import '../../repos/user_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
+import '../../utils/dialogs/loaders.dart';
 import 'create_list_screen.dart';
 import 'skeletons/list_skeleton.dart';
 
@@ -83,6 +84,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ListBloc, ListState>(
       listener: (context, state) {
+        if (state is ListStateDeleted ||
+            state is ListStateDeleting ||
+            state is ListStateDeleteFailure) {
+          state.isLoading ? Loader().show() : Loader().hide();
+
+          if (state is ListStateDeleted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            setState(() {
+              lists.clear();
+              lists = ListRepo().lists;
+            });
+          }
+        }
+
         if (state is ListStateFetchFailure ||
             state is ListStateFetched ||
             state is ListStateFetching ||
@@ -94,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           if (state is ListStateNewAdded) {
             setState(() {
-              lists = ListRepo().lists;
+              lists = List.from(ListRepo().lists);
             });
           }
 
@@ -205,7 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             BlocSelector<ItemBloc, ItemState, bool>(
                                 selector: (state) {
                               return state is ListStateFetched ||
-                                      state is ListStateNewAdded
+                                      state is ListStateNewAdded ||
+                                      state is ListStateDeleted
                                   ? true
                                   : false;
                             }, builder: (context, _) {
@@ -249,6 +265,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       onAddListPressed: (list) {
                         triggerMoveToUserEvent(
                             context.read<ListBloc>(), list.id);
+                      },
+                      onDeleteListPressed: (list) {
+                        final List<String> itemIds =
+                            ItemRepo().getItemsIdBy(listId: list.id);
+                        context.read<ListBloc>().add(ListEventDelete(
+                            listId: list.id, itemsIds: itemIds));
                       },
                     ),
                   );

@@ -97,12 +97,19 @@ class ListRepo {
     required List<String> itemsIds,
   }) async {
     try {
-      FirestoreService()
-          .delete(collection: FIREBASE_COLLECTION_LISTS, docId: id);
+      await FirestoreService().delete(
+        collection: FIREBASE_COLLECTION_LISTS,
+        docId: id,
+      );
       for (final String itemId in itemsIds) {
-        FirestoreService()
-            .delete(collection: FIREBASE_COLLECTION_ITEMS, docId: itemId);
+        await FirestoreService().delete(
+          collection: FIREBASE_COLLECTION_ITEMS,
+          docId: itemId,
+        );
       }
+
+      _lists.removeWhere(
+          (element) => element.id.toLowerCase() == id.toLowerCase());
     } catch (e) {
       throw throwAppException(e: e);
     }
@@ -124,6 +131,7 @@ class ListRepo {
         final ListModel model = ListModel.fromMap(data);
         final int index =
             _lists.indexWhere((element) => element.id == model.id);
+
         if (index > -1) {
           _lists[index] = model;
         } else {

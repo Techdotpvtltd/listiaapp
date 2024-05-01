@@ -146,7 +146,8 @@ class _ItemWidgetState extends State<_ItemWidget> {
           return [
             ItemRepo().getNumberOfItemsBy(
                 listId: widget.list.id, categories: widget.list.categories),
-            ItemRepo().getNumberOfCompletedItemsBy(listId: widget.list.id, categories: widget.list.categories)
+            ItemRepo().getNumberOfCompletedItemsBy(
+                listId: widget.list.id, categories: widget.list.categories)
           ];
         },
         builder: (context, value) {
@@ -292,34 +293,35 @@ class _ItemWidgetState extends State<_ItemWidget> {
 
                             /// Created By Text
                             FutureBuilder<UserModel?>(
-                                future: UserRepo().fetchUser(
-                                    profileId: widget.list.createdBy),
-                                builder: (context, snapshot) {
-                                  return Text.rich(
-                                    TextSpan(
-                                      text: "Created by ",
-                                      children: [
-                                        TextSpan(
-                                          text: widget.list.referBy == "admin"
-                                              ? "ListiShop"
-                                              : snapshot.data?.uid ==
-                                                      UserRepo().currentUser.uid
-                                                  ? "You"
-                                                  : snapshot.data?.name,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(0xFF676767),
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                              future: UserRepo()
+                                  .fetchUser(profileId: widget.list.createdBy),
+                              builder: (context, snapshot) {
+                                return Text.rich(
+                                  TextSpan(
+                                    text: "Created by ",
+                                    children: [
+                                      TextSpan(
+                                        text: widget.list.referBy == "admin"
+                                            ? "ListiShop"
+                                            : snapshot.data?.uid ==
+                                                    UserRepo().currentUser.uid
+                                                ? "You"
+                                                : snapshot.data?.name,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: const Color(0xFF676767),
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                      ],
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: AppTheme.subTitleColor1,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
                                       ),
+                                    ],
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor1,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
                                     ),
-                                  );
-                                })
+                                  ),
+                                );
+                              },
+                            )
                           ],
                         ),
                 ),

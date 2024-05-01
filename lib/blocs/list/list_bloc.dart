@@ -5,6 +5,7 @@
 // Date:        22-04-24 17:12:38 -- Monday
 // Description:
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../exceptions/app_exceptions.dart';
@@ -84,6 +85,21 @@ class ListBloc extends Bloc<ListEvent, ListState> {
           emit(ListStateUpdated());
         } on AppException catch (e) {
           emit(ListStateUpdateFailure(exception: e));
+        }
+      },
+    );
+
+    on<ListEventDelete>(
+      (event, emit) async {
+        try {
+          emit(ListStateDeleting());
+          await ListRepo().deleteList(
+            id: event.listId,
+            itemsIds: event.itemsIds,
+          );
+          emit(ListStateDeleted());
+        } on AppException catch (e) {
+          emit(ListStateDeleteFailure(exception: e));
         }
       },
     );

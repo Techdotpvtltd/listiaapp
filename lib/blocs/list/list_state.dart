@@ -99,4 +99,16 @@ class ListStateUpdateFailure extends ListState {
 class ListStateUpdated extends ListState {}
 
 // ===========================Delete List State================================
-class ListStateDeleted extends ListState {}
+class ListStateDeleting extends ListState {
+  ListStateDeleting({super.isLoading = true});
+}
+
+class ListStateDeleted extends ListState {
+  ListStateDeleted();
+}
+
+class ListStateDeleteFailure extends ListState {
+  final AppException exception;
+
+  ListStateDeleteFailure({required this.exception});
+}
