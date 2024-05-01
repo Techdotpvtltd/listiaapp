@@ -82,3 +82,21 @@ class ListStateMoveFailure extends ListState {
 }
 
 class ListStateMoved extends ListState {}
+
+// =========================== Update List State ================================
+
+class ListStateUpdating extends ListState {
+  ListStateUpdating(
+      {super.isLoading = true, super.loadingText = "Creating..."});
+}
+
+class ListStateUpdateFailure extends ListState {
+  final AppException exception;
+
+  ListStateUpdateFailure({required this.exception});
+}
+
+class ListStateUpdated extends ListState {}
+
+// ===========================Delete List State================================
+class ListStateDeleted extends ListState {}

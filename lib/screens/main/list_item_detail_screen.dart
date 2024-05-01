@@ -37,6 +37,7 @@ import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
 import '../../repos/user_repo.dart';
 import '../components/custom_dropdown.dart';
+import 'create_list_screen.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen(
@@ -77,12 +78,17 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
     NavigationService.go(ShareScreen(list: list));
   }
 
+  void navigateToUpdateList() {
+    NavigationService.go(CreateListScreen(updatedList: list));
+  }
+
   void onMenuPressed({required String selectedMenu}) {
     switch (selectedMenu.toLowerCase()) {
       case 'add person':
         navigateToShareScreen();
         break;
       case 'edit':
+        navigateToUpdateList();
         break;
       case 'delete':
         break;
@@ -224,7 +230,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                               },
                               builder: (context, _) {
                                 return Text(
-                                  "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
+                                  "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id, categories: list.categories)}/${ItemRepo().getNumberOfItemsBy(listId: list.id, categories: list.categories)} Completed",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: const Color(0xFF6C6C6C),
                                     fontSize: 9,
@@ -305,9 +311,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                           children: [
                             Text(
                               CategoryRepo()
-                                  .getCategoryFrom(
-                                      categoryId: categoryItem.category)
-                                  .item,
+                                      .getCategoryFrom(
+                                          categoryId: categoryItem.category)
+                                      ?.item ??
+                                  "Deleted",
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.titleColor1,
                                 fontSize: 16,

@@ -34,18 +34,49 @@ class ItemRepo {
     _instance = ItemRepo._internal();
   }
 
-  int getNumberOfItemsBy({String? listId}) {
-    return listId == null
-        ? _items.where((element) => element.createdBy != "admin").length
-        : _items.where((element) => element.listId == listId).length;
-  }
+  int getNumberOfItemsBy({String? listId, required List<String> categories}) {
+    final allCategories = ListRepo()
+        .lists
+        .map((e) => e.categories)
+        .expand((element) => element.map((e) => e.toLowerCase()))
+        .toSet();
 
-  int getNumberOfCompletedItemsBy({String? listId}) {
     return listId == null
-        ? _items.where((element) => element.completedBy != null).length
+        ? _items
+            .where((element) =>
+                element.createdBy != "admin" &&
+                allCategories.contains(element.category.toLowerCase()))
+            .length
         : _items
             .where((element) =>
-                element.listId == listId && element.completedBy != null)
+                element.listId == listId &&
+                categories
+                    .map((e) => e.toLowerCase())
+                    .contains(element.category.toLowerCase()))
+            .length;
+  }
+
+  int getNumberOfCompletedItemsBy(
+      {String? listId, required List<String> categories}) {
+    final allCategories = ListRepo()
+        .lists
+        .map((e) => e.categories)
+        .expand((element) => element.map((e) => e.toLowerCase()))
+        .toSet();
+
+    return listId == null
+        ? _items
+            .where((element) =>
+                element.completedBy != null &&
+                allCategories.contains(element.category.toLowerCase()))
+            .length
+        : _items
+            .where((element) =>
+                element.listId == listId &&
+                element.completedBy != null &&
+                categories
+                    .map((e) => e.toLowerCase())
+                    .contains(element.category.toLowerCase()))
             .length;
   }
 
@@ -187,6 +218,7 @@ class ItemRepo {
       onError: (e) => throwAppException(e: e),
       onData: (data) {
         final ItemModel model = ItemModel.fromMap(data);
+
         final int index =
             _items.indexWhere((element) => element.id == model.id);
         if (index > -1) {

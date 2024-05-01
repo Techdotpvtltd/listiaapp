@@ -72,5 +72,20 @@ class ListBloc extends Bloc<ListEvent, ListState> {
         }
       },
     );
+
+    on<ListEventUpdate>(
+      (event, emit) async {
+        try {
+          emit(ListStateUpdating());
+          await ListRepo().updateList(
+              id: event.listId,
+              title: event.title,
+              categories: event.categories);
+          emit(ListStateUpdated());
+        } on AppException catch (e) {
+          emit(ListStateUpdateFailure(exception: e));
+        }
+      },
+    );
   }
 }

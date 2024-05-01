@@ -77,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     triggerFetchListEvent(context.read<ListBloc>());
     triggerAdminFetchListEvent(context.read<ListBloc>());
-    triggerFetchCategoriesEvent(context.read<CategoryBloc>());
   }
 
   @override
@@ -101,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           if (state is ListStateFetched) {
             triggerFetchItemEvent(context.read<ItemBloc>());
+            triggerFetchCategoriesEvent(context.read<CategoryBloc>());
           }
 
           if (state is ListStateAdminFetched) {
@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               builder: (context, _) {
                                 return Text(
-                                  "${ItemRepo().getNumberOfCompletedItemsBy()} of ${ItemRepo().getNumberOfItemsBy()}",
+                                  "${ItemRepo().getNumberOfCompletedItemsBy(categories: [])} of ${ItemRepo().getNumberOfItemsBy(categories: [])}",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: Colors.white,
                                     fontSize: 22,

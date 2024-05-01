@@ -15,6 +15,21 @@ class ListEventCreate extends ListEvent {
   ListEventCreate({required this.title, required this.categories});
 }
 
+class ListEventUpdate extends ListEvent {
+  final String listId;
+  final String title;
+  final List<String> categories;
+
+  ListEventUpdate(
+      {required this.listId, required this.title, required this.categories});
+}
+
+class ListEventDelete extends ListEvent {
+  final String listId;
+  final List<String> itemsIds;
+  ListEventDelete({required this.listId, required this.itemsIds});
+}
+
 // Fetch List
 class ListEventFetch extends ListEvent {
   final String forUser;

@@ -17,7 +17,9 @@ import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
 import '../../models/category_model.dart';
+import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
+import '../../repos/user_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
@@ -28,8 +30,8 @@ import '../components/custom_title_textfiled.dart';
 import '../components/paddings.dart';
 
 class CreateListScreen extends StatefulWidget {
-  const CreateListScreen({super.key});
-
+  const CreateListScreen({super.key, this.updatedList});
+  final ListModel? updatedList;
   @override
   State<CreateListScreen> createState() => _CreateListScreenState();
 }
@@ -40,10 +42,30 @@ class _CreateListScreenState extends State<CreateListScreen> {
   String? errorMessage;
   List<String> selectedCategories = [];
   TextEditingController nameController = TextEditingController();
+  late final ListModel? updatedList = widget.updatedList;
 
   void triggerCreateListEvent(ListBloc bloc) {
-    bloc.add(ListEventCreate(
-        title: nameController.text, categories: selectedCategories));
+    bloc.add(
+      ListEventCreate(
+          title: nameController.text, categories: selectedCategories),
+    );
+  }
+
+  void triggerUpdateEvent(ListBloc bloc) {
+    bloc.add(ListEventUpdate(
+        listId: widget.updatedList!.id,
+        title: nameController.text,
+        categories: selectedCategories));
+  }
+
+  @override
+  void initState() {
+    if (updatedList != null) {
+      nameController.text = updatedList?.title ?? "";
+      selectedCategories = updatedList?.categories ?? [];
+    }
+
+    super.initState();
   }
 
   @override
@@ -52,11 +74,25 @@ class _CreateListScreenState extends State<CreateListScreen> {
       listener: (context, state) {
         if (state is ListStateCreating ||
             state is ListStateCreated ||
-            state is ListStateCreateFailure) {
+            state is ListStateCreateFailure ||
+            state is ListStateUpdateFailure ||
+            state is ListStateUpdated ||
+            state is ListStateUpdating) {
           setState(() {
             isLoading = state.isLoading;
           });
           if (state is ListStateCreateFailure) {
+            if (state.exception.errorCode != null) {
+              setState(() {
+                errorCode = state.exception.errorCode;
+                errorMessage = state.exception.message;
+              });
+              return;
+            }
+            CustomDialogs().errorBox(message: state.exception.message);
+          }
+
+          if (state is ListStateUpdateFailure) {
             if (state.exception.errorCode != null) {
               setState(() {
                 errorCode = state.exception.errorCode;
@@ -77,10 +113,21 @@ class _CreateListScreenState extends State<CreateListScreen> {
               },
             );
           }
+
+          if (state is ListStateUpdated) {
+            CustomDialogs().successBox(
+              message: "Your list has been successfully updated.",
+              title: "List Updated",
+              positiveTitle: "Go to Home",
+              onPositivePressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            );
+          }
         }
       },
       child: CustomScaffold(
-        title: "Create New List",
+        title: updatedList != null ? "Update List" : "Create New List",
         resizeToAvoidBottomInset: false,
         body: HVPadding(
           verticle: 30,
@@ -89,7 +136,7 @@ class _CreateListScreenState extends State<CreateListScreen> {
             children: [
               /// Create New List Label
               Text(
-                "Create New List",
+                updatedList != null ? "Update List" : "Create New List",
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w700,
                   fontSize: 22,
@@ -128,15 +175,20 @@ class _CreateListScreenState extends State<CreateListScreen> {
               ),
               gapH10,
               _CategoryBubble(
+                selectedCategoyIds: widget.updatedList?.categories,
                 onItemsUpdated: (items) {
                   selectedCategories = items.map((e) => e.id).toList();
                 },
               ),
               const Spacer(),
               CustomButton(
-                title: "Create",
+                title: updatedList != null ? "Update" : "Create",
                 isLoading: isLoading,
                 onPressed: () {
+                  if (updatedList != null) {
+                    triggerUpdateEvent(context.read<ListBloc>());
+                    return;
+                  }
                   triggerCreateListEvent(context.read<ListBloc>());
                 },
               ),
@@ -149,18 +201,39 @@ class _CreateListScreenState extends State<CreateListScreen> {
 }
 
 class _CategoryBubble extends StatefulWidget {
-  const _CategoryBubble({required this.onItemsUpdated});
+  const _CategoryBubble(
+      {required this.onItemsUpdated, this.selectedCategoyIds});
   final Function(List<CategoryModel>) onItemsUpdated;
+  final List<String>? selectedCategoyIds;
   @override
   State<_CategoryBubble> createState() => _CategoryBubbleState();
 }
 
 class _CategoryBubbleState extends State<_CategoryBubble> {
-  List<CategoryModel> items = CategoryRepo().categories;
+  List<CategoryModel> items = CategoryRepo()
+      .categories
+      .where((element) =>
+          element.createdBy.toLowerCase() == "admin" ||
+          element.createdBy == UserRepo().currentUser.uid)
+      .toList();
   final selectedItems = <CategoryModel>[];
 
   void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
     bloc.add(CategoryEventAdd(category: categoryName));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.selectedCategoyIds != null) {
+      for (final String id in widget.selectedCategoyIds!) {
+        final int index = items.indexWhere(
+            (element) => element.id.toLowerCase() == id.toLowerCase());
+        if (index > -1) {
+          selectedItems.add(items[index]);
+        }
+      }
+    }
   }
 
   @override

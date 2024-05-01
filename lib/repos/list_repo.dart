@@ -70,6 +70,44 @@ class ListRepo {
     }
   }
 
+  /// Update List
+  Future<void> updateList({
+    required String id,
+    required String title,
+    required List<String> categories,
+  }) async {
+    try {
+      await DataValidation.createList(categories: categories, title: title);
+      await FirestoreService().updateWithDocId(
+        path: FIREBASE_COLLECTION_LISTS,
+        docId: id,
+        data: {
+          "title": title,
+          "categories": categories,
+        },
+      );
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  /// Delete List
+  Future<void> deleteList({
+    required String id,
+    required List<String> itemsIds,
+  }) async {
+    try {
+      FirestoreService()
+          .delete(collection: FIREBASE_COLLECTION_LISTS, docId: id);
+      for (final String itemId in itemsIds) {
+        FirestoreService()
+            .delete(collection: FIREBASE_COLLECTION_ITEMS, docId: itemId);
+      }
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
   /// Fetch Lists
   Future<void> fetchLists(
       {required VoidCallback onData,

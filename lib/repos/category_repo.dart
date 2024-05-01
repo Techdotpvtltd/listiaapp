@@ -11,6 +11,7 @@ import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/firestore_services.dart';
 import '../web_services/query_model.dart';
+import 'list_repo.dart';
 import 'user_repo.dart';
 import 'validations/data_validations.dart';
 
@@ -21,7 +22,7 @@ class CategoryRepo {
   factory CategoryRepo() => _instance;
 
   // ===========================Properties================================
-  List<CategoryModel> _categories = [];
+  final List<CategoryModel> _categories = [];
   List<CategoryModel> get categories => _categories;
 
   // ===========================Methods================================
@@ -43,9 +44,13 @@ class CategoryRepo {
     return nCategories;
   }
 
-  CategoryModel getCategoryFrom({required String categoryId}) {
-    return _categories.firstWhere(
+  CategoryModel? getCategoryFrom({required String categoryId}) {
+    final int index = _categories.indexWhere(
         (element) => element.id.toLowerCase() == categoryId.toLowerCase());
+    if (index > -1) {
+      return _categories[index];
+    }
+    return null;
   }
 
   // ===========================API Methods================================
@@ -73,19 +78,28 @@ class CategoryRepo {
   Future<void> fetchCategories() async {
     try {
       final UserModel currentUser = UserRepo().currentUser;
-
+      final listCreaterIds =
+          ListRepo().lists.map((e) => e.createdBy).toSet().toList();
+      listCreaterIds.addAll([currentUser.uid, "admin"]);
       final List<Map<String, dynamic>> map =
           await FirestoreService().fetchWithMultipleConditions(
         collection: FIREBASE_COLLECTION_CATEGORY,
         queries: [
           QueryModel(
             field: 'createdBy',
-            value: [currentUser.uid, "admin"],
+            value: listCreaterIds,
             type: QueryType.whereIn,
           ),
         ],
       );
-      _categories = map.map((e) => CategoryModel.fromMap(e)).toList();
+      for (final Map<String, dynamic> data in map) {
+        final CategoryModel category = CategoryModel.fromMap(data);
+        if (_categories.indexWhere((element) =>
+                element.item.toLowerCase() == category.item.toLowerCase()) <
+            0) {
+          _categories.add(category);
+        }
+      }
     } catch (e) {
       throw throwAppException(e: e);
     }
