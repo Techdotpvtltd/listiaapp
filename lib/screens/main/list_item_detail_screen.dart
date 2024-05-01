@@ -36,6 +36,7 @@ import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
 import '../../repos/item_repo.dart';
 import '../../repos/user_repo.dart';
+import '../components/custom_dropdown.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
   const ListItemDetailScreen(
@@ -56,7 +57,37 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late List<CategorizeItemsModel> categoryItems = [];
   String selectedCategory = "All";
   late final bool isAdminList = list.createdBy == "admin";
+  late final bool isListCreater =
+      UserRepo().currentUser.uid == widget.list.createdBy;
   bool isAddListLoading = false;
+
+  List<DropdownMenuModel> getMenuItems() {
+    final items = [
+      DropdownMenuModel(title: 'Add Person', icon: Icons.add),
+    ];
+
+    if (isListCreater) {
+      items.add(DropdownMenuModel(title: "Edit", icon: Icons.edit));
+      items.add(DropdownMenuModel(title: "Delete", icon: Icons.delete));
+    }
+    return items;
+  }
+
+  void navigateToShareScreen() {
+    NavigationService.go(ShareScreen(list: list));
+  }
+
+  void onMenuPressed({required String selectedMenu}) {
+    switch (selectedMenu.toLowerCase()) {
+      case 'add person':
+        navigateToShareScreen();
+        break;
+      case 'edit':
+        break;
+      case 'delete':
+        break;
+    }
+  }
 
   void filteredItems({String? searchText}) {
     categoryItems = ItemRepo().filteredItems(
@@ -71,6 +102,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   void triggerMarkCompleteItemEvent(ItemBloc bloc,
       {required String selectedItemId}) {
     bloc.add(ItemEventMarkComplete(itemId: selectedItemId));
+  }
+
+  void triggerMarkUnCompleteItemEvent(ItemBloc bloc, {required String itemId}) {
+    bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
   }
 
   @override
@@ -146,25 +181,13 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             ),
           gapW10,
 
-          /// Add User Button
+          /// Menu Button
           if (!widget.isBoughtScreen && !isAdminList)
-            CustomInkWell(
-              onTap: () {
-                NavigationService.go(ShareScreen(list: list));
+            CustomMenuDropdown(
+              items: getMenuItems(),
+              onSelectedItem: (selectedMenu, index) {
+                onMenuPressed(selectedMenu: selectedMenu);
               },
-              child: Container(
-                height: 25,
-                width: 25,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 12,
-                ),
-              ),
             ),
           gapW20,
         ],
@@ -293,12 +316,19 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             ),
                             gapH10,
                             _ItemList(
-                              categoryItem.items,
-                              (selectedItem) {
+                              items: categoryItem.items,
+                              onItemSelected: (selectedItem) {
                                 if (!isAdminList) {
                                   triggerMarkCompleteItemEvent(
                                       context.read<ItemBloc>(),
                                       selectedItemId: selectedItem.id);
+                                }
+                              },
+                              onItemDeselected: (selectedItem) {
+                                if (!isAdminList) {
+                                  triggerMarkUnCompleteItemEvent(
+                                      context.read<ItemBloc>(),
+                                      itemId: selectedItem.id);
                                 }
                               },
                             ),
@@ -317,10 +347,13 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 }
 
 class _ItemList extends StatefulWidget {
-  const _ItemList(this.items, this.onItemSelected);
+  const _ItemList(
+      {required this.items,
+      required this.onItemSelected,
+      required this.onItemDeselected});
   final List<ItemModel> items;
   final Function(ItemModel) onItemSelected;
-
+  final Function(ItemModel) onItemDeselected;
   @override
   State<_ItemList> createState() => _ItemListState();
 }
@@ -331,106 +364,113 @@ class _ItemListState extends State<_ItemList> {
     return Column(
       children: [
         for (int index = 0; index < widget.items.length; index++)
-          Builder(builder: (context) {
-            final ItemModel item = widget.items[index];
-            bool isSelected = item.completedBy != null;
-            bool isBought = item.boughtBy != null;
-            final bool isShowAdditionalData =
-                AppManager().isActiveSubscription ||
-                    UserRepo().currentUser.uid == item.createdBy;
-            return CustomInkWell(
-              onTap: () {
-                setState(() {
-                  if (!isSelected) {
-                    widget.onItemSelected(item);
-                  }
-                });
-              },
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? LinearGradient(
-                          begin: const Alignment(0.99, -0.10),
-                          end: const Alignment(-0.99, 0.1),
-                          colors: [
-                            const Color(0xFF30A94A).withOpacity(0.02),
-                            const Color(0x002EA346)
-                                .withOpacity(isBought ? 0.3 : 0.09),
-                          ],
-                        )
-                      : null,
-                  border: Border.all(
-                    color: isSelected
-                        ? AppTheme.primaryColor2
-                        : const Color(0xFFF3F3F3),
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(24)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        /// Check Box
-                        CustomCheckBox(isChecked: isSelected),
-                        gapW10,
-                        // Title Text
-                        Text(
-                          item.itemName,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: AppTheme.titleColor1,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+          Builder(
+            builder: (context) {
+              final ItemModel item = widget.items[index];
+              bool isSelected = item.completedBy != null;
+              bool isBought = item.boughtBy != null;
+              final bool isShowAdditionalData =
+                  AppManager().isActiveSubscription ||
+                      UserRepo().currentUser.uid == item.createdBy;
+              return CustomInkWell(
+                onTap: () {
+                  setState(() {
+                    if (!isSelected) {
+                      widget.onItemSelected(item);
+                    } else {
+                      widget.onItemDeselected(item);
+                    }
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(
+                            begin: const Alignment(0.99, -0.10),
+                            end: const Alignment(-0.99, 0.1),
+                            colors: [
+                              const Color(0xFF30A94A).withOpacity(0.02),
+                              const Color(0x002EA346)
+                                  .withOpacity(isBought ? 0.3 : 0.09),
+                            ],
+                          )
+                        : null,
+                    border: Border.all(
+                      color: isSelected
+                          ? AppTheme.primaryColor2
+                          : const Color(0xFFF3F3F3),
                     ),
-
-                    ///
-                    if (isShowAdditionalData)
+                    borderRadius: const BorderRadius.all(Radius.circular(24)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Row(
                         children: [
-                          if (item.celeries != null)
-                            SvgPicture.asset(AppAssets.fireIcon),
-                          if (item.celeries != null) gapW4,
-                          if (item.celeries != null)
-                            Text(
-                              "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: const Color(0xFF676767),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                decoration: isSelected
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                              ),
+                          /// Check Box
+                          CustomCheckBox(isChecked: isSelected),
+                          gapW10,
+                          // Title Text
+                          Text(
+                            item.itemName,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: AppTheme.titleColor1,
+                              fontSize: 14,
+                              decoration: isSelected
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              fontWeight: FontWeight.w700,
                             ),
-                          if (item.macros != null) gapW10,
-                          if (item.macros != null)
-                            SvgPicture.asset(AppAssets.electricIcon),
-                          if (item.macros != null) gapW4,
-                          if (item.macros != null)
-                            Text(
-                              "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: const Color(0xFF676767),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                decoration: isSelected
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                              ),
-                            ),
+                          ),
                         ],
-                      )
-                  ],
+                      ),
+
+                      ///
+                      if (isShowAdditionalData)
+                        Row(
+                          children: [
+                            if (item.celeries != null)
+                              SvgPicture.asset(AppAssets.fireIcon),
+                            if (item.celeries != null) gapW4,
+                            if (item.celeries != null)
+                              Text(
+                                "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(0xFF676767),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  decoration: isSelected
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                ),
+                              ),
+                            if (item.macros != null) gapW10,
+                            if (item.macros != null)
+                              SvgPicture.asset(AppAssets.electricIcon),
+                            if (item.macros != null) gapW4,
+                            if (item.macros != null)
+                              Text(
+                                "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(0xFF676767),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  decoration: isSelected
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                ),
+                              ),
+                          ],
+                        )
+                    ],
+                  ),
                 ),
-              ),
-            );
-          })
+              );
+            },
+          )
       ],
     );
   }

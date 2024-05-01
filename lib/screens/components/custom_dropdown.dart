@@ -12,8 +12,8 @@ import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import '../../utils/constants/constants.dart';
 
-class CustomDropdown extends StatefulWidget {
-  const CustomDropdown({
+class CustomTextFieldDropdown extends StatefulWidget {
+  const CustomTextFieldDropdown({
     super.key,
     this.titleText,
     required this.hintText,
@@ -26,10 +26,11 @@ class CustomDropdown extends StatefulWidget {
   final Function(String) onSelectedItem;
 
   @override
-  State<CustomDropdown> createState() => _CustomDropdownState();
+  State<CustomTextFieldDropdown> createState() =>
+      _CustomTextFieldDropdownState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> {
+class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
   bool isShowPassword = true;
   List<String> items = [];
   String? selectedItem;
@@ -110,4 +111,76 @@ class _CustomDropdownState extends State<CustomDropdown> {
       ],
     );
   }
+}
+
+// ===========================Custom Button Dropdoown================================
+
+class CustomMenuDropdown extends StatelessWidget {
+  const CustomMenuDropdown(
+      {required this.items,
+      required this.onSelectedItem,
+      super.key,
+      this.icon});
+  final List<DropdownMenuModel> items;
+  final Function(String, int) onSelectedItem;
+  final Widget? icon;
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2(
+        customButton: icon ??
+            const Icon(
+              Icons.more_vert_outlined,
+              color: Colors.white,
+            ),
+        items: items
+            .map(
+              (DropdownMenuModel item) => DropdownMenuItem<String>(
+                value: item.title,
+                child: Row(
+                  children: [
+                    Icon(
+                      item.icon,
+                      color: Colors.white,
+                    ),
+                    gapW10,
+                    Text(
+                      item.title,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+        dropdownStyleData: const DropdownStyleData(
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor1,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          direction: DropdownDirection.left,
+          width: 160,
+        ),
+        onChanged: (value) {
+          if (value != null) {
+            final int index = items.indexWhere(
+                (e) => e.title.toLowerCase() == value.toLowerCase());
+            onSelectedItem(value, index);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class DropdownMenuModel {
+  final String title;
+  final IconData icon;
+
+  DropdownMenuModel({required this.title, required this.icon});
 }

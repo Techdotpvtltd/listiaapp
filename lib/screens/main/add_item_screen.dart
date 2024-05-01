@@ -148,7 +148,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               gapH20,
 
               /// Select Category Filed
-              CustomDropdown(
+              CustomTextFieldDropdown(
                 hintText: "Select Category",
                 titleText: "Select Category",
                 items: categories.map((e) => e.item).toList(),
