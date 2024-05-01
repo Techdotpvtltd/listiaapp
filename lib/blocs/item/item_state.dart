@@ -31,6 +31,20 @@ class ItemStateAddFailure extends ItemState {
 
 class ItemStateAdded extends ItemState {}
 
+// ===========================Update Item States================================
+class ItemStateUpdating extends ItemState {
+  ItemStateUpdating(
+      {super.isLoading = true, super.loadingText = "Adding Item..."});
+}
+
+class ItemStateUpdateFailure extends ItemState {
+  final AppException exception;
+
+  ItemStateUpdateFailure({required this.exception});
+}
+
+class ItemStateUpdated extends ItemState {}
+
 // ===========================Fetch Items States================================
 class ItemStateFetching extends ItemState {
   ItemStateFetching(

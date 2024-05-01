@@ -34,6 +34,25 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       },
     );
 
+    // Add New Item List
+    on<ItemEventUpdate>(
+      (event, emit) async {
+        try {
+          emit(ItemStateUpdating());
+          await ItemRepo().updateItem(
+            itemName: event.itemName,
+            itemId: event.itemId,
+            category: event.category,
+            macros: event.macros,
+            celeries: event.celeries,
+          );
+          emit(ItemStateUpdated());
+        } on AppException catch (e) {
+          emit(ItemStateUpdateFailure(exception: e));
+        }
+      },
+    );
+
     /// Fetch item Event
     on<ItemEventFetch>((event, emit) async {
       emit(ItemStateFetching());

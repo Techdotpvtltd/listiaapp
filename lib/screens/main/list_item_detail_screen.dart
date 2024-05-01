@@ -29,7 +29,6 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
-import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
 import '../../managers/app_manager.dart';
 import '../../models/item_model.dart';
@@ -341,6 +340,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             gapH10,
                             _ItemList(
                               items: categoryItem.items,
+                              categories: widget.list.categories,
                               onItemSelected: (selectedItem) {
                                 if (!isAdminList) {
                                   triggerMarkCompleteItemEvent(
@@ -374,15 +374,27 @@ class _ItemList extends StatefulWidget {
   const _ItemList(
       {required this.items,
       required this.onItemSelected,
-      required this.onItemDeselected});
+      required this.onItemDeselected,
+      required this.categories});
   final List<ItemModel> items;
   final Function(ItemModel) onItemSelected;
   final Function(ItemModel) onItemDeselected;
+  final List<String> categories;
   @override
   State<_ItemList> createState() => _ItemListState();
 }
 
 class _ItemListState extends State<_ItemList> {
+  void onEditMenuPressed(ItemModel model) {
+    NavigationService.go(
+      AddItemScreen(
+        listId: model.listId,
+        categories: widget.categories,
+        item: model,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -396,102 +408,130 @@ class _ItemListState extends State<_ItemList> {
               final bool isShowAdditionalData =
                   AppManager().isActiveSubscription ||
                       UserRepo().currentUser.uid == item.createdBy;
-              return CustomInkWell(
-                onTap: () {
-                  setState(() {
-                    if (!isSelected) {
-                      widget.onItemSelected(item);
-                    } else {
-                      widget.onItemDeselected(item);
-                    }
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  decoration: BoxDecoration(
-                    gradient: isSelected
-                        ? LinearGradient(
-                            begin: const Alignment(0.99, -0.10),
-                            end: const Alignment(-0.99, 0.1),
-                            colors: [
-                              const Color(0xFF30A94A).withOpacity(0.02),
-                              const Color(0x002EA346)
-                                  .withOpacity(isBought ? 0.3 : 0.09),
-                            ],
-                          )
-                        : null,
-                    border: Border.all(
-                      color: isSelected
-                          ? AppTheme.primaryColor2
-                          : const Color(0xFFF3F3F3),
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(24)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          /// Check Box
-                          CustomCheckBox(isChecked: isSelected),
-                          gapW10,
-                          // Title Text
-                          Text(
-                            item.itemName,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppTheme.titleColor1,
-                              fontSize: 14,
-                              decoration: isSelected
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                              fontWeight: FontWeight.w700,
-                            ),
+              return Row(
+                children: [
+                  Expanded(
+                    child: CustomInkWell(
+                      onTap: () {
+                        setState(() {
+                          if (!isSelected) {
+                            widget.onItemSelected(item);
+                          } else {
+                            widget.onItemDeselected(item);
+                          }
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 15),
+                        decoration: BoxDecoration(
+                          gradient: isSelected
+                              ? LinearGradient(
+                                  begin: const Alignment(0.99, -0.10),
+                                  end: const Alignment(-0.99, 0.1),
+                                  colors: [
+                                    const Color(0xFF30A94A).withOpacity(0.02),
+                                    const Color(0x002EA346)
+                                        .withOpacity(isBought ? 0.3 : 0.09),
+                                  ],
+                                )
+                              : null,
+                          border: Border.all(
+                            color: isSelected
+                                ? AppTheme.primaryColor2
+                                : const Color(0xFFF3F3F3),
                           ),
-                        ],
-                      ),
-
-                      ///
-                      if (isShowAdditionalData)
-                        Row(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(24)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (item.celeries != null)
-                              SvgPicture.asset(AppAssets.fireIcon),
-                            if (item.celeries != null) gapW4,
-                            if (item.celeries != null)
-                              Text(
-                                "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: const Color(0xFF676767),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: isSelected
-                                      ? TextDecoration.lineThrough
-                                      : null,
+                            Row(
+                              children: [
+                                /// Check Box
+                                CustomCheckBox(isChecked: isSelected),
+                                gapW10,
+                                // Title Text
+                                Text(
+                                  item.itemName,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: AppTheme.titleColor1,
+                                    fontSize: 14,
+                                    decoration: isSelected
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                            if (item.macros != null) gapW10,
-                            if (item.macros != null)
-                              SvgPicture.asset(AppAssets.electricIcon),
-                            if (item.macros != null) gapW4,
-                            if (item.macros != null)
-                              Text(
-                                "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: const Color(0xFF676767),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: isSelected
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                ),
-                              ),
+                              ],
+                            ),
+
+                            ///
+                            if (isShowAdditionalData)
+                              Row(
+                                children: [
+                                  if (item.celeries != null)
+                                    SvgPicture.asset(AppAssets.fireIcon),
+                                  if (item.celeries != null) gapW4,
+                                  if (item.celeries != null)
+                                    Text(
+                                      "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: const Color(0xFF676767),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        decoration: isSelected
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                  if (item.macros != null) gapW10,
+                                  if (item.macros != null)
+                                    SvgPicture.asset(AppAssets.electricIcon),
+                                  if (item.macros != null) gapW4,
+                                  if (item.macros != null)
+                                    Text(
+                                      "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: const Color(0xFF676767),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        decoration: isSelected
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                ],
+                              )
                           ],
-                        )
-                    ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Visibility(
+                    visible: item.createdBy == UserRepo().currentUser.uid &&
+                        !isBought,
+                    child: CustomMenuDropdown(
+                      icon: const Icon(
+                        Icons.more_vert_outlined,
+                        color: Colors.black,
+                      ),
+                      items: [
+                        DropdownMenuModel(icon: Icons.edit, title: "Edit"),
+                        DropdownMenuModel(icon: Icons.delete, title: "Delete"),
+                      ],
+                      onSelectedItem: (value, index) {
+                        if (value.toLowerCase() == "edit") {
+                          onEditMenuPressed(item);
+                        }
+
+                        if (value.toLowerCase() == "delete") {}
+                      },
+                    ),
+                  ),
+                ],
               );
             },
           )

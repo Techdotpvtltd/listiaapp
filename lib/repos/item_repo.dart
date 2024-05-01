@@ -214,6 +214,29 @@ class ItemRepo {
     }
   }
 
+  // Add New Item Method
+  Future<void> updateItem(
+      {required String itemName,
+      required String itemId,
+      required String category,
+      int? celeries,
+      int? macros}) async {
+    try {
+      await DataValidation.addItem(title: itemName, category: category);
+      await FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_ITEMS,
+          data: {
+            "itemName": itemName,
+            'category': category,
+            'celeries': celeries,
+            'macros': macros,
+          },
+          docId: itemId);
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
   // Fetch All Items Method
   Future<void> fetchItems({
     required VoidCallback onGetAll,

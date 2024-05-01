@@ -23,6 +23,21 @@ class ItemEventAddNew extends ItemEvent {
       required this.category});
 }
 
+class ItemEventUpdate extends ItemEvent {
+  final String itemName;
+  final int? celeries;
+  final int? macros;
+  final String itemId;
+  final String category;
+
+  ItemEventUpdate(
+      {required this.itemName,
+      this.celeries,
+      this.macros,
+      required this.itemId,
+      required this.category});
+}
+
 // Fetch Items Event
 class ItemEventFetch extends ItemEvent {}
 

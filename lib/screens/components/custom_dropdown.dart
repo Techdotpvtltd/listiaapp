@@ -19,11 +19,13 @@ class CustomTextFieldDropdown extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.onSelectedItem,
+    this.selectedValue,
   });
   final String? titleText;
   final String hintText;
   final List<String> items;
   final Function(String) onSelectedItem;
+  final String? selectedValue;
 
   @override
   State<CustomTextFieldDropdown> createState() =>
@@ -82,7 +84,7 @@ class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
                   ),
                 )
                 .toList(),
-            value: selectedItem,
+            value: widget.selectedValue ?? selectedItem,
             onChanged: (value) {
               setState(() {
                 selectedItem = value;

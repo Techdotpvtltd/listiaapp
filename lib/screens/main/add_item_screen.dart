@@ -21,6 +21,7 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../models/category_model.dart';
+import '../../models/item_model.dart';
 import '../../repos/category_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
@@ -28,10 +29,10 @@ import '../components/custom_dropdown.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen(
-      {super.key, required this.listId, required this.categories});
+      {super.key, required this.listId, required this.categories, this.item});
   final String listId;
   final List<String> categories;
-
+  final ItemModel? item;
   @override
   State<AddItemScreen> createState() => _AddItemScreenState();
 }
@@ -41,6 +42,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   int? errorCode;
   String? errorMessage;
   String? selectedCategory;
+  late final ItemModel? item = widget.item;
   late final List<CategoryModel> categories =
       CategoryRepo().getCategoriesFrom(categoryIds: widget.categories);
   TextEditingController nameController = TextEditingController();
@@ -53,6 +55,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     int? celeries = int.tryParse(celeriesController.text);
     int? macros = int.tryParse(macrosController.text);
+
     bloc.add(
       ItemEventAddNew(
         itemName: nameController.text,
@@ -64,18 +67,62 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
+  void triggerUpdateItemEvent(ItemBloc bloc, {required String ItemId}) {
+    setState(() {
+      errorCode = null;
+    });
+    int? celeries = int.tryParse(celeriesController.text);
+    int? macros = int.tryParse(macrosController.text);
+
+    bloc.add(
+      ItemEventUpdate(
+        itemName: nameController.text,
+        celeries: celeries,
+        macros: macros,
+        itemId: ItemId,
+        category: selectedCategory ?? "",
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (item != null) {
+      nameController.text = item?.itemName ?? "";
+      celeriesController.text = item?.celeries.toString() ?? "";
+      macrosController.text = item?.macros.toString() ?? "";
+      selectedCategory = item?.category;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ItemBloc, ItemState>(
       listener: (context, state) {
         if (state is ItemStateAdding ||
             state is ItemStateAddFailure ||
-            state is ItemStateAdded) {
+            state is ItemStateAdded ||
+            state is ItemStateUpdated ||
+            state is ItemStateUpdateFailure ||
+            state is ItemStateUpdating) {
           setState(() {
             isLoading = state.isLoading;
           });
 
           if (state is ItemStateAddFailure) {
+            if (state.exception.errorCode != null) {
+              setState(() {
+                errorCode = state.exception.errorCode;
+                errorMessage = state.exception.message;
+              });
+              return;
+            }
+
+            CustomDialogs().errorBox(message: state.exception.message);
+          }
+
+          if (state is ItemStateUpdateFailure) {
             if (state.exception.errorCode != null) {
               setState(() {
                 errorCode = state.exception.errorCode;
@@ -106,10 +153,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
               },
             );
           }
+
+          if (state is ItemStateUpdated) {
+            CustomDialogs().successBox(
+              message: "An item has been successfully updated",
+              title: "Item Updated",
+              positiveTitle: "Back to list",
+              onPositivePressed: () {
+                NavigationService.back();
+              },
+            );
+          }
         }
       },
       child: CustomScaffold(
-        title: "Add New Item",
+        title: item != null ? "Update Item" : "Add New Item",
         body: HVPadding(
           verticle: 30,
           child: Column(
@@ -117,7 +175,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             children: [
               /// Create New List Label
               Text(
-                "Add New List",
+                item != null ? "Update Item" : "Add New Item",
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w700,
                   fontSize: 22,
@@ -151,6 +209,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
               CustomTextFieldDropdown(
                 hintText: "Select Category",
                 titleText: "Select Category",
+                selectedValue: CategoryRepo()
+                    .getCategoryFrom(categoryId: selectedCategory ?? "")
+                    ?.item,
                 items: categories.map((e) => e.item).toList(),
                 onSelectedItem: (category) {
                   if (selectedCategory != "") {
@@ -191,9 +252,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
               /// Add Button
               CustomButton(
                 isLoading: isLoading,
-                title: "Add",
+                title: item != null ? "Update" : "Add",
                 onPressed: () {
-                  triggerAddItemEvent(context.read<ItemBloc>());
+                  item != null
+                      ? triggerUpdateItemEvent(context.read<ItemBloc>(),
+                          ItemId: item!.id)
+                      : triggerAddItemEvent(context.read<ItemBloc>());
                 },
               ),
             ],
