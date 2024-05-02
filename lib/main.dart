@@ -19,6 +19,7 @@ import 'blocs/category/category_bloc.dart';
 import 'blocs/item/item_bloc.dart';
 import 'blocs/list/list_bloc.dart';
 import 'blocs/share_user/share_user_bloc.dart';
+import 'blocs/subscription/subscription_bloc.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -54,6 +55,7 @@ class _WasteApp extends StatelessWidget {
         BlocProvider(create: (context) => ItemBloc()),
         BlocProvider(create: (context) => CategoryBloc()),
         BlocProvider(create: (context) => ShareUserBloc()),
+        BlocProvider(create: (context) => SubscriptionBloc()),
       ],
       child: const _WasteMaterialApp(),
     );

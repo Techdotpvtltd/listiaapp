@@ -42,7 +42,6 @@ class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
     setState(() {
       items = List.from(widget.items);
     });
-    debugPrint(items.toString());
     super.initState();
   }
 

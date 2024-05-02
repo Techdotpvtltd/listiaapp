@@ -163,7 +163,7 @@ class FirestoreService {
           break;
       }
     }
-    debugPrint(query.parameters.toString());
+    // debugPrint(query.parameters.toString());
     return query;
   }
 
@@ -238,7 +238,6 @@ class FirestoreService {
     final toRef = _firestore.collection(toCollection);
     for (final doc in fromSnap.docs) {
       await toRef.doc(doc.id).set(doc.data());
-      debugPrint("Set doc-${doc.id}");
     }
   }
 }

@@ -76,6 +76,17 @@ class DataExceptionSubscriptionRequired extends DataException {
       {super.message = "Please upgrade your plan to use this feature."});
 }
 
+class DataExceptionSubscriptionFailure extends DataException {
+  final String? code;
+  final String? source;
+
+  DataExceptionSubscriptionFailure({
+    required super.message,
+    this.code,
+    this.source,
+  });
+}
+
 DataException throwDataException({required String errorCode, String? message}) {
   switch (errorCode.toUpperCase()) {
     case 'ALREADY-EXISTS':

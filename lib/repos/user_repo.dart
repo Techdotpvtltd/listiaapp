@@ -47,7 +47,6 @@ class UserRepo {
       if (currentUser?.emailVerified == false) {
         throw AuthExceptionEmailVerificationRequired();
       }
-      debugPrint("user id = ${currentUser?.uid}");
       final data = await FirestoreService().fetchSingleRecord(
           path: FIREBASE_COLLECTION_USER, docId: currentUser?.uid ?? "");
 
@@ -57,7 +56,7 @@ class UserRepo {
 
       final UserModel userModel = UserModel.fromMap(data);
       _userModel = userModel;
-      debugPrint("user id = $_userModel");
+      debugPrint("User = $_userModel");
     } catch (e) {
       throw throwAppException(e: e);
     }

@@ -211,7 +211,6 @@ class ListRepo {
             path: FIREBASE_COLLECTION_LISTS,
             docId: listId,
             data: {"isCompleted": true});
-        debugPrint("Marking $listId list to complete");
       }
     }
   }
