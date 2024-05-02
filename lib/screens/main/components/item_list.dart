@@ -70,8 +70,11 @@ class _ItemListState extends State<ItemList> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding:
-          EdgeInsets.only(top: widget.lists.isNotEmpty ? 30 : 0, bottom: 100),
+      padding: EdgeInsets.only(
+          top: widget.lists.isNotEmpty ? 30 : 0,
+          bottom: 100,
+          left: 30,
+          right: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

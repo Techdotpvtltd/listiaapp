@@ -253,31 +253,28 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: SafeArea(
-          child: HorizontalPadding(
-            child: Skeleton(
-              isLoading: isLoading,
-              skeleton: const ListSkeleton(),
-              child: ItemList(
-                onItemTap: (index, isAdminList) {
-                  NavigationService.go(
-                    ListItemDetailScreen(
-                      list: isAdminList ? adminLists[index] : lists[index],
-                      onAddListPressed: (list) {
-                        triggerMoveToUserEvent(
-                            context.read<ListBloc>(), list.id);
-                      },
-                      onDeleteListPressed: (list) {
-                        final List<String> itemIds =
-                            ItemRepo().getItemsIdBy(listId: list.id);
-                        context.read<ListBloc>().add(ListEventDelete(
-                            listId: list.id, itemsIds: itemIds));
-                      },
-                    ),
-                  );
-                },
-                lists: lists,
-                adminLists: adminLists,
-              ),
+          child: Skeleton(
+            isLoading: isLoading,
+            skeleton: const ListSkeleton(),
+            child: ItemList(
+              onItemTap: (index, isAdminList) {
+                NavigationService.go(
+                  ListItemDetailScreen(
+                    list: isAdminList ? adminLists[index] : lists[index],
+                    onAddListPressed: (list) {
+                      triggerMoveToUserEvent(context.read<ListBloc>(), list.id);
+                    },
+                    onDeleteListPressed: (list) {
+                      final List<String> itemIds =
+                          ItemRepo().getItemsIdBy(listId: list.id);
+                      context.read<ListBloc>().add(
+                          ListEventDelete(listId: list.id, itemsIds: itemIds));
+                    },
+                  ),
+                );
+              },
+              lists: lists,
+              adminLists: adminLists,
             ),
           ),
         ),
