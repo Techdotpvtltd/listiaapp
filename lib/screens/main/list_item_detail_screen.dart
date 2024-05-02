@@ -344,14 +344,14 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                               items: categoryItem.items,
                               categories: widget.list.categories,
                               onItemSelected: (selectedItem) {
-                                if (!isAdminList) {
+                                if (!isAdminList && !widget.isBoughtScreen) {
                                   triggerMarkCompleteItemEvent(
                                       context.read<ItemBloc>(),
                                       selectedItemId: selectedItem.id);
                                 }
                               },
                               onItemDeselected: (selectedItem) {
-                                if (!isAdminList) {
+                                if (!isAdminList && !widget.isBoughtScreen) {
                                   triggerMarkUnCompleteItemEvent(
                                       context.read<ItemBloc>(),
                                       itemId: selectedItem.id);

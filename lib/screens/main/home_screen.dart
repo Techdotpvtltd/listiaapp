@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
-import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/components/round_button.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
 import 'package:listi_shop/screens/main/list_item_detail_screen.dart';
