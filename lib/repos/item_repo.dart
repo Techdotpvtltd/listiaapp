@@ -153,7 +153,7 @@ class ItemRepo {
   List<ItemModel> getCompletedItemsBy({required String listId}) {
     final items = _items
         .where((element) =>
-            element.listId == listId && element.completedBy == null)
+            element.listId == listId && element.completedBy != null)
         .toList();
     items.sort((a, b) => (b.completedBy?.completedAt.millisecondsSinceEpoch ??
             0)
