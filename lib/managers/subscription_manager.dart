@@ -16,12 +16,16 @@ import '../exceptions/data_exceptions.dart';
 class SubscriptionManager {
   // =========================== Singleton Instance ================================
   static final SubscriptionManager _instance = SubscriptionManager._internal();
-  SubscriptionManager._internal();
+  SubscriptionManager._internal() {
+    _inAppPurchase = InAppPurchase.instance;
+  }
   factory SubscriptionManager() => _instance;
 
   // ===========================Properties================================
   late StreamSubscription<dynamic> _subscription;
   final Stream _purchasedUpdated = InAppPurchase.instance.purchaseStream;
+  late final InAppPurchase _inAppPurchase;
+
   List<ProductDetails> products = [];
   // ===========================Methods================================
 
@@ -62,11 +66,12 @@ class SubscriptionManager {
 
   /// Load Products
   Future<List<ProductDetails>> loadProducts(
-      {required Set<String> productsId}) async {
-    debugPrint(
-        "Is Store available = ${await InAppPurchase.instance.isAvailable()}");
+      {required Set<String> productsId,
+      required Function(List<String>) onNotFoundIDs}) async {
+    final bool isAvailable = await _inAppPurchase.isAvailable();
+    debugPrint("Is Store available = $isAvailable");
     final ProductDetailsResponse response =
-        await InAppPurchase.instance.queryProductDetails(productsId);
+        await _inAppPurchase.queryProductDetails(productsId);
     if (response.error != null) {
       throw DataExceptionSubscriptionFailure(
           message: response.error?.message ?? "",
@@ -75,10 +80,7 @@ class SubscriptionManager {
     }
 
     if (response.notFoundIDs.isNotEmpty) {
-      throw DataExceptionSubscriptionFailure(
-          message: "Products not found.",
-          code: 'ids-not-found',
-          source: "Please check specific platform's product id status.");
+      onNotFoundIDs(response.notFoundIDs);
     }
 
     products = response.productDetails;
@@ -88,11 +90,11 @@ class SubscriptionManager {
   // Buy Subscription
   Future<bool> buySubscription({required ProductDetails productDetails}) async {
     final PurchaseParam param = PurchaseParam(productDetails: productDetails);
-    return await InAppPurchase.instance.buyConsumable(purchaseParam: param);
+    return await _inAppPurchase.buyConsumable(purchaseParam: param);
   }
 
   // Restore Previous Subsriptions
   Future<void> restoreSubscription() async {
-    await InAppPurchase.instance.restorePurchases();
+    await _inAppPurchase.restorePurchases();
   }
 }

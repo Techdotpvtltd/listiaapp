@@ -21,9 +21,22 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
       (event, emit) async {
         try {
           emit(SubscriptionStateGettingProducts());
-          final List<ProductDetails> products = await SubscriptionManager()
-              .loadProducts(
-                  productsId: {'com.techdot.listiShop.sliver_monthly'});
+          final List<ProductDetails> products =
+              await SubscriptionManager().loadProducts(
+            productsId: {'household_monthly', 'test_123'},
+            onNotFoundIDs: (ids) {
+              for (final String id in ids) {
+                emit(
+                  SubscriptionStatePurchaseFailure(
+                    exception: (DataExceptionSubscriptionFailure(
+                        message: "Product $id not found.",
+                        code: 'ids-not-found',
+                        source: "")),
+                  ),
+                );
+              }
+            },
+          );
           emit(SubscriptionStateGotProducts(products: products));
           emit(SubscriptionStateReady());
           await SubscriptionManager().listenSubscriptionPurchaseUpdate(

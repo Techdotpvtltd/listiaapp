@@ -74,6 +74,10 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           if (state is SubscriptionStateFailure) {
             debugPrint(state.exception.message);
           }
+
+          if (state is SubscriptionStatePurchaseFailure) {
+            debugPrint(state.exception.message);
+          }
         }
       },
       child: CustomScaffold(

@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../main.dart';
 
+// Project: 	   listi_shop
+// File:    	   navigation_service
+// Path:    	   lib/utils/extensions/navigation_service.dart
+// Author:       Ali Akbar
+// Date:        03-05-24 13:52:08 -- Friday
+// Description: 
+
 class NavigationService {
   static Future<dynamic> go(Widget child) async {
     return await Navigator.push(
