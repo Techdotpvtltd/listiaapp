@@ -24,6 +24,7 @@ import '../../../models/list_model.dart';
 import '../../../models/user_model.dart';
 import '../../../repos/item_repo.dart';
 import '../../../repos/user_repo.dart';
+import '../../../utils/dialogs/dialogs.dart';
 import '../../components/custom_button.dart';
 
 Color pointGraphValueColor(dynamic datum, int index) {
@@ -89,6 +90,9 @@ class _ItemListState extends State<ItemList> {
                   () {
                     widget.onItemTap(index, false);
                   },
+                  (list) {
+                    items.removeWhere((element) => element.id == list.id);
+                  },
                 );
               },
             ),
@@ -116,6 +120,9 @@ class _ItemListState extends State<ItemList> {
                         () {
                           widget.onItemTap(index, true);
                         },
+                        (list) {
+                          items.removeWhere((element) => element.id == list.id);
+                        },
                       );
                     },
                   ),
@@ -128,10 +135,10 @@ class _ItemListState extends State<ItemList> {
 }
 
 class _ItemWidget extends StatefulWidget {
-  const _ItemWidget(this.list, this.onItemTapped);
+  const _ItemWidget(this.list, this.onItemTapped, this.onListDeleted);
   final ListModel list;
   final VoidCallback onItemTapped;
-
+  final Function(ListModel) onListDeleted;
   @override
   State<_ItemWidget> createState() => _ItemWidgetState();
 }
@@ -142,196 +149,213 @@ class _ItemWidgetState extends State<_ItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomInkWell(
-      onTap: widget.onItemTapped,
-      child: BlocSelector<ItemBloc, ItemState, List<int>>(
-        selector: (state) {
-          return [
-            ItemRepo().getNumberOfItemsBy(
-                listId: widget.list.id, categories: widget.list.categories),
-            ItemRepo().getNumberOfCompletedItemsBy(
-                listId: widget.list.id, categories: widget.list.categories)
-          ];
-        },
-        builder: (context, value) {
-          final int numberOfItems = value.first;
-          final int numberOfCompletedItems = value.last;
-
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEFEFE).withOpacity(0.88),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  offset: const Offset(13, 9),
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 30.6,
-                  spreadRadius: 0,
-                )
-              ],
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                /// Graph Chart
-                Flexible(
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: SfCircularChart(
-                          margin: EdgeInsets.zero,
-                          centerX: "40%",
-                          series: [
-                            RadialBarSeries(
-                              dataSource: [
-                                {
-                                  "x": 0,
-                                  "value":
-                                      (numberOfCompletedItems / numberOfItems) *
-                                          100
-                                }
-                              ],
-                              xValueMapper: (data, _) => data['x'],
-                              yValueMapper: (data, _) => data['value'],
-                              pointColorMapper: (datum, index) =>
-                                  pointGraphValueColor(datum, index),
-                              radius: "100%",
-                              innerRadius: "70%",
-                              maximumValue: 100,
-                            )
-                          ],
-                        ),
-                      ),
-                      gapW6,
-
-                      /// Text Widgets
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// Title Text
-                            Text(
-                              widget.list.title,
-                              maxLines: 2,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.titleColor1,
-                              ),
-                            ),
-                            gapH2,
-
-                            /// Number Of items text
-                            Text(
-                              "$numberOfCompletedItems / $numberOfItems",
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF238A34),
-                              ),
-                            ),
-
-                            /// Date Label
-                            Text(
-                              widget.list.createdAt
-                                  .dateToString("dd MMMM yyyy"),
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.subTitleColor1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+    return Dismissible(
+      key: Key(widget.list.id),
+      direction: (widget.list.createdBy == "admin" &&
+              widget.list.createdBy != UserRepo().currentUser.uid)
+          ? DismissDirection.none
+          : DismissDirection.endToStart,
+      secondaryBackground: Container(
+        color: Colors.red,
+        child: const Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
+        ),
+      ),
+      background: Container(
+        color: Colors.green,
+        child: const Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left: 20),
+            child: Icon(Icons.edit, color: Colors.white),
+          ),
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Are you sure you want to delete this item?"),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () {
+                      widget.onListDeleted(widget.list);
+                      Navigator.of(context).pop(true);
+                    },
+                    child: const Text("DELETE")),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
                 ),
+              ],
+            );
+          },
+        );
+      },
+      onDismissed: (direction) {
+        // Implement delete functionality here
+        // Call the method to delete the item
 
-                /// Most Right Widgets
-                Flexible(
-                  child: widget.list.createdBy == "admin"
-                      ? BlocListener<ListBloc, ListState>(
-                          listener: (context, state) {
-                            if (state is ListStateMoveFailure ||
-                                state is ListStateMoved ||
-                                state is ListStateMoving) {
-                              if (state is ListStateMoving) {
+        context
+            .read<ListBloc>()
+            .add(ListEventDelete(listId: widget.list.id, itemsIds: []));
+      },
+      child: CustomInkWell(
+        onTap: widget.onItemTapped,
+        child: BlocSelector<ItemBloc, ItemState, List<int>>(
+          selector: (state) {
+            return [
+              ItemRepo().getNumberOfItemsBy(
+                  listId: widget.list.id, categories: widget.list.categories),
+              ItemRepo().getNumberOfCompletedItemsBy(
+                  listId: widget.list.id, categories: widget.list.categories)
+            ];
+          },
+          builder: (context, value) {
+            final int numberOfItems = value.first;
+            final int numberOfCompletedItems = value.last;
+
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEFEFE).withOpacity(0.88),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    offset: const Offset(13, 9),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 30.6,
+                    spreadRadius: 0,
+                  )
+                ],
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.list.title,
+                                maxLines: 2,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.titleColor1,
+                                ),
+                              ),
+                              gapH2,
+                              Text(
+                                "$numberOfCompletedItems / $numberOfItems",
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF238A34),
+                                ),
+                              ),
+                              Text(
+                                widget.list.createdAt
+                                    .dateToString("dd MMMM yyyy"),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.subTitleColor1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    child: widget.list.createdBy == "admin"
+                        ? BlocListener<ListBloc, ListState>(
+                            listener: (context, state) {
+                              if (state is ListStateMoveFailure ||
+                                  state is ListStateMoved ||
+                                  state is ListStateMoving) {
+                                if (state is ListStateMoving) {
+                                  setState(() {
+                                    movingListId = state.listId;
+                                  });
+                                }
                                 setState(() {
-                                  movingListId = state.listId;
+                                  isAddingPressed = state.isLoading;
                                 });
                               }
-                              setState(() {
-                                isAddingPressed = state.isLoading;
-                              });
-                            }
-                          },
-                          child: CustomButton(
-                            isLoading: movingListId == widget.list.id &&
-                                isAddingPressed,
-                            width: 100,
-                            height: 40,
-                            title: "Add",
-                            onPressed: () {
-                              context
-                                  .read<ListBloc>()
-                                  .add(ListEventMove(listId: widget.list.id));
                             },
-                          ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            /// Profile Widget
-                            ProfilesWidget(
-                              height: 44,
-                              invitedUsers: widget.list.sharedUsers,
-                            ),
-
-                            /// Created By Text
-                            FutureBuilder<UserModel?>(
-                              future: UserRepo()
-                                  .fetchUser(profileId: widget.list.createdBy),
-                              builder: (context, snapshot) {
-                                return Text.rich(
-                                  TextSpan(
-                                    text: "Created by ",
-                                    children: [
-                                      TextSpan(
-                                        text: widget.list.referBy == "admin"
-                                            ? "ListiShop"
-                                            : snapshot.data?.uid ==
-                                                    UserRepo().currentUser.uid
-                                                ? "You"
-                                                : snapshot.data?.name,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: const Color(0xFF676767),
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor1,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                );
+                            child: CustomButton(
+                              isLoading: movingListId == widget.list.id &&
+                                  isAddingPressed,
+                              width: 100,
+                              height: 40,
+                              title: "Add",
+                              onPressed: () {
+                                context
+                                    .read<ListBloc>()
+                                    .add(ListEventMove(listId: widget.list.id));
                               },
-                            )
-                          ],
-                        ),
-                ),
-              ],
-            ),
-          );
-        },
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              ProfilesWidget(
+                                height: 44,
+                                invitedUsers: widget.list.sharedUsers,
+                              ),
+                              FutureBuilder<UserModel?>(
+                                future: UserRepo().fetchUser(
+                                    profileId: widget.list.createdBy),
+                                builder: (context, snapshot) {
+                                  return Text.rich(
+                                    TextSpan(
+                                      text: "Created by ",
+                                      children: [
+                                        TextSpan(
+                                          text: widget.list.referBy == "admin"
+                                              ? "ListiShop"
+                                              : snapshot.data?.uid ==
+                                                      UserRepo().currentUser.uid
+                                                  ? "You"
+                                                  : snapshot.data?.name,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: const Color(0xFF676767),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: AppTheme.subTitleColor1,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            ],
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
