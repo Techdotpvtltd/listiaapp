@@ -33,7 +33,7 @@ class _CompleteListScreenState extends State<CompleteListScreen> {
     return BlocListener<ListBloc, ListState>(
       listener: (context, state) {},
       child: CustomScaffold(
-        title: "Bought Items",
+        title: "Shopping Lists",
         backButtonIcon: const Icon(
           Icons.menu,
           color: Colors.white,

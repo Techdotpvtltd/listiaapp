@@ -20,7 +20,6 @@ import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/complete_list_screen.dart';
-import 'package:listi_shop/screens/main/contact_us_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
@@ -37,9 +36,8 @@ import 'edit_profile_screen.dart';
 
 final List<DrawerModel> drawerItems = [
   DrawerModel(id: 0, title: "Home", asset: AppAssets.homeIcon),
-  DrawerModel(id: 1, title: "Bought Items", asset: AppAssets.listIcon),
+  DrawerModel(id: 1, title: "Shopping Lists", asset: AppAssets.listIcon),
   DrawerModel(id: 2, title: "Profile", asset: AppAssets.userIcon),
-  DrawerModel(id: 3, title: "Contact Us", asset: AppAssets.chatIcon),
   DrawerModel(id: 4, title: "Subscription", asset: AppAssets.historyIcon),
 ];
 
@@ -61,8 +59,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
         return const CompleteListScreen();
       case 2:
         return const ProfileScreen();
-      case 3:
-        return const ContactUsScreen(isShowMenu: true);
       case 4:
         return const SubscriptionPlanScreen(isShowMenu: true);
       default:

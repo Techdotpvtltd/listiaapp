@@ -27,7 +27,6 @@ import 'package:listi_shop/utils/dialogs/dialogs.dart';
 import 'package:listi_shop/blocs/auth/auth_bloc.dart';
 import 'package:listi_shop/blocs/auth/auth_event.dart';
 
-import 'contact_us_screen.dart';
 import 'subscription_plan_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -166,13 +165,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               "Subscription",
               () {
                 NavigationService.go(const SubscriptionPlanScreen());
-              },
-            ),
-            gapH20,
-            _CustomButton(
-              "Contact us",
-              () {
-                NavigationService.go(const ContactUsScreen());
               },
             ),
             const Spacer(),
