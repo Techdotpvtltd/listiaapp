@@ -59,7 +59,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
         return const CompleteListScreen();
       case 2:
         return const ProfileScreen();
-      case 4:
+      case 3:
         return const SubscriptionPlanScreen(isShowMenu: true);
       default:
         return const HomeScreen();

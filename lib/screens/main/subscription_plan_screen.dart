@@ -26,12 +26,20 @@ import '../../models/subscription_model.dart';
 final List<SubscriptionModel> subscriptions = [
   SubscriptionModel(
     id: "0",
-    title: "Silver",
+    title: "Household",
     contents: [
-      "Add MORE Than 5 People",
-      "Also one boost weekly just for 24 hours",
+      "Add up to 5 people.",
     ],
-    price: 19.9,
+    price: 12.7,
+    periodDuration: "month",
+  ),
+  SubscriptionModel(
+    id: "1",
+    title: "Business",
+    contents: [
+      "Add up to 20 people.",
+    ],
+    price: 31.75,
     periodDuration: "month",
   ),
 ];
