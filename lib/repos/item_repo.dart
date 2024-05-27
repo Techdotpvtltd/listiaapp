@@ -141,10 +141,8 @@ class ItemRepo {
 
   List<ItemModel> getCompletedItemsBy({required String listId}) {
     final items = _items
-        .where((element) =>
-            element.listId == listId &&
-            element.completedBy != null &&
-            element.boughtBy == null)
+        .where(
+            (element) => element.listId == listId && element.boughtBy == null)
         .toList();
     items.sort((a, b) =>
         a.isReadyToBuy.convertToInt().compareTo(b.isReadyToBuy.convertToInt()));

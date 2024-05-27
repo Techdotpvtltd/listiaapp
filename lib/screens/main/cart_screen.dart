@@ -259,37 +259,37 @@ class _CartScreenState extends State<CartScreen> {
                               ),
 
                               /// Delete Button
-                              if (item.boughtBy == null)
-                                CustomInkWell(
-                                  onTap: () {
-                                    CustomDialogs().deleteBox(
-                                      title: "Remove Item",
-                                      message:
-                                          "Are you sure to remove ${item.itemName} item from the cart?",
-                                      onPositivePressed: () {
-                                        triggerRemoveItemEvent(
-                                            context.read<ItemBloc>(),
-                                            itemId: item.id);
-                                      },
-                                    );
-                                  },
-                                  child: Container(
-                                    width: 22,
-                                    height: 22,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFB82D2D)
-                                          .withOpacity(0.14),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.delete,
-                                        color: Color(0xFFB82D2D),
-                                        size: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                              // if (item.boughtBy == null)
+                              //   CustomInkWell(
+                              //     onTap: () {
+                              //       CustomDialogs().deleteBox(
+                              //         title: "Remove Item",
+                              //         message:
+                              //             "Are you sure to remove ${item.itemName} item from the cart?",
+                              //         onPositivePressed: () {
+                              //           triggerRemoveItemEvent(
+                              //               context.read<ItemBloc>(),
+                              //               itemId: item.id);
+                              //         },
+                              //       );
+                              //     },
+                              //     child: Container(
+                              //       width: 22,
+                              //       height: 22,
+                              //       decoration: BoxDecoration(
+                              //         color: const Color(0xFFB82D2D)
+                              //             .withOpacity(0.14),
+                              //         shape: BoxShape.circle,
+                              //       ),
+                              //       child: const Center(
+                              //         child: Icon(
+                              //           Icons.delete,
+                              //           color: Color(0xFFB82D2D),
+                              //           size: 14,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ),
                             ],
                           ),
                         ),
