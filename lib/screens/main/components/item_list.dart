@@ -13,7 +13,6 @@ import 'package:listi_shop/screens/main/components/profiles_widget.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/date_extension.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../blocs/item/item_bloc.dart';
 import '../../../blocs/item/item_state.dart';
@@ -24,7 +23,6 @@ import '../../../models/list_model.dart';
 import '../../../models/user_model.dart';
 import '../../../repos/item_repo.dart';
 import '../../../repos/user_repo.dart';
-import '../../../utils/dialogs/dialogs.dart';
 import '../../components/custom_button.dart';
 
 Color pointGraphValueColor(dynamic datum, int index) {

@@ -16,7 +16,6 @@ import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/add_item_screen.dart';
 import 'package:listi_shop/screens/main/cart_screen.dart';
-import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
 import 'package:listi_shop/screens/main/components/item_type_list.dart';
 import 'package:listi_shop/screens/main/components/profiles_widget.dart';
 import 'package:listi_shop/screens/main/share_screen.dart';
@@ -30,7 +29,6 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_state.dart';
-import '../../managers/app_manager.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
@@ -287,6 +285,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
               /// Search Text Field,
               CustomTextFiled(
                 hintText: "Search",
+                isFirstCapitalizeLetter: true,
                 onChange: (value) {
                   setState(
                     () {
@@ -416,9 +415,7 @@ class _ItemListState extends State<_ItemList> {
               final ItemModel item = widget.items[index];
               bool isSelected = item.completedBy != null;
               bool isBought = item.boughtBy != null;
-              final bool isShowAdditionalData =
-                  AppManager().isActiveSubscription ||
-                      UserRepo().currentUser.uid == item.createdBy;
+
               return Row(
                 children: [
                   Expanded(
@@ -461,9 +458,6 @@ class _ItemListState extends State<_ItemList> {
                           children: [
                             Row(
                               children: [
-                                /// Check Box
-                                CustomCheckBox(isChecked: isSelected),
-                                gapW10,
                                 // Title Text
                                 Text(
                                   item.itemName,
@@ -480,42 +474,6 @@ class _ItemListState extends State<_ItemList> {
                             ),
 
                             ///
-                            if (isShowAdditionalData)
-                              Row(
-                                children: [
-                                  if (item.celeries != null)
-                                    SvgPicture.asset(AppAssets.fireIcon),
-                                  if (item.celeries != null) gapW4,
-                                  if (item.celeries != null)
-                                    Text(
-                                      "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: const Color(0xFF676767),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: isSelected
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                    ),
-                                  if (item.macros != null) gapW10,
-                                  if (item.macros != null)
-                                    SvgPicture.asset(AppAssets.electricIcon),
-                                  if (item.macros != null) gapW4,
-                                  if (item.macros != null)
-                                    Text(
-                                      "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: const Color(0xFF676767),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: isSelected
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                    ),
-                                ],
-                              )
                           ],
                         ),
                       ),
