@@ -30,6 +30,7 @@ class ItemModel {
   final ItemCompleteModel? completedBy;
   final String listId;
   final ItemBoughtModel? boughtBy;
+  final bool isReadyToBuy;
   ItemModel({
     required this.id,
     required this.createdAt,
@@ -40,6 +41,7 @@ class ItemModel {
     this.quantity,
     this.boughtBy,
     this.completedBy,
+    required this.isReadyToBuy,
   });
 
   ItemModel copyWith({
@@ -52,6 +54,7 @@ class ItemModel {
     int? quantity,
     ItemCompleteModel? completedBy,
     ItemBoughtModel? boughtBy,
+    bool? isReadyToBuy,
   }) {
     return ItemModel(
       id: id ?? this.id,
@@ -63,6 +66,7 @@ class ItemModel {
       completedBy: completedBy ?? this.completedBy,
       listId: listId ?? this.listId,
       boughtBy: boughtBy ?? this.boughtBy,
+      isReadyToBuy: isReadyToBuy ?? this.isReadyToBuy,
     );
   }
 
@@ -75,6 +79,7 @@ class ItemModel {
       'category': category,
       'quantity': quantity,
       'listId': listId,
+      'isReadyToBuy': isReadyToBuy,
     };
   }
 
@@ -93,6 +98,7 @@ class ItemModel {
           ? ItemBoughtModel.fromMap(map['boughtBy'])
           : null,
       listId: map['listId'] as String,
+      isReadyToBuy: map['isReadyToBuy'] as bool? ?? false,
     );
   }
 
@@ -103,7 +109,7 @@ class ItemModel {
 
   @override
   String toString() {
-    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, quantity: $quantity)';
+    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, quantity: $quantity, isReadyToBuy: $isReadyToBuy)';
   }
 
   @override
@@ -118,6 +124,7 @@ class ItemModel {
         other.quantity == quantity &&
         other.listId == listId &&
         other.boughtBy == boughtBy &&
+        other.isReadyToBuy == isReadyToBuy &&
         completedBy == other.completedBy;
   }
 
@@ -131,6 +138,7 @@ class ItemModel {
         quantity.hashCode ^
         listId.hashCode ^
         boughtBy.hashCode ^
+        isReadyToBuy.hashCode ^
         completedBy.hashCode;
   }
 }

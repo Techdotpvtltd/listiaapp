@@ -51,6 +51,22 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
       },
     );
 
+    // Add New Item List
+    on<ItemEventUpdateIsReadyToBuy>(
+      (event, emit) async {
+        try {
+          emit(ItemStateUpdating());
+          await ItemRepo().updateIsReadyToBuy(
+            itemId: event.itemId,
+            isReadyToBuy: event.isReadyToBuy,
+          );
+          emit(ItemStateUpdated());
+        } on AppException catch (e) {
+          emit(ItemStateUpdateFailure(exception: e));
+        }
+      },
+    );
+
     /// Fetch item Event
     on<ItemEventFetch>((event, emit) async {
       emit(ItemStateFetching());

@@ -36,6 +36,16 @@ class ItemEventUpdate extends ItemEvent {
   });
 }
 
+class ItemEventUpdateIsReadyToBuy extends ItemEvent {
+  final String itemId;
+  final bool isReadyToBuy;
+
+  ItemEventUpdateIsReadyToBuy({
+    required this.itemId,
+    required this.isReadyToBuy,
+  });
+}
+
 class ItemEventDeleted extends ItemEvent {
   final String itemId;
 

@@ -38,27 +38,55 @@ class _CartScreenState extends State<CartScreen> {
   List<String> itemsToBeBought = [];
   bool isLoading = false;
 
+  void triggerRemoveItemEvent(ItemBloc bloc, {required String itemId}) {
+    bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
+    bloc.add(ItemEventUpdateIsReadyToBuy(itemId: itemId, isReadyToBuy: false));
+  }
+
   void addItemsToBoughtList() {
-    itemsToBeBought.clear();
     itemsToBeBought = items
-        .where((element) => element.boughtBy == null)
+        .where((element) => element.isReadyToBuy)
         .map((e) => e.id)
         .toList();
   }
 
-  void triggerRemoveItemEvent(ItemBloc bloc, {required String itemId}) {
-    bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
+  void triggerMarkItemsBought(ItemBloc bloc) {
+    bloc.add(
+      ItemEventMarkItemsBought(
+        items: itemsToBeBought,
+        listId: widget.listId,
+      ),
+    );
   }
 
-  void triggerMarkItemsBought(ItemBloc bloc) {
-    bloc.add(ItemEventMarkItemsBought(
-        items: itemsToBeBought, listId: widget.listId));
+  void checkCartListCompleted() {
+    if (itemsToBeBought.length >= items.length) {
+      CustomDialogs().alertBox(
+        title: "Shopping Completed",
+        message: "Did you finish your shopping?",
+        positiveTitle: "Yes",
+        negativeTitle: "No",
+        onPositivePressed: () {
+          triggerMarkItemsBought(context.read<ItemBloc>());
+        },
+      );
+    }
+  }
+
+  void triggerMarkIsReadyToBuyStatus(
+      ItemBloc bloc, String itemId, bool isReadyToBuy) {
+    bloc.add(
+      ItemEventUpdateIsReadyToBuy(
+        itemId: itemId,
+        isReadyToBuy: isReadyToBuy,
+      ),
+    );
   }
 
   @override
   void initState() {
-    super.initState();
     addItemsToBoughtList();
+    super.initState();
   }
 
   @override
@@ -79,6 +107,14 @@ class _CartScreenState extends State<CartScreen> {
             });
           }
         }
+
+        if (state is ItemStateUpdated) {
+          setState(() {
+            items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
+            addItemsToBoughtList();
+          });
+        }
+
         if (state is ItemStateItemRemoveFromCompleted) {
           setState(() {
             items.removeWhere((element) => element.id == state.itemId);
@@ -156,80 +192,106 @@ class _CartScreenState extends State<CartScreen> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final ItemModel item = items[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 9),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFF0474ED).withOpacity(0.19),
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                const CustomCheckBox(isChecked: true),
-                                gapW10,
-                                Text(
-                                  item.itemName,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.titleColor1,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                ),
-                                gapW6,
-                                Text(
-                                  "x${item.quantity.toString()}",
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.subTitleColor2,
-                                    fontSize: 12,
-                                    decoration: TextDecoration.lineThrough,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
+                      final bool isChecked = itemsToBeBought.contains(item.id);
 
-                            /// Delete Button
-                            if (item.boughtBy == null)
-                              CustomInkWell(
-                                onTap: () {
-                                  CustomDialogs().deleteBox(
-                                    title: "Remove Item",
-                                    message:
-                                        "Are you sure to remove ${item.itemName} item from the cart?",
-                                    onPositivePressed: () {
-                                      triggerRemoveItemEvent(
-                                          context.read<ItemBloc>(),
-                                          itemId: item.id);
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  width: 22,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFB82D2D)
-                                        .withOpacity(0.14),
-                                    shape: BoxShape.circle,
+                      return CustomInkWell(
+                        onTap: () {
+                          setState(() {
+                            if (isChecked) {
+                              itemsToBeBought.remove(item.id);
+                              triggerMarkIsReadyToBuyStatus(
+                                  context.read<ItemBloc>(), item.id, false);
+                            } else {
+                              itemsToBeBought.add(item.id);
+                              triggerMarkIsReadyToBuyStatus(
+                                  context.read<ItemBloc>(), item.id, true);
+                              checkCartListCompleted();
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 9),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFF0474ED).withOpacity(0.19),
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  CustomCheckBox(
+                                    isChecked: isChecked,
                                   ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: Color(0xFFB82D2D),
-                                      size: 14,
+                                  gapW10,
+                                  Text(
+                                    item.itemName,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.titleColor1,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      decoration: isChecked
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                    ),
+                                  ),
+                                  gapW6,
+                                  Text(
+                                    "x${item.quantity.toString()}",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor2,
+                                      fontSize: 12,
+                                      decoration: isChecked
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              /// Delete Button
+                              if (item.boughtBy == null)
+                                CustomInkWell(
+                                  onTap: () {
+                                    CustomDialogs().deleteBox(
+                                      title: "Remove Item",
+                                      message:
+                                          "Are you sure to remove ${item.itemName} item from the cart?",
+                                      onPositivePressed: () {
+                                        triggerRemoveItemEvent(
+                                            context.read<ItemBloc>(),
+                                            itemId: item.id);
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFB82D2D)
+                                          .withOpacity(0.14),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Color(0xFFB82D2D),
+                                        size: 14,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

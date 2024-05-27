@@ -6,6 +6,7 @@
 // Description:
 
 import 'package:flutter/material.dart';
+import 'package:listi_shop/utils/extensions/boolean.dart';
 
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
@@ -157,9 +158,8 @@ class ItemRepo {
             element.completedBy != null &&
             element.boughtBy == null)
         .toList();
-    items.sort((a, b) => (b.completedBy?.completedAt.millisecondsSinceEpoch ??
-            0)
-        .compareTo((a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)));
+    items.sort((a, b) =>
+        a.isReadyToBuy.convertToInt().compareTo(b.isReadyToBuy.convertToInt()));
     return items;
   }
 
@@ -203,6 +203,7 @@ class ItemRepo {
         itemName: itemName,
         category: category,
         listId: listId,
+        isReadyToBuy: false,
         quantity: quantity,
       );
       final Map<String, dynamic> _ = await FirestoreService()
@@ -232,6 +233,24 @@ class ItemRepo {
             'quantity': quantity,
           },
           docId: itemId);
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  // Add New Item Method
+  Future<void> updateIsReadyToBuy({
+    required bool isReadyToBuy,
+    required String itemId,
+  }) async {
+    try {
+      await FirestoreService().updateWithDocId(
+        path: FIREBASE_COLLECTION_ITEMS,
+        data: {
+          "isReadyToBuy": isReadyToBuy,
+        },
+        docId: itemId,
+      );
     } catch (e) {
       throw throwAppException(e: e);
     }
