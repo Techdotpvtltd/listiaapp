@@ -47,23 +47,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late final List<CategoryModel> categories =
       CategoryRepo().getCategoriesFrom(categoryIds: widget.categories);
   TextEditingController nameController = TextEditingController();
-  TextEditingController celeriesController = TextEditingController();
-  TextEditingController macrosController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
 
   void triggerAddItemEvent(ItemBloc bloc) {
     setState(() {
       errorCode = null;
     });
-    int? celeries = int.tryParse(celeriesController.text);
-    int? macros = int.tryParse(macrosController.text);
 
     bloc.add(
       ItemEventAddNew(
         itemName: nameController.text,
-        celeries: celeries,
-        macros: macros,
         listId: widget.listId,
         category: selectedCategory ?? "",
+        quantity: int.tryParse(quantityController.text) ?? 1,
       ),
     );
   }
@@ -72,16 +68,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
     setState(() {
       errorCode = null;
     });
-    int? celeries = int.tryParse(celeriesController.text);
-    int? macros = int.tryParse(macrosController.text);
 
     bloc.add(
       ItemEventUpdate(
         itemName: nameController.text,
-        celeries: celeries,
-        macros: macros,
         itemId: itemId,
         category: selectedCategory ?? "",
+        quantity: int.tryParse(quantityController.text) ?? 1,
       ),
     );
   }
@@ -89,10 +82,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   void initState() {
     super.initState();
+    quantityController.text = item?.quantity.toString() ?? "1";
     if (item != null) {
       nameController.text = item?.itemName ?? "";
-      celeriesController.text = item?.celeries.toString() ?? "";
-      macrosController.text = item?.macros.toString() ?? "";
       selectedCategory = item?.category;
     }
   }
@@ -138,8 +130,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           if (state is ItemStateAdded) {
             CustomSnackBar().success("Added");
             nameController.clear();
-            celeriesController.clear();
-            macrosController.clear();
+            quantityController.text = "1";
           }
 
           if (state is ItemStateUpdated) {
@@ -156,6 +147,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       },
       child: CustomScaffold(
         title: item != null ? "Update Item" : "Add New Item",
+        resizeToAvoidBottomInset: false,
         body: HVPadding(
           verticle: 30,
           child: Column(
@@ -213,27 +205,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               gapH20,
 
-              Row(
-                children: [
-                  /// Item Name text Filed
-                  Expanded(
-                    child: CustomTextFiled(
-                      controller: celeriesController,
-                      hintText: "Enter Value",
-                      titleText: "Total Celeries",
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  gapW10,
-                  Expanded(
-                    child: CustomTextFiled(
-                      controller: macrosController,
-                      hintText: "Enter Value",
-                      titleText: "Total Macros",
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
+              // Quantity Controller
+              CustomTextFiled(
+                controller: quantityController,
+                hintText: "Enter quantity",
+                titleText: "Quantity",
+                keyboardType: TextInputType.number,
               ),
               const Spacer(),
 

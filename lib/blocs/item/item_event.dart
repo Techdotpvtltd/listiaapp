@@ -10,32 +10,30 @@ abstract class ItemEvent {}
 /// Add New Item Event
 class ItemEventAddNew extends ItemEvent {
   final String itemName;
-  final int? celeries;
-  final int? macros;
+  final int? quantity;
   final String listId;
   final String category;
 
-  ItemEventAddNew(
-      {required this.itemName,
-      this.celeries,
-      this.macros,
-      required this.listId,
-      required this.category});
+  ItemEventAddNew({
+    required this.itemName,
+    this.quantity,
+    required this.listId,
+    required this.category,
+  });
 }
 
 class ItemEventUpdate extends ItemEvent {
   final String itemName;
-  final int? celeries;
-  final int? macros;
+  final int? quantity;
   final String itemId;
   final String category;
 
-  ItemEventUpdate(
-      {required this.itemName,
-      this.celeries,
-      this.macros,
-      required this.itemId,
-      required this.category});
+  ItemEventUpdate({
+    required this.itemName,
+    this.quantity,
+    required this.itemId,
+    required this.category,
+  });
 }
 
 class ItemEventDeleted extends ItemEvent {

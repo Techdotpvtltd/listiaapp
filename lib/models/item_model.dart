@@ -26,8 +26,7 @@ class ItemModel {
   final String createdBy;
   final String itemName;
   final String category;
-  final int? celeries;
-  final int? macros;
+  final int? quantity;
   final ItemCompleteModel? completedBy;
   final String listId;
   final ItemBoughtModel? boughtBy;
@@ -38,8 +37,7 @@ class ItemModel {
     required this.itemName,
     required this.category,
     required this.listId,
-    this.celeries,
-    this.macros,
+    this.quantity,
     this.boughtBy,
     this.completedBy,
   });
@@ -51,8 +49,7 @@ class ItemModel {
     String? itemName,
     String? category,
     String? listId,
-    int? celeries,
-    int? macros,
+    int? quantity,
     ItemCompleteModel? completedBy,
     ItemBoughtModel? boughtBy,
   }) {
@@ -62,8 +59,7 @@ class ItemModel {
       createdBy: createdBy ?? this.createdBy,
       itemName: itemName ?? this.itemName,
       category: category ?? this.category,
-      celeries: celeries ?? this.celeries,
-      macros: macros ?? this.macros,
+      quantity: quantity ?? this.quantity,
       completedBy: completedBy ?? this.completedBy,
       listId: listId ?? this.listId,
       boughtBy: boughtBy ?? this.boughtBy,
@@ -77,8 +73,7 @@ class ItemModel {
       'createdBy': createdBy,
       'itemName': itemName.capitalizeFirstCharacter(),
       'category': category,
-      'celeries': celeries,
-      'macros': macros,
+      'quantity': quantity,
       'listId': listId,
     };
   }
@@ -90,8 +85,7 @@ class ItemModel {
       createdBy: map['createdBy'] as String,
       itemName: (map['itemName'] as String).capitalizeFirstCharacter(),
       category: map['category'] as String,
-      celeries: map['celeries'] != null ? map['celeries'] as int : null,
-      macros: map['macros'] != null ? map['macros'] as int : null,
+      quantity: map['quantity'] != null ? map['quantity'] as int : 1,
       completedBy: map['completedBy'] != null
           ? ItemCompleteModel.fromMap(map['completedBy'])
           : null,
@@ -109,7 +103,7 @@ class ItemModel {
 
   @override
   String toString() {
-    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, celeries: $celeries, macros: $macros, completedBy: $completedBy, boughtBy: $boughtBy)';
+    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, quantity: $quantity)';
   }
 
   @override
@@ -121,8 +115,7 @@ class ItemModel {
         other.createdBy == createdBy &&
         other.itemName == itemName &&
         other.category == category &&
-        other.celeries == celeries &&
-        other.macros == macros &&
+        other.quantity == quantity &&
         other.listId == listId &&
         other.boughtBy == boughtBy &&
         completedBy == other.completedBy;
@@ -135,8 +128,7 @@ class ItemModel {
         createdBy.hashCode ^
         itemName.hashCode ^
         category.hashCode ^
-        celeries.hashCode ^
-        macros.hashCode ^
+        quantity.hashCode ^
         listId.hashCode ^
         boughtBy.hashCode ^
         completedBy.hashCode;

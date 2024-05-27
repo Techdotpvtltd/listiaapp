@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
@@ -18,9 +17,7 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../models/item_model.dart';
 import '../../repos/item_repo.dart';
-import '../../utils/constants/app_assets.dart';
 import '../../utils/constants/app_theme.dart';
-import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
 
 class CartScreen extends StatefulWidget {
@@ -180,35 +177,6 @@ class _CartScreenState extends State<CartScreen> {
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    if (item.celeries != null)
-                                      SvgPicture.asset(AppAssets.fireIcon),
-                                    if (item.celeries != null) gapW4,
-                                    if (item.celeries != null)
-                                      Text(
-                                        "${item.celeries} ${(item.celeries ?? 0) > 1 ? "celeries" : "celery"}",
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: const Color(0xFF676767),
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    if (item.macros != null) gapW10,
-                                    if (item.macros != null)
-                                      SvgPicture.asset(AppAssets.electricIcon),
-                                    if (item.macros != null) gapW4,
-                                    if (item.macros != null)
-                                      Text(
-                                        "${item.macros} ${(item.macros ?? 0) > 1 ? "macros" : "macro"}",
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: const Color(0xFF676767),
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                  ],
                                 ),
                               ],
                             ),

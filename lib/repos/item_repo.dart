@@ -189,7 +189,7 @@ class ItemRepo {
       {required String itemName,
       required String listId,
       required String category,
-      int? celeries,
+      int? quantity,
       int? macros}) async {
     try {
       await DataValidation.addItem(title: itemName, category: category);
@@ -201,8 +201,7 @@ class ItemRepo {
         itemName: itemName,
         category: category,
         listId: listId,
-        celeries: celeries,
-        macros: macros,
+        quantity: quantity,
       );
       final Map<String, dynamic> _ = await FirestoreService()
           .saveWithSpecificIdFiled(
@@ -215,12 +214,12 @@ class ItemRepo {
   }
 
   // Add New Item Method
-  Future<void> updateItem(
-      {required String itemName,
-      required String itemId,
-      required String category,
-      int? celeries,
-      int? macros}) async {
+  Future<void> updateItem({
+    required String itemName,
+    required String itemId,
+    required String category,
+    int? quantity,
+  }) async {
     try {
       await DataValidation.addItem(title: itemName, category: category);
       await FirestoreService().updateWithDocId(
@@ -228,8 +227,7 @@ class ItemRepo {
           data: {
             "itemName": itemName,
             'category': category,
-            'celeries': celeries,
-            'macros': macros,
+            'quantity': quantity,
           },
           docId: itemId);
     } catch (e) {
@@ -297,8 +295,7 @@ class ItemRepo {
         itemName: item.itemName,
         listId: forList,
         category: item.category,
-        celeries: item.celeries,
-        macros: item.macros,
+        quantity: item.quantity,
       );
     }
   }
