@@ -62,6 +62,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late final bool isListCreater =
       UserRepo().currentUser.uid == widget.list.createdBy;
   bool isAddListLoading = false;
+  late List<String> categories = ItemRepo().getCategories(listId: list.id);
 
   List<DropdownMenuModel> getMenuItems() {
     final items = [
@@ -110,13 +111,17 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   }
 
   void filteredItems({String? searchText}) {
+    setState(() {
+      categories = ItemRepo().getCategories(listId: list.id);
+    });
     categoryItems = ItemRepo().filteredItems(
-        searchText: searchText,
-        categories: selectedCategory.toLowerCase() == "all"
-            ? widget.list.categories
-            : [selectedCategory],
-        listId: widget.list.id,
-        isShowBoughtItemsOnly: widget.isBoughtScreen);
+      searchText: searchText,
+      categories: selectedCategory.toLowerCase() == "all"
+          ? categories
+          : [selectedCategory],
+      listId: widget.list.id,
+      isShowBoughtItemsOnly: widget.isBoughtScreen,
+    );
   }
 
   void triggerMarkCompleteItemEvent(ItemBloc bloc,
@@ -131,6 +136,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   @override
   void initState() {
     super.initState();
+
     filteredItems();
   }
 
@@ -176,7 +182,6 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                   NavigationService.go(
                     AddItemScreen(
                       listId: widget.list.id,
-                      categories: List.from(widget.list.categories),
                     ),
                   );
                 },
@@ -246,7 +251,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                               },
                               builder: (context, _) {
                                 return Text(
-                                  "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id, categories: list.categories)}/${ItemRepo().getNumberOfItemsBy(listId: list.id, categories: list.categories)} Completed",
+                                  "List ${ItemRepo().getNumberOfCompletedItemsBy(listId: list.id)}/${ItemRepo().getNumberOfItemsBy(listId: list.id)} Completed",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: const Color(0xFF6C6C6C),
                                     fontSize: 9,
@@ -304,7 +309,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
               SizedBox(
                 height: 30,
                 child: CategoryListView(
-                  categories: List.from(list.categories),
+                  categories: categories,
                   onSelectedCategory: (category) {
                     setState(
                       () {
@@ -341,7 +346,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             gapH10,
                             _ItemList(
                               items: categoryItem.items,
-                              categories: widget.list.categories,
+                              categories: categories,
                               onItemSelected: (selectedItem) {
                                 if (!isAdminList && !widget.isBoughtScreen) {
                                   triggerMarkCompleteItemEvent(
@@ -390,7 +395,6 @@ class _ItemListState extends State<_ItemList> {
     NavigationService.go(
       AddItemScreen(
         listId: model.listId,
-        categories: widget.categories,
         item: model,
       ),
     );

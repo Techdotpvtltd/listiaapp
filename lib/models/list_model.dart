@@ -16,7 +16,6 @@ class ListModel {
   final String id;
   final String createdBy;
   final String title;
-  final List<String> categories;
   final List<String> sharedUsers;
   final DateTime createdAt;
   final bool isCompleted;
@@ -27,7 +26,6 @@ class ListModel {
     required this.id,
     required this.createdBy,
     required this.title,
-    required this.categories,
     required this.sharedUsers,
     required this.createdAt,
     required this.isCompleted,
@@ -39,7 +37,6 @@ class ListModel {
     String? id,
     String? createdBy,
     String? title,
-    List<String>? categories,
     List<String>? sharedUsers,
     DateTime? createdAt,
     bool? isCompleted,
@@ -51,7 +48,6 @@ class ListModel {
       isCompleted: isCompleted ?? this.isCompleted,
       createdBy: createdBy ?? this.createdBy,
       title: title ?? this.title,
-      categories: categories ?? this.categories,
       sharedUsers: sharedUsers ?? this.sharedUsers,
       createdAt: createdAt ?? this.createdAt,
       referBy: referBy ?? this.referBy,
@@ -64,7 +60,6 @@ class ListModel {
       'id': id,
       'createdBy': createdBy,
       'title': title.capitalizeFirstCharacter(),
-      'categories': categories,
       'sharedUsers': sharedUsers,
       'createdAt': Timestamp.fromDate(createdAt),
       'isCompleted': isCompleted,
@@ -81,9 +76,6 @@ class ListModel {
       referListId: map['referListId'] as String?,
       isCompleted: map['isCompleted'] as bool? ?? false,
       title: map['title'] as String,
-      categories: (map['categories'] as List<dynamic>)
-          .map((e) => e.toString().capitalizeFirstCharacter())
-          .toList(),
       sharedUsers: (map['sharedUsers'] as List<dynamic>)
           .map((e) => e.toString())
           .toList(),
@@ -98,7 +90,7 @@ class ListModel {
 
   @override
   String toString() {
-    return 'ListModel(id: $id, createdBy: $createdBy, title: $title, categories: $categories, sharedUsers: $sharedUsers, createdAt: $createdAt, referBy: $referBy, referListId: $referListId)';
+    return 'ListModel(id: $id, createdBy: $createdBy, title: $title, sharedUsers: $sharedUsers, createdAt: $createdAt, referBy: $referBy, referListId: $referListId)';
   }
 
   @override
@@ -108,7 +100,6 @@ class ListModel {
     return other.id == id &&
         other.createdBy == createdBy &&
         other.title == title &&
-        listEquals(other.categories, categories) &&
         listEquals(other.sharedUsers, sharedUsers) &&
         other.createdAt == createdAt &&
         other.isCompleted == isCompleted;
@@ -119,7 +110,6 @@ class ListModel {
     return id.hashCode ^
         createdBy.hashCode ^
         title.hashCode ^
-        categories.hashCode ^
         sharedUsers.hashCode ^
         isCompleted.hashCode ^
         createdAt.hashCode;

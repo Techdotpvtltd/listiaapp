@@ -207,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               builder: (context, _) {
                                 return Text(
-                                  "${ItemRepo().getNumberOfCompletedItemsBy(categories: [])} of ${ItemRepo().getNumberOfItemsBy(categories: [])}",
+                                  "${ItemRepo().getNumberOfCompletedItemsBy()} of ${ItemRepo().getNumberOfItemsBy()}",
                                   style: GoogleFonts.plusJakartaSans(
                                     color: Colors.white,
                                     fontSize: 22,

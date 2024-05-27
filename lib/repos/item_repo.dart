@@ -35,49 +35,29 @@ class ItemRepo {
     _instance = ItemRepo._internal();
   }
 
-  int getNumberOfItemsBy({String? listId, required List<String> categories}) {
-    final allCategories = ListRepo()
-        .lists
-        .map((e) => e.categories)
-        .expand((element) => element.map((e) => e.toLowerCase()))
-        .toSet();
-
+  int getNumberOfItemsBy({String? listId}) {
     return listId == null
         ? _items
             .where((element) =>
-                element.createdBy != "admin" &&
-                allCategories.contains(element.category.toLowerCase()))
+                element.createdBy != "admin" && element.boughtBy == null)
             .length
         : _items
             .where((element) =>
-                element.listId == listId &&
-                categories
-                    .map((e) => e.toLowerCase())
-                    .contains(element.category.toLowerCase()))
+                element.listId == listId && element.boughtBy == null)
             .length;
   }
 
-  int getNumberOfCompletedItemsBy(
-      {String? listId, required List<String> categories}) {
-    final allCategories = ListRepo()
-        .lists
-        .map((e) => e.categories)
-        .expand((element) => element.map((e) => e.toLowerCase()))
-        .toSet();
-
+  int getNumberOfCompletedItemsBy({String? listId}) {
     return listId == null
         ? _items
             .where((element) =>
-                element.completedBy != null &&
-                allCategories.contains(element.category.toLowerCase()))
+                element.completedBy != null && element.boughtBy == null)
             .length
         : _items
             .where((element) =>
                 element.listId == listId &&
                 element.completedBy != null &&
-                categories
-                    .map((e) => e.toLowerCase())
-                    .contains(element.category.toLowerCase()))
+                element.boughtBy == null)
             .length;
   }
 
@@ -106,6 +86,14 @@ class ItemRepo {
         listId: listId,
         filteredItems: filteredItems,
         isShowBoughtItemsOnly: isShowBoughtItemsOnly);
+  }
+
+  List<String> getCategories({required String listId}) {
+    return _items
+        .where((element) => element.listId == listId)
+        .map((e) => e.category)
+        .toSet()
+        .toList();
   }
 
   List<CategorizeItemsModel> _categorizeItems(

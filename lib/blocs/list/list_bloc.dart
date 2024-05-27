@@ -18,8 +18,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     on<ListEventCreate>((event, emit) async {
       try {
         emit(ListStateCreating());
-        await ListRepo()
-            .createList(title: event.title, categories: event.categories);
+        await ListRepo().createList(title: event.title);
         emit(ListStateCreated());
       } on AppException catch (e) {
         emit(ListStateCreateFailure(exception: e));
@@ -78,9 +77,9 @@ class ListBloc extends Bloc<ListEvent, ListState> {
         try {
           emit(ListStateUpdating());
           await ListRepo().updateList(
-              id: event.listId,
-              title: event.title,
-              categories: event.categories);
+            id: event.listId,
+            title: event.title,
+          );
           emit(ListStateUpdated());
         } on AppException catch (e) {
           emit(ListStateUpdateFailure(exception: e));

@@ -10,18 +10,15 @@ abstract class ListEvent {}
 // Create New List
 class ListEventCreate extends ListEvent {
   final String title;
-  final List<String> categories;
 
-  ListEventCreate({required this.title, required this.categories});
+  ListEventCreate({required this.title});
 }
 
 class ListEventUpdate extends ListEvent {
   final String listId;
   final String title;
-  final List<String> categories;
 
-  ListEventUpdate(
-      {required this.listId, required this.title, required this.categories});
+  ListEventUpdate({required this.listId, required this.title});
 }
 
 class ListEventDelete extends ListEvent {

@@ -8,18 +8,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:listi_shop/screens/components/custom_ink_well.dart';
-
-import '../../blocs/category/category_bloc.dart';
-import '../../blocs/category/category_event.dart';
-import '../../blocs/category/category_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
-import '../../models/category_model.dart';
 import '../../models/list_model.dart';
-import '../../repos/category_repo.dart';
-import '../../repos/user_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
@@ -40,29 +32,26 @@ class _CreateListScreenState extends State<CreateListScreen> {
   bool isLoading = false;
   int? errorCode;
   String? errorMessage;
-  List<String> selectedCategories = [];
   TextEditingController nameController = TextEditingController();
   late final ListModel? updatedList = widget.updatedList;
 
   void triggerCreateListEvent(ListBloc bloc) {
     bloc.add(
-      ListEventCreate(
-          title: nameController.text, categories: selectedCategories),
+      ListEventCreate(title: nameController.text),
     );
   }
 
   void triggerUpdateEvent(ListBloc bloc) {
     bloc.add(ListEventUpdate(
-        listId: widget.updatedList!.id,
-        title: nameController.text,
-        categories: selectedCategories));
+      listId: widget.updatedList!.id,
+      title: nameController.text,
+    ));
   }
 
   @override
   void initState() {
     if (updatedList != null) {
       nameController.text = updatedList?.title ?? "";
-      selectedCategories = updatedList?.categories ?? [];
     }
 
     super.initState();
@@ -128,6 +117,20 @@ class _CreateListScreenState extends State<CreateListScreen> {
       },
       child: CustomScaffold(
         title: updatedList != null ? "Update List" : "Create New List",
+        floatingActionButton: HorizontalPadding(
+          child: CustomButton(
+            title: updatedList != null ? "Update" : "Create",
+            isLoading: isLoading,
+            onPressed: () {
+              if (updatedList != null) {
+                triggerUpdateEvent(context.read<ListBloc>());
+                return;
+              }
+              triggerCreateListEvent(context.read<ListBloc>());
+            },
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         resizeToAvoidBottomInset: false,
         body: HVPadding(
           verticle: 30,
@@ -163,169 +166,9 @@ class _CreateListScreenState extends State<CreateListScreen> {
                 hintText: "Enter Name",
                 titleText: "List name",
               ),
-              // Select Category Items
-              gapH20,
-              Text(
-                "Select Categories",
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 18,
-                  color: AppTheme.titleColor1,
-                ),
-              ),
-              gapH10,
-              _CategoryBubble(
-                selectedCategoyIds: widget.updatedList?.categories,
-                onItemsUpdated: (items) {
-                  selectedCategories = items.map((e) => e.id).toList();
-                },
-              ),
-              const Spacer(),
-              CustomButton(
-                title: updatedList != null ? "Update" : "Create",
-                isLoading: isLoading,
-                onPressed: () {
-                  if (updatedList != null) {
-                    triggerUpdateEvent(context.read<ListBloc>());
-                    return;
-                  }
-                  triggerCreateListEvent(context.read<ListBloc>());
-                },
-              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CategoryBubble extends StatefulWidget {
-  const _CategoryBubble(
-      {required this.onItemsUpdated, this.selectedCategoyIds});
-  final Function(List<CategoryModel>) onItemsUpdated;
-  final List<String>? selectedCategoyIds;
-  @override
-  State<_CategoryBubble> createState() => _CategoryBubbleState();
-}
-
-class _CategoryBubbleState extends State<_CategoryBubble> {
-  List<CategoryModel> items = CategoryRepo()
-      .categories
-      .where((element) =>
-          element.createdBy.toLowerCase() == "admin" ||
-          element.createdBy == UserRepo().currentUser.uid)
-      .toList();
-  final selectedItems = <CategoryModel>[];
-
-  void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
-    bloc.add(CategoryEventAdd(category: categoryName));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.selectedCategoyIds != null) {
-      for (final String id in widget.selectedCategoyIds!) {
-        final int index = items.indexWhere(
-            (element) => element.id.toLowerCase() == id.toLowerCase());
-        if (index > -1) {
-          selectedItems.add(items[index]);
-        }
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<CategoryBloc, CategoryState>(
-      listener: (context, state) {
-        if (state is CategoryStateAddFailure ||
-            state is CategoryStateAdded ||
-            state is CategoryStateAdding) {
-          if (state is CategoryStateAddFailure) {
-            CustomDialogs().errorBox(message: state.exception.message);
-          }
-
-          if (state is CategoryStateAdded) {
-            setState(() {
-              items = CategoryRepo().categories;
-            });
-          }
-        }
-      },
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 10,
-        children: [
-          for (final CategoryModel item in items)
-            Builder(
-              builder: (context) {
-                final bool isSelected = selectedItems.contains(item);
-                return CustomInkWell(
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        selectedItems.remove(item);
-                        widget.onItemsUpdated(selectedItems);
-                        return;
-                      }
-                      selectedItems.add(item);
-                      widget.onItemsUpdated(selectedItems);
-                    });
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.primaryColor1 : Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      border: Border.all(color: AppTheme.primaryColor1),
-                    ),
-                    child: Text(
-                      item.item,
-                      style: GoogleFonts.plusJakartaSans(
-                        color:
-                            isSelected ? Colors.white : AppTheme.primaryColor1,
-                        fontSize: 14,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-          // Add More Button
-          CustomInkWell(
-            onTap: () {
-              CustomDialogs().showTextField(
-                title: "Add Category",
-                tfHint: "Enter Category Name:",
-                buttonTitle: "Save",
-                onDone: (value) {
-                  triggerAddCategoryEvent(context.read<CategoryBloc>(), value);
-                },
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              decoration: const BoxDecoration(
-                color: AppTheme.primaryColor1,
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Text(
-                "Add Category",
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

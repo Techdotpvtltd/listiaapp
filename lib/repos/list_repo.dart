@@ -42,18 +42,16 @@ class ListRepo {
   /// Craete List
   Future<String?> createList({
     required String title,
-    required List<String> categories,
     String? referBy,
     String? referListId,
   }) async {
     try {
       final UserModel user = UserRepo().currentUser;
-      await DataValidation.createList(categories: categories, title: title);
+      await DataValidation.createList(title: title);
       final ListModel uploadingList = ListModel(
           id: "",
           createdBy: user.uid,
           title: title,
-          categories: categories,
           isCompleted: false,
           sharedUsers: [user.uid],
           referBy: referBy,
@@ -74,16 +72,14 @@ class ListRepo {
   Future<void> updateList({
     required String id,
     required String title,
-    required List<String> categories,
   }) async {
     try {
-      await DataValidation.createList(categories: categories, title: title);
+      await DataValidation.createList(title: title);
       await FirestoreService().updateWithDocId(
         path: FIREBASE_COLLECTION_LISTS,
         docId: id,
         data: {
           "title": title,
-          "categories": categories,
         },
       );
     } catch (e) {
@@ -189,7 +185,6 @@ class ListRepo {
           _adminLists.firstWhere((element) => element.id == listId);
       final String? id = await createList(
         title: movedList.title,
-        categories: movedList.categories,
         referBy: "admin",
         referListId: listId,
       );

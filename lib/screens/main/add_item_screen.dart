@@ -17,6 +17,9 @@ import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 
+import '../../blocs/category/category_bloc.dart';
+import '../../blocs/category/category_event.dart';
+import '../../blocs/category/category_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
@@ -29,10 +32,8 @@ import '../components/custom_dropdown.dart';
 import '../components/custom_snack_bar.dart';
 
 class AddItemScreen extends StatefulWidget {
-  const AddItemScreen(
-      {super.key, required this.listId, required this.categories, this.item});
+  const AddItemScreen({super.key, required this.listId, this.item});
   final String listId;
-  final List<String> categories;
   final ItemModel? item;
   @override
   State<AddItemScreen> createState() => _AddItemScreenState();
@@ -44,10 +45,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
   String? errorMessage;
   String? selectedCategory;
   late final ItemModel? item = widget.item;
-  late final List<CategoryModel> categories =
-      CategoryRepo().getCategoriesFrom(categoryIds: widget.categories);
+  late List<CategoryModel> categories = CategoryRepo().categories;
   TextEditingController nameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  List<String> categoryNames = [];
 
   void triggerAddItemEvent(ItemBloc bloc) {
     setState(() {
@@ -62,6 +63,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
         quantity: int.tryParse(quantityController.text) ?? 1,
       ),
     );
+  }
+
+  void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
+    bloc.add(CategoryEventAdd(category: categoryName));
   }
 
   void triggerUpdateItemEvent(ItemBloc bloc, {required String itemId}) {
@@ -79,9 +84,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
+  void updateCatoriesName() {
+    categoryNames.clear();
+    categoryNames = categories.map((e) => e.item).toList();
+    categoryNames.insert(0, "Add New");
+  }
+
   @override
   void initState() {
     super.initState();
+    updateCatoriesName();
     quantityController.text = item?.quantity.toString() ?? "1";
     if (item != null) {
       nameController.text = item?.itemName ?? "";
@@ -91,60 +103,85 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ItemBloc, ItemState>(
-      listener: (context, state) {
-        if (state is ItemStateAdding ||
-            state is ItemStateAddFailure ||
-            state is ItemStateAdded ||
-            state is ItemStateUpdated ||
-            state is ItemStateUpdateFailure ||
-            state is ItemStateUpdating) {
-          setState(() {
-            isLoading = state.isLoading;
-          });
+    return MultiBlocListener(
+      listeners: [
+        /// Category Listener
+        BlocListener<CategoryBloc, CategoryState>(
+          listener: (context, state) {
+            if (state is CategoryStateAddFailure ||
+                state is CategoryStateAdded ||
+                state is CategoryStateAdding) {
+              if (state is CategoryStateAddFailure) {
+                CustomDialogs().errorBox(message: state.exception.message);
+              }
 
-          if (state is ItemStateAddFailure) {
-            if (state.exception.errorCode != null) {
-              setState(() {
-                errorCode = state.exception.errorCode;
-                errorMessage = state.exception.message;
-              });
-              return;
+              if (state is CategoryStateAdded) {
+                setState(() {
+                  categories = CategoryRepo().categories;
+                  updateCatoriesName();
+                });
+              }
             }
+          },
+        ),
 
-            CustomDialogs().errorBox(message: state.exception.message);
-          }
-
-          if (state is ItemStateUpdateFailure) {
-            if (state.exception.errorCode != null) {
+        /// Item Listener
+        BlocListener<ItemBloc, ItemState>(
+          listener: (context, state) {
+            if (state is ItemStateAdding ||
+                state is ItemStateAddFailure ||
+                state is ItemStateAdded ||
+                state is ItemStateUpdated ||
+                state is ItemStateUpdateFailure ||
+                state is ItemStateUpdating) {
               setState(() {
-                errorCode = state.exception.errorCode;
-                errorMessage = state.exception.message;
+                isLoading = state.isLoading;
               });
-              return;
+
+              if (state is ItemStateAddFailure) {
+                if (state.exception.errorCode != null) {
+                  setState(() {
+                    errorCode = state.exception.errorCode;
+                    errorMessage = state.exception.message;
+                  });
+                  return;
+                }
+
+                CustomDialogs().errorBox(message: state.exception.message);
+              }
+
+              if (state is ItemStateUpdateFailure) {
+                if (state.exception.errorCode != null) {
+                  setState(() {
+                    errorCode = state.exception.errorCode;
+                    errorMessage = state.exception.message;
+                  });
+                  return;
+                }
+
+                CustomDialogs().errorBox(message: state.exception.message);
+              }
+
+              if (state is ItemStateAdded) {
+                CustomSnackBar().success("Added");
+                nameController.clear();
+                quantityController.text = "1";
+              }
+
+              if (state is ItemStateUpdated) {
+                CustomDialogs().successBox(
+                  message: "An item has been successfully updated",
+                  title: "Item Updated",
+                  positiveTitle: "Back to list",
+                  onPositivePressed: () {
+                    NavigationService.back();
+                  },
+                );
+              }
             }
-
-            CustomDialogs().errorBox(message: state.exception.message);
-          }
-
-          if (state is ItemStateAdded) {
-            CustomSnackBar().success("Added");
-            nameController.clear();
-            quantityController.text = "1";
-          }
-
-          if (state is ItemStateUpdated) {
-            CustomDialogs().successBox(
-              message: "An item has been successfully updated",
-              title: "Item Updated",
-              positiveTitle: "Back to list",
-              onPositivePressed: () {
-                NavigationService.back();
-              },
-            );
-          }
-        }
-      },
+          },
+        ),
+      ],
       child: CustomScaffold(
         title: item != null ? "Update Item" : "Add New Item",
         resizeToAvoidBottomInset: false,
@@ -192,9 +229,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 selectedValue: CategoryRepo()
                     .getCategoryFrom(categoryId: selectedCategory ?? "")
                     ?.item,
-                items: categories.map((e) => e.item).toList(),
+                items: categoryNames,
                 onSelectedItem: (category) {
-                  if (selectedCategory != "") {
+                  if (category != "") {
+                    if (category.toLowerCase() == "add new") {
+                      CustomDialogs().showTextField(
+                        title: "Add Category",
+                        tfHint: "Enter Category Name:",
+                        buttonTitle: "Save",
+                        onDone: (value) {
+                          triggerAddCategoryEvent(
+                              context.read<CategoryBloc>(), value);
+                        },
+                      );
+                      setState(() {
+                        selectedCategory = null;
+                      });
+                      return;
+                    }
                     selectedCategory = categories
                         .firstWhere((element) =>
                             element.item.toLowerCase() ==

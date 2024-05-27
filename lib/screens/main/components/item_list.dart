@@ -209,10 +209,8 @@ class _ItemWidgetState extends State<_ItemWidget> {
         child: BlocSelector<ItemBloc, ItemState, List<int>>(
           selector: (state) {
             return [
-              ItemRepo().getNumberOfItemsBy(
-                  listId: widget.list.id, categories: widget.list.categories),
-              ItemRepo().getNumberOfCompletedItemsBy(
-                  listId: widget.list.id, categories: widget.list.categories)
+              ItemRepo().getNumberOfItemsBy(listId: widget.list.id),
+              ItemRepo().getNumberOfCompletedItemsBy(listId: widget.list.id)
             ];
           },
           builder: (context, value) {
