@@ -19,7 +19,7 @@ import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
-import 'package:listi_shop/screens/main/complete_list_screen.dart';
+import 'package:listi_shop/screens/main/shopping_list_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
@@ -56,7 +56,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
       case 0:
         return const HomeScreen();
       case 1:
-        return const CompleteListScreen();
+        return const ShoppingListScreen();
       case 2:
         return const ProfileScreen();
       case 3:

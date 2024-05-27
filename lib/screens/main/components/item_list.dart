@@ -54,10 +54,12 @@ class ItemList extends StatefulWidget {
     required this.onItemTap,
     required this.lists,
     required this.adminLists,
+    this.isBoughtScreen = false,
   });
   final Function(int, bool isAdminList) onItemTap;
   final List<ListModel> lists;
   final List<ListModel> adminLists;
+  final bool isBoughtScreen;
   @override
   State<ItemList> createState() => _ItemListState();
 }
@@ -91,6 +93,7 @@ class _ItemListState extends State<ItemList> {
                   (list) {
                     items.removeWhere((element) => element.id == list.id);
                   },
+                  widget.isBoughtScreen,
                 );
               },
             ),
@@ -121,6 +124,7 @@ class _ItemListState extends State<ItemList> {
                         (list) {
                           items.removeWhere((element) => element.id == list.id);
                         },
+                        widget.isBoughtScreen,
                       );
                     },
                   ),
@@ -133,10 +137,13 @@ class _ItemListState extends State<ItemList> {
 }
 
 class _ItemWidget extends StatefulWidget {
-  const _ItemWidget(this.list, this.onItemTapped, this.onListDeleted);
+  const _ItemWidget(
+      this.list, this.onItemTapped, this.onListDeleted, this.isBoughtScreen);
   final ListModel list;
   final VoidCallback onItemTapped;
   final Function(ListModel) onListDeleted;
+  final bool isBoughtScreen;
+
   @override
   State<_ItemWidget> createState() => _ItemWidgetState();
 }
@@ -149,10 +156,12 @@ class _ItemWidgetState extends State<_ItemWidget> {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(widget.list.id),
-      direction: (widget.list.createdBy == "admin" &&
-              widget.list.createdBy != UserRepo().currentUser.uid)
+      direction: widget.isBoughtScreen
           ? DismissDirection.none
-          : DismissDirection.endToStart,
+          : (widget.list.createdBy == "admin" &&
+                  widget.list.createdBy != UserRepo().currentUser.uid)
+              ? DismissDirection.none
+              : DismissDirection.endToStart,
       secondaryBackground: Container(
         color: Colors.red,
         child: const Align(

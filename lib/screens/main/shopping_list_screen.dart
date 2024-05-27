@@ -19,14 +19,14 @@ import '../../repos/list_repo.dart';
 import '../../utils/extensions/navigation_service.dart';
 import 'list_item_detail_screen.dart';
 
-class CompleteListScreen extends StatefulWidget {
-  const CompleteListScreen({super.key});
+class ShoppingListScreen extends StatefulWidget {
+  const ShoppingListScreen({super.key});
 
   @override
-  State<CompleteListScreen> createState() => _CompleteListScreenState();
+  State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
-class _CompleteListScreenState extends State<CompleteListScreen> {
+class _ShoppingListScreenState extends State<ShoppingListScreen> {
   final List<ListModel> lists = ListRepo().completedLists();
   @override
   Widget build(BuildContext context) {
@@ -51,6 +51,7 @@ class _CompleteListScreenState extends State<CompleteListScreen> {
                 ),
               );
             },
+            isBoughtScreen: true,
             adminLists: const [],
             lists: lists,
           ),

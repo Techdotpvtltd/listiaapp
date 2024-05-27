@@ -180,9 +180,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                   }
 
                   NavigationService.go(
-                    AddItemScreen(
-                      listId: widget.list.id,
-                    ),
+                    AddItemScreen(listId: widget.list.id),
                   );
                 },
               ),
@@ -472,9 +470,6 @@ class _ItemListState extends State<_ItemList> {
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.titleColor1,
                                 fontSize: 14,
-                                decoration: isSelected
-                                    ? TextDecoration.lineThrough
-                                    : null,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -483,9 +478,6 @@ class _ItemListState extends State<_ItemList> {
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.subTitleColor2,
                                 fontSize: 12,
-                                decoration: isSelected
-                                    ? TextDecoration.lineThrough
-                                    : null,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
