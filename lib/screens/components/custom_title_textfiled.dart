@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import '../../utils/constants/constants.dart';
+import 'dart:io' show Platform;
 
 class CustomTextFiled extends StatefulWidget {
   const CustomTextFiled({
@@ -124,7 +126,15 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
               widget.onTFTap!();
             }
           },
-          keyboardType: widget.keyboardType,
+          keyboardType:
+              (widget.keyboardType == TextInputType.number && Platform.isIOS)
+                  ? const TextInputType.numberWithOptions(
+                      signed: true, decimal: true)
+                  : widget.keyboardType,
+          inputFormatters:
+              (widget.keyboardType == TextInputType.number && Platform.isIOS)
+                  ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9+.-]'))]
+                  : null,
           readOnly: _isReadOnly,
           onChanged: (value) {
             if (widget.onChange != null) {
