@@ -9,8 +9,9 @@ class CustomSnackBar {
     Color? textColor,
   ) {
     final snackBar = SnackBar(
-      behavior: SnackBarBehavior.fixed,
+      behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
+      margin: const EdgeInsets.only(bottom: 0),
       elevation: 0,
       content: Container(
           padding: const EdgeInsets.all(8),

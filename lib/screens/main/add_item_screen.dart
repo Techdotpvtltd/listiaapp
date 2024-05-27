@@ -5,7 +5,6 @@
 // Date:        04-04-24 19:49:30 -- Thursday
 // Description:
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,7 +42,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   bool isLoading = false;
   int? errorCode;
   String? errorMessage;
-  String? selectedCategory;
+  String? selectedCategoryId;
   late final ItemModel? item = widget.item;
   late List<CategoryModel> categories = CategoryRepo().categories;
   TextEditingController nameController = TextEditingController();
@@ -59,7 +58,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       ItemEventAddNew(
         itemName: nameController.text,
         listId: widget.listId,
-        category: selectedCategory ?? "",
+        category: selectedCategoryId ?? "",
         quantity: int.tryParse(quantityController.text) ?? 1,
       ),
     );
@@ -78,7 +77,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       ItemEventUpdate(
         itemName: nameController.text,
         itemId: itemId,
-        category: selectedCategory ?? "",
+        category: selectedCategoryId ?? "",
         quantity: int.tryParse(quantityController.text) ?? 1,
       ),
     );
@@ -97,7 +96,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     quantityController.text = item?.quantity.toString() ?? "1";
     if (item != null) {
       nameController.text = item?.itemName ?? "";
-      selectedCategory = item?.category;
+      selectedCategoryId = item?.category;
     }
   }
 
@@ -166,6 +165,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 CustomSnackBar().success("Added");
                 nameController.clear();
                 quantityController.text = "1";
+                setState(() {
+                  selectedCategoryId = null;
+                });
               }
 
               if (state is ItemStateUpdated) {
@@ -185,6 +187,22 @@ class _AddItemScreenState extends State<AddItemScreen> {
       child: CustomScaffold(
         title: item != null ? "Update Item" : "Add New Item",
         resizeToAvoidBottomInset: false,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:
+
+            /// Add Button
+            HorizontalPadding(
+          child: CustomButton(
+            isLoading: isLoading,
+            title: item != null ? "Update" : "Add",
+            onPressed: () {
+              item != null
+                  ? triggerUpdateItemEvent(context.read<ItemBloc>(),
+                      itemId: item!.id)
+                  : triggerAddItemEvent(context.read<ItemBloc>());
+            },
+          ),
+        ),
         body: HVPadding(
           verticle: 30,
           child: Column(
@@ -227,7 +245,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 hintText: "Select Category",
                 titleText: "Select Category",
                 selectedValue: CategoryRepo()
-                    .getCategoryFrom(categoryId: selectedCategory ?? "")
+                    .getCategoryFrom(categoryId: selectedCategoryId ?? "")
                     ?.item,
                 items: categoryNames,
                 onSelectedItem: (category) {
@@ -242,16 +260,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               context.read<CategoryBloc>(), value);
                         },
                       );
-                      setState(() {
-                        selectedCategory = null;
-                      });
                       return;
                     }
-                    selectedCategory = categories
-                        .firstWhere((element) =>
-                            element.item.toLowerCase() ==
-                            category.toLowerCase())
-                        .id;
+                    setState(() {
+                      selectedCategoryId = categories
+                          .firstWhere((element) =>
+                              element.item.toLowerCase() ==
+                              category.toLowerCase())
+                          .id;
+                    });
                   }
                 },
               ),
@@ -263,19 +280,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 hintText: "Enter quantity",
                 titleText: "Quantity",
                 keyboardType: TextInputType.number,
-              ),
-              const Spacer(),
-
-              /// Add Button
-              CustomButton(
-                isLoading: isLoading,
-                title: item != null ? "Update" : "Add",
-                onPressed: () {
-                  item != null
-                      ? triggerUpdateItemEvent(context.read<ItemBloc>(),
-                          itemId: item!.id)
-                      : triggerAddItemEvent(context.read<ItemBloc>());
-                },
               ),
             ],
           ),

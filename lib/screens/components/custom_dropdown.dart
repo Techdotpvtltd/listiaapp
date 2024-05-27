@@ -35,12 +35,10 @@ class CustomTextFieldDropdown extends StatefulWidget {
 class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
   bool isShowPassword = true;
   List<String> items = [];
-  String? selectedItem;
-
   @override
   void initState() {
     setState(() {
-      items = List.from(widget.items);
+      items = widget.items;
     });
     super.initState();
   }
@@ -83,11 +81,11 @@ class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
                   ),
                 )
                 .toList(),
-            value: widget.selectedValue ?? selectedItem,
+            value: widget.selectedValue,
             onChanged: (value) {
-              setState(() {
-                selectedItem = value;
-              });
+              if (value?.toLowerCase() == "add new") {
+                return;
+              }
               widget.onSelectedItem(value ?? "");
             },
             hint: Text(
