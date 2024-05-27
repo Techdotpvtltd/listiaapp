@@ -26,6 +26,7 @@ import '../../repos/category_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
 import '../components/custom_dropdown.dart';
+import '../components/custom_snack_bar.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen(
@@ -135,23 +136,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           }
 
           if (state is ItemStateAdded) {
-            CustomDialogs().successBox(
-              message: "An item has been successfully added to the list.",
-              title: "Item Added",
-              positiveTitle: "Back to list",
-              onPositivePressed: () {
-                NavigationService.back();
-              },
-              negativeTitle: "Add New",
-              onNegativePressed: () {
-                /// Reset the screen
-                setState(() {
-                  nameController.clear();
-                  celeriesController.clear();
-                  macrosController.clear();
-                });
-              },
-            );
+            CustomSnackBar().success("Added");
+            nameController.clear();
+            celeriesController.clear();
+            macrosController.clear();
           }
 
           if (state is ItemStateUpdated) {
