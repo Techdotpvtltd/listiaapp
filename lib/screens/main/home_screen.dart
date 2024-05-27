@@ -267,7 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       final List<String> itemIds =
                           ItemRepo().getItemsIdBy(listId: list.id);
                       context.read<ListBloc>().add(
-                          ListEventDelete(listId: list.id, itemsIds: itemIds));
+                            ListEventDelete(listId: list.id, itemsIds: itemIds),
+                          );
                     },
                   ),
                 );

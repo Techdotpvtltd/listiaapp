@@ -456,21 +456,27 @@ class _ItemListState extends State<_ItemList> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                // Title Text
-                                Text(
-                                  item.itemName,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.titleColor1,
-                                    fontSize: 14,
-                                    decoration: isSelected
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              item.itemName,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppTheme.titleColor1,
+                                fontSize: 14,
+                                decoration: isSelected
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              "x${item.quantity.toString()}",
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppTheme.subTitleColor2,
+                                fontSize: 12,
+                                decoration: isSelected
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
 
                             ///

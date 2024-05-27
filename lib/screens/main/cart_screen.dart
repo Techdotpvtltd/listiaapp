@@ -18,7 +18,9 @@ import '../../blocs/item/item_state.dart';
 import '../../models/item_model.dart';
 import '../../repos/item_repo.dart';
 import '../../utils/constants/app_theme.dart';
+import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
+import 'components/custom_checkbox.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen(
@@ -160,22 +162,36 @@ class _CartScreenState extends State<CartScreen> {
                             horizontal: 20, vertical: 12),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: const Color(0xFF0474ED).withOpacity(0.19)),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                            color: const Color(0xFF0474ED).withOpacity(0.19),
+                          ),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
                               children: [
+                                const CustomCheckBox(isChecked: true),
+                                gapW10,
                                 Text(
                                   item.itemName,
                                   style: GoogleFonts.plusJakartaSans(
                                     color: AppTheme.titleColor1,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                                gapW6,
+                                Text(
+                                  "x${item.quantity.toString()}",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: AppTheme.subTitleColor2,
+                                    fontSize: 12,
+                                    decoration: TextDecoration.lineThrough,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
