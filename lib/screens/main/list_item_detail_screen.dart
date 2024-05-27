@@ -279,7 +279,14 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                             padding:
                                 MaterialStatePropertyAll(EdgeInsets.all(14)),
                           ),
-                          icon: SvgPicture.asset(AppAssets.bucketIcon),
+                          icon: SvgPicture.asset(
+                            AppAssets.bucketIcon,
+                            width: 25,
+                            colorFilter: const ColorFilter.mode(
+                              AppTheme.primaryColor2,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                         );
                       },
                     ),

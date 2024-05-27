@@ -30,7 +30,7 @@ final List<SubscriptionModel> subscriptions = [
     contents: [
       "Add up to 5 people.",
     ],
-    price: 12.7,
+    price: 10,
     periodDuration: "month",
   ),
   SubscriptionModel(
@@ -39,7 +39,7 @@ final List<SubscriptionModel> subscriptions = [
     contents: [
       "Add up to 20 people.",
     ],
-    price: 31.75,
+    price: 25,
     periodDuration: "month",
   ),
 ];
@@ -146,7 +146,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
                           /// Price Text
                           Text(
-                            "\$${subscriptions[index].price}/ ${subscriptions[index].periodDuration}",
+                            "£${subscriptions[index].price}/ ${subscriptions[index].periodDuration}",
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
