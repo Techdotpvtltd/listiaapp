@@ -16,6 +16,7 @@ import '../models/subscription_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/firestore_services.dart';
 import '../web_services/query_model.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 
 class SubscriptionRepo {
   // ===========================Singleton InStance================================
@@ -32,7 +33,8 @@ class SubscriptionRepo {
     try {
       final DateTime startDate = DateTime.fromMillisecondsSinceEpoch(
           int.tryParse(purchase.transactionDate ?? "0") ?? 0);
-      final DateTime endDate = startDate.add(const Duration(minutes: 5));
+      final DateTime endDate = startDate.add(
+          kReleaseMode ? const Duration(days: 30) : const Duration(minutes: 5));
       final SubscriptionModel model = SubscriptionModel(
           id: "",
           periodDuration: "month",
