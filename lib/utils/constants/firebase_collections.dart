@@ -19,3 +19,6 @@ const String FIREBASE_COLLECTION_LISTS_ADMIN =
 
 const String FIREBASE_COLLECTION_ITEMS_ADMIN =
     "${kReleaseMode ? "Rel-" : "Dev-"}Admin-Items";
+
+const String FIREBASE_COLLECTION_SUBSCRIPTIONS =
+    "${kReleaseMode ? "Rel-" : "Dev-"}Subscriptions";

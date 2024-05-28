@@ -15,6 +15,7 @@ import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
+import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:skeletons/skeletons.dart';
@@ -27,7 +28,6 @@ import '../../models/list_model.dart';
 import '../../models/user_model.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
-import 'payment_method_screen.dart';
 
 class ShareScreen extends StatefulWidget {
   const ShareScreen({super.key, required this.list});
@@ -93,7 +93,7 @@ class _ShareScreenState extends State<ShareScreen> {
                     "You can send 5 invitations in free mode. Please upgrade your plan to send more invitations.",
                 positiveTitle: "Show Subscription Plan",
                 onPositivePressed: () {
-                  NavigationService.go(const PaymentMethodScreen());
+                  NavigationService.go(const SubscriptionPlanScreen());
                 },
               );
               return;

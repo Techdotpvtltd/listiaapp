@@ -14,8 +14,21 @@ class SubscriptionEventReady extends SubscriptionEvent {}
 
 class SubscriptionEventFetechProducts extends SubscriptionEvent {}
 
-class SubscriptionEventBuyPurchase extends SubscriptionEvent {
+class SubscriptionEventBuySubscription extends SubscriptionEvent {
   final ProductDetails productDetails;
 
-  SubscriptionEventBuyPurchase({required this.productDetails});
+  SubscriptionEventBuySubscription({required this.productDetails});
 }
+
+class SubscriptionEventMarkPurchaseCompleted extends SubscriptionEvent {
+  final PurchaseDetails purchaseDetails;
+
+  SubscriptionEventMarkPurchaseCompleted({required this.purchaseDetails});
+}
+
+// ===========================Listener Product ================================
+class SubscriptionEventListener extends SubscriptionEvent {}
+
+// ===========================Get Last Subscription Event================================
+
+class SubscriptionEventGetLast extends SubscriptionEvent {}

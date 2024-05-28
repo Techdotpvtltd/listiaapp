@@ -16,6 +16,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/auth/auth_event.dart';
+import '../../utils/constants/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -52,9 +53,11 @@ class _SplashScreenState extends State<SplashScreen> {
       child: Scaffold(
         body: Stack(
           children: [
-            Image.asset(
-              AppAssets.background,
-              fit: BoxFit.cover,
+            Positioned.fill(
+              child: Image.asset(
+                AppAssets.background,
+                fit: BoxFit.cover,
+              ),
             ),
             Positioned.fill(
               child: Align(

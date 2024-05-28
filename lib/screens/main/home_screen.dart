@@ -4,6 +4,7 @@
 // Author:       Ali Akbar
 // Date:        03-04-24 19:11:54 -- Wednesday
 // Description:
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,6 +28,8 @@ import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_event.dart';
 import '../../blocs/list/list_state.dart';
+import '../../blocs/subscription/subscription_bloc.dart';
+import '../../blocs/subscription/subscription_event.dart';
 import '../../models/list_model.dart';
 import '../../repos/item_repo.dart';
 import '../../repos/list_repo.dart';
@@ -72,11 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
     bloc.add(ListEventMove(listId: id));
   }
 
+  void triggerSubscriptionListenerEvent(SubscriptionBloc bloc) {
+    bloc.add(SubscriptionEventListener());
+  }
+
+  void triggerGetLastSubscriptionEvent(SubscriptionBloc bloc) {
+    bloc.add(SubscriptionEventGetLast());
+  }
+
   @override
   void initState() {
     super.initState();
     triggerFetchListEvent(context.read<ListBloc>());
     triggerAdminFetchListEvent(context.read<ListBloc>());
+    triggerGetLastSubscriptionEvent(context.read<SubscriptionBloc>());
+    triggerSubscriptionListenerEvent(context.read<SubscriptionBloc>());
   }
 
   @override

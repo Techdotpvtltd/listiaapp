@@ -8,6 +8,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../exceptions/app_exceptions.dart';
@@ -34,6 +35,7 @@ class SubscriptionManager {
     Function(AppException)? onError,
     required Function(PurchaseDetails) onData,
   }) async {
+    Completer<void> completer = Completer<void>();
     _subscription = _purchasedUpdated.listen(
       (purchaseDetailsList) {
         if (purchaseDetailsList is List<PurchaseDetails>) {
@@ -60,8 +62,15 @@ class SubscriptionManager {
       },
       onDone: () {
         _subscription.cancel();
+        completer.complete();
       },
     );
+    await completer.future;
+  }
+
+  /// Restore
+  Future<void> restorePurchases() async {
+    await _inAppPurchase.restorePurchases();
   }
 
   /// Load Products
@@ -87,10 +96,26 @@ class SubscriptionManager {
     return products;
   }
 
+  Future<void> completePurchases(PurchaseDetails purchaseDetails) async {
+    await _inAppPurchase.completePurchase(purchaseDetails);
+  }
+
   // Buy Subscription
-  Future<bool> buySubscription({required ProductDetails productDetails}) async {
-    final PurchaseParam param = PurchaseParam(productDetails: productDetails);
-    return await _inAppPurchase.buyConsumable(purchaseParam: param);
+  Future<void> buySubscription({required ProductDetails productDetails}) async {
+    try {
+      final PurchaseParam param = PurchaseParam(productDetails: productDetails);
+      await _inAppPurchase.buyConsumable(purchaseParam: param);
+    } catch (e) {
+      if (e is PlatformException) {
+        if (e.code == "storekit_duplicate_product_object") {
+          throw DataExceptionSubscriptionFailure(
+              message:
+                  "It seems there's an unfinished transaction for this subscription. Please wait for the current transaction to complete, or finish it manually in your purchase history to proceed.");
+        }
+      }
+      throw DataExceptionSubscriptionFailure(
+          message: "Something went wrong. Please try again.");
+    }
   }
 
   // Restore Previous Subsriptions

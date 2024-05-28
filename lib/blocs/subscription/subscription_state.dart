@@ -68,3 +68,12 @@ class SubscriptionStateStoreStatus extends SubscriptionState {
 
   SubscriptionStateStoreStatus({required this.isAvailable});
 }
+
+// ===========================Mark Purchased Completed================================
+
+class SubcriptionStateMarkedPurchaseCompleted extends SubscriptionState {}
+
+// ===========================Get Last Subscription States================================
+class SubscriptionStateGettingLast extends SubscriptionState {}
+
+class SubscriptionStateGotLast extends SubscriptionState {}

@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
@@ -21,28 +22,7 @@ import '../../blocs/subscription/subscription_bloc.dart';
 import '../../blocs/subscription/subscription_event.dart';
 import '../../blocs/subscription/subscription_state.dart';
 import '../../managers/app_manager.dart';
-import '../../models/subscription_model.dart';
-
-final List<SubscriptionModel> subscriptions = [
-  SubscriptionModel(
-    id: "0",
-    title: "Household",
-    contents: [
-      "Add up to 5 people.",
-    ],
-    price: 10,
-    periodDuration: "month",
-  ),
-  SubscriptionModel(
-    id: "1",
-    title: "Business",
-    contents: [
-      "Add up to 20 people.",
-    ],
-    price: 25,
-    periodDuration: "month",
-  ),
-];
+import '../../repos/subscription_repo.dart';
 
 class SubscriptionPlanScreen extends StatefulWidget {
   const SubscriptionPlanScreen({super.key, this.isShowMenu = false});
@@ -52,7 +32,10 @@ class SubscriptionPlanScreen extends StatefulWidget {
 }
 
 class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
-  bool isActived = AppManager().isActiveSubscription;
+  String activeSubscriptionId = AppManager().isActiveSubscription
+      ? SubscriptionRepo().lastSubscription?.productId ?? ""
+      : "";
+  List<ProductDetails> productDetails = [];
 
   void triggerGetProductsEvent() {
     context.read<SubscriptionBloc>().add(SubscriptionEventReady());
@@ -76,7 +59,12 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
             state is SubscriptionStatePurchased ||
             state is SubscriptionStatePurchaseFailure) {
           if (state is SubscriptionStateGotProducts) {
-            debugPrint(state.products.toString());
+            setState(() {
+              productDetails = state.products;
+              activeSubscriptionId = AppManager().isActiveSubscription
+                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                  : "";
+            });
           }
 
           if (state is SubscriptionStateFailure) {
@@ -85,6 +73,14 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
           if (state is SubscriptionStatePurchaseFailure) {
             debugPrint(state.exception.message);
+          }
+
+          if (state is SubscriptionStatePurchased) {
+            setState(() {
+              activeSubscriptionId = AppManager().isActiveSubscription
+                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                  : "";
+            });
           }
         }
       },
@@ -104,25 +100,26 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
         body: HVPadding(
           verticle: 10,
           child: ListView.builder(
-            itemCount: subscriptions.length,
+            itemCount: productDetails.length,
             padding: const EdgeInsets.only(top: 40, bottom: 20),
             itemBuilder: (context, index) {
               return CustomInkWell(
                 onTap: () {
-                  // setState(() {
-                  //   selectedIndex = index;
-                  // });
-                  NavigationService.go(const PaymentMethodScreen());
+                  NavigationService.go(
+                    PaymentMethodScreen(productDetail: productDetails[index]),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.only(
                       top: 37, bottom: 24, left: 24, right: 24),
                   margin: const EdgeInsets.symmetric(vertical: 9),
                   decoration: BoxDecoration(
-                    color: isActived
+                    color: activeSubscriptionId == productDetails[index].id
                         ? null
                         : const Color(0xFF5A7D65).withOpacity(0.08),
-                    gradient: isActived ? AppTheme.primaryLinearGradient : null,
+                    gradient: activeSubscriptionId == productDetails[index].id
+                        ? AppTheme.primaryLinearGradient
+                        : null,
                     border: Border.all(color: AppTheme.primaryColor2),
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
                   ),
@@ -134,11 +131,12 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            subscriptions[index].title,
+                            productDetails[index].title,
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
-                              color: isActived
+                              color: activeSubscriptionId ==
+                                      productDetails[index].id
                                   ? Colors.white
                                   : AppTheme.titleColor1,
                             ),
@@ -146,11 +144,12 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
                           /// Price Text
                           Text(
-                            "£${subscriptions[index].price}/ ${subscriptions[index].periodDuration}",
+                            "${productDetails[index].price}/ month",
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              color: isActived
+                              color: activeSubscriptionId ==
+                                      productDetails[index].id
                                   ? Colors.white
                                   : AppTheme.titleColor1,
                             ),
@@ -159,7 +158,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       ),
                       gapH10,
 
-                      for (String content in subscriptions[index].contents)
+                      for (String content
+                          in productDetails[index].description.split(","))
 
                         /// Contents Row
                         Row(
@@ -168,7 +168,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               width: 3,
                               height: 3,
                               decoration: BoxDecoration(
-                                color: isActived
+                                color: activeSubscriptionId ==
+                                        productDetails[index].id
                                     ? Colors.white
                                     : AppTheme.primaryColor2,
                                 shape: BoxShape.circle,
@@ -181,7 +182,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 12,
-                                  color: isActived
+                                  color: activeSubscriptionId ==
+                                          productDetails[index].id
                                       ? Colors.white
                                       : AppTheme.titleColor1,
                                 ),
@@ -195,13 +197,17 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                         child: CustomInkWell(
                           onTap: () async {
                             await NavigationService.go(
-                                const PaymentMethodScreen());
+                              PaymentMethodScreen(
+                                productDetail: productDetails[index],
+                              ),
+                            );
                           },
                           child: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: isActived
+                                color: activeSubscriptionId ==
+                                        productDetails[index].id
                                     ? Colors.white
                                     : AppTheme.primaryColor2,
                               ),
@@ -209,7 +215,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                             ),
                             child: Icon(
                               Icons.arrow_forward,
-                              color: isActived
+                              color: activeSubscriptionId ==
+                                      productDetails[index].id
                                   ? Colors.white
                                   : AppTheme.primaryColor2,
                             ),
