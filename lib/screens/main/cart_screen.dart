@@ -224,72 +224,40 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  CustomCheckBox(
-                                    isChecked: isChecked,
-                                  ),
-                                  gapW10,
-                                  Text(
-                                    item.itemName,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.titleColor1,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      decoration: isChecked
-                                          ? TextDecoration.lineThrough
-                                          : TextDecoration.none,
-                                    ),
-                                  ),
-                                  gapW6,
-                                  Text(
-                                    "x${item.quantity.toString()}",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor2,
-                                      fontSize: 12,
-                                      decoration: isChecked
-                                          ? TextDecoration.lineThrough
-                                          : TextDecoration.none,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                              CustomCheckBox(
+                                isChecked: isChecked,
                               ),
-
-                              /// Delete Button
-                              // if (item.boughtBy == null)
-                              //   CustomInkWell(
-                              //     onTap: () {
-                              //       CustomDialogs().deleteBox(
-                              //         title: "Remove Item",
-                              //         message:
-                              //             "Are you sure to remove ${item.itemName} item from the cart?",
-                              //         onPositivePressed: () {
-                              //           triggerRemoveItemEvent(
-                              //               context.read<ItemBloc>(),
-                              //               itemId: item.id);
-                              //         },
-                              //       );
-                              //     },
-                              //     child: Container(
-                              //       width: 22,
-                              //       height: 22,
-                              //       decoration: BoxDecoration(
-                              //         color: const Color(0xFFB82D2D)
-                              //             .withOpacity(0.14),
-                              //         shape: BoxShape.circle,
-                              //       ),
-                              //       child: const Center(
-                              //         child: Icon(
-                              //           Icons.delete,
-                              //           color: Color(0xFFB82D2D),
-                              //           size: 14,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
+                              gapW10,
+                              Expanded(
+                                child: Text(
+                                  item.itemName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: AppTheme.titleColor1,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    decorationThickness: 2,
+                                    decoration: isChecked
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                                  ),
+                                ),
+                              ),
+                              gapW6,
+                              Text(
+                                "x${item.quantity.toString()}",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.subTitleColor2,
+                                  fontSize: 12,
+                                  decorationThickness: 2,
+                                  decoration: isChecked
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         ),

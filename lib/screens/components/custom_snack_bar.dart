@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
+import '../../utils/constants/constants.dart';
 
 class CustomSnackBar {
   void _show(
@@ -11,7 +12,8 @@ class CustomSnackBar {
     final snackBar = SnackBar(
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
-      margin: const EdgeInsets.only(bottom: 0),
+      margin: EdgeInsets.only(bottom: SCREEN_HEIGHT / 2.5),
+      duration: const Duration(milliseconds: 750),
       elevation: 0,
       content: Container(
           padding: const EdgeInsets.all(8),

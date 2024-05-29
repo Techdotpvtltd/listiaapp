@@ -341,7 +341,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                                       .getCategoryFrom(
                                           categoryId: categoryItem.category)
                                       ?.item ??
-                                  "Deleted",
+                                  "",
                               style: GoogleFonts.plusJakartaSans(
                                 color: AppTheme.titleColor1,
                                 fontSize: 16,

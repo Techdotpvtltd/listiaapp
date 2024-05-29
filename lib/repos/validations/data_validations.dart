@@ -34,9 +34,9 @@ class DataValidation {
           message: "Please Enter item name.", errorCode: 1);
     }
 
-    if (category == "") {
-      throw AuthExceptionRequiredField(message: "Please select a category");
-    }
+    // if (category == "") {
+    //   throw AuthExceptionRequiredField(message: "Please select a category");
+    // }
   }
 
   static Future<void> createUser({

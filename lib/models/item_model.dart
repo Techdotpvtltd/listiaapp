@@ -89,7 +89,7 @@ class ItemModel {
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       createdBy: map['createdBy'] as String,
       itemName: (map['itemName'] as String).capitalizeFirstCharacter(),
-      category: map['category'] as String,
+      category: map['category'] as String? ?? "",
       quantity: map['quantity'] != null ? map['quantity'] as int : 1,
       completedBy: map['completedBy'] != null
           ? ItemCompleteModel.fromMap(map['completedBy'])

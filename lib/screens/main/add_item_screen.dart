@@ -25,7 +25,6 @@ import '../../models/category_model.dart';
 import '../../models/item_model.dart';
 import '../../repos/category_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
-import '../../utils/extensions/navigation_service.dart';
 import '../components/custom_dropdown.dart';
 import '../components/custom_snack_bar.dart';
 
@@ -170,14 +169,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
 
               if (state is ItemStateUpdated) {
-                CustomDialogs().successBox(
-                  message: "An item has been successfully updated",
-                  title: "Item Updated",
-                  positiveTitle: "Back to list",
-                  onPositivePressed: () {
-                    NavigationService.back();
-                  },
-                );
+                CustomSnackBar().success("Updated");
               }
             }
           },
@@ -232,6 +224,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 controller: nameController,
                 errorCode: errorCode,
                 errorText: errorMessage,
+                isFirstCapitalizeLetter: true,
                 fieldId: 1,
                 hintText: "Enter Name",
                 titleText: "Item name",
