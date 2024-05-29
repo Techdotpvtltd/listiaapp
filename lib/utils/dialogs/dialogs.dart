@@ -163,16 +163,19 @@ class CustomDialogs {
     );
   }
 
-  void deleteBox(
-      {required String title,
-      required String message,
-      required VoidCallback onPositivePressed}) {
+  void deleteBox({
+    required String title,
+    required String message,
+    required VoidCallback onPositivePressed,
+    VoidCallback? onNegativePressed,
+  }) {
     alertBox(
       title: title,
       message: message,
       onPositivePressed: onPositivePressed,
       positiveTitle: "Delete",
       icon: Icons.delete,
+      onNegativePressed: onNegativePressed,
     );
   }
 

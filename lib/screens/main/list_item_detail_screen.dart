@@ -5,6 +5,8 @@
 // Date:        04-04-24 20:07:06 -- Thursday
 // Description:
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -405,13 +407,25 @@ class _ItemListState extends State<_ItemList> {
     );
   }
 
-  void onDeleteMenuPressed(ItemModel model) {
+  Future<bool> onDeleteMenuPressed(ItemModel model) async {
+    Completer<void> completer = Completer<void>();
+    bool value = false;
     CustomDialogs().deleteBox(
-        title: "Item Deletion",
-        message: "Are you sure to delete this ${model.itemName} item?.",
-        onPositivePressed: () {
-          context.read<ItemBloc>().add(ItemEventDeleted(itemId: model.id));
-        });
+      title: "Item Deletion",
+      message: "Are you sure to delete this ${model.itemName} item?.",
+      onPositivePressed: () {
+        context.read<ItemBloc>().add(ItemEventDeleted(itemId: model.id));
+        value = true;
+        completer.complete();
+      },
+      onNegativePressed: () {
+        value = false;
+        completer.complete();
+        NavigationService.back();
+      },
+    );
+    completer.future;
+    return value;
   }
 
   @override
@@ -425,93 +439,119 @@ class _ItemListState extends State<_ItemList> {
               bool isSelected = item.completedBy != null;
               bool isBought = item.boughtBy != null;
 
-              return Row(
-                children: [
-                  Expanded(
-                    child: CustomInkWell(
-                      onTap: () {
-                        setState(() {
-                          if (!isSelected) {
-                            widget.onItemSelected(item);
-                          } else {
-                            widget.onItemDeselected(item);
-                          }
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 15),
-                        decoration: BoxDecoration(
-                          gradient: isSelected
-                              ? LinearGradient(
-                                  begin: const Alignment(0.99, -0.10),
-                                  end: const Alignment(-0.99, 0.1),
-                                  colors: [
-                                    const Color(0xFF30A94A).withOpacity(0.02),
-                                    const Color(0x002EA346)
-                                        .withOpacity(isBought ? 0.3 : 0.09),
-                                  ],
-                                )
-                              : null,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppTheme.primaryColor2
-                                : const Color(0xFFF3F3F3),
+              return Dismissible(
+                key: Key(item.id), // Use a unique key for each item
+                background: Container(
+                  alignment: Alignment.centerLeft,
+                  color: Colors.blue,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                ),
+                secondaryBackground: Container(
+                  alignment: Alignment.centerRight,
+                  color: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                confirmDismiss: (direction) async {
+                  if (direction == DismissDirection.startToEnd) {
+                    onEditMenuPressed(item);
+                    return false; // Return false to prevent the item from being dismissed
+                  } else if (direction == DismissDirection.endToStart) {
+                    return await onDeleteMenuPressed(
+                        item); // Return true to dismiss the item
+                  }
+                  return false;
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomInkWell(
+                        onTap: () {
+                          setState(() {
+                            if (!isSelected) {
+                              widget.onItemSelected(item);
+                            } else {
+                              widget.onItemDeselected(item);
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 15),
+                          decoration: BoxDecoration(
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    begin: const Alignment(0.99, -0.10),
+                                    end: const Alignment(-0.99, 0.1),
+                                    colors: [
+                                      const Color(0xFF30A94A).withOpacity(0.02),
+                                      const Color(0x002EA346)
+                                          .withOpacity(isBought ? 0.3 : 0.09),
+                                    ],
+                                  )
+                                : null,
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppTheme.primaryColor2
+                                  : const Color(0xFFF3F3F3),
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(24)),
                           ),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(24)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              item.itemName,
-                              style: GoogleFonts.plusJakartaSans(
-                                color: AppTheme.titleColor1,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.itemName,
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.titleColor1,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "x${item.quantity.toString()}",
-                              style: GoogleFonts.plusJakartaSans(
-                                color: AppTheme.subTitleColor2,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                              Text(
+                                "x${item.quantity.toString()}",
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.subTitleColor2,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
 
-                            ///
-                          ],
+                              ///
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Visibility(
-                    visible: item.createdBy == UserRepo().currentUser.uid &&
-                        !isBought,
-                    child: CustomMenuDropdown(
-                      icon: const Icon(
-                        Icons.more_vert_outlined,
-                        color: Colors.black,
-                      ),
-                      items: [
-                        DropdownMenuModel(icon: Icons.edit, title: "Edit"),
-                        DropdownMenuModel(icon: Icons.delete, title: "Delete"),
-                      ],
-                      onSelectedItem: (value, index) {
-                        if (value.toLowerCase() == "edit") {
-                          onEditMenuPressed(item);
-                        }
+                    Visibility(
+                      visible: item.createdBy == UserRepo().currentUser.uid &&
+                          !isBought,
+                      child: CustomMenuDropdown(
+                        icon: const Icon(
+                          Icons.more_vert_outlined,
+                          color: Colors.black,
+                        ),
+                        items: [
+                          DropdownMenuModel(icon: Icons.edit, title: "Edit"),
+                          DropdownMenuModel(
+                              icon: Icons.delete, title: "Delete"),
+                        ],
+                        onSelectedItem: (value, index) {
+                          if (value.toLowerCase() == "edit") {
+                            onEditMenuPressed(item);
+                          }
 
-                        if (value.toLowerCase() == "delete") {
-                          onDeleteMenuPressed(item);
-                        }
-                      },
+                          if (value.toLowerCase() == "delete") {
+                            onDeleteMenuPressed(item);
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           )
