@@ -160,7 +160,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
 
               if (state is ItemStateAdded) {
-                CustomSnackBar().success("Added");
+                CustomSnackBar().success("Item Added");
                 nameController.clear();
                 quantityController.text = "1";
                 setState(() {
@@ -169,7 +169,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
 
               if (state is ItemStateUpdated) {
-                CustomSnackBar().success("Updated");
+                CustomSnackBar().success("Item Updated");
               }
             }
           },

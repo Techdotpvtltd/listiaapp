@@ -16,7 +16,7 @@ class CustomSnackBar {
       duration: const Duration(milliseconds: 750),
       elevation: 0,
       content: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             color: backgroundColor ?? Colors.black,
             boxShadow: const [
@@ -27,7 +27,7 @@ class CustomSnackBar {
               //   offset: Offset(2, 4),
               // )
             ],
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +51,7 @@ class CustomSnackBar {
   }
 
   void success(String message) {
-    _show(message, Colors.green, Colors.white);
+    _show(message, const Color.fromARGB(255, 113, 205, 116), Colors.black);
   }
 
   void error(String message) {
