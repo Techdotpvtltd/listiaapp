@@ -191,15 +191,15 @@ class _ItemWidgetState extends State<_ItemWidget> {
               content: const Text("Are you sure you want to delete this item?"),
               actions: <Widget>[
                 TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+                TextButton(
                     onPressed: () {
                       widget.onListDeleted(widget.list);
                       Navigator.of(context).pop(true);
                     },
                     child: const Text("DELETE")),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("CANCEL"),
-                ),
               ],
             );
           },

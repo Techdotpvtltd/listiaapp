@@ -99,25 +99,23 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
             : null,
         body: HVPadding(
           verticle: 10,
-          child: ListView.builder(
-            itemCount: productDetails.length,
-            padding: const EdgeInsets.only(top: 40, bottom: 20),
-            itemBuilder: (context, index) {
-              return CustomInkWell(
-                onTap: () {
-                  NavigationService.go(
-                    PaymentMethodScreen(productDetail: productDetails[index]),
-                  );
-                },
-                child: Container(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                /// Free Card
+                Container(
                   padding: const EdgeInsets.only(
-                      top: 37, bottom: 24, left: 24, right: 24),
+                    top: 37,
+                    bottom: 24,
+                    left: 24,
+                    right: 24,
+                  ),
                   margin: const EdgeInsets.symmetric(vertical: 9),
                   decoration: BoxDecoration(
-                    color: activeSubscriptionId == productDetails[index].id
+                    color: !AppManager().isActiveSubscription
                         ? null
                         : const Color(0xFF5A7D65).withOpacity(0.08),
-                    gradient: activeSubscriptionId == productDetails[index].id
+                    gradient: !AppManager().isActiveSubscription
                         ? AppTheme.primaryLinearGradient
                         : null,
                     border: Border.all(color: AppTheme.primaryColor2),
@@ -131,12 +129,11 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            productDetails[index].title,
+                            "Free",
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
-                              color: activeSubscriptionId ==
-                                      productDetails[index].id
+                              color: !AppManager().isActiveSubscription
                                   ? Colors.white
                                   : AppTheme.titleColor1,
                             ),
@@ -144,12 +141,11 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
                           /// Price Text
                           Text(
-                            "${productDetails[index].price}/ month",
+                            "0/ year",
                             style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              color: activeSubscriptionId ==
-                                      productDetails[index].id
+                              color: !AppManager().isActiveSubscription
                                   ? Colors.white
                                   : AppTheme.titleColor1,
                             ),
@@ -158,76 +154,200 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       ),
                       gapH10,
 
-                      for (String content
-                          in productDetails[index].description.split(","))
-
-                        /// Contents Row
-                        Row(
-                          children: [
-                            Container(
-                              width: 3,
-                              height: 3,
-                              decoration: BoxDecoration(
-                                color: activeSubscriptionId ==
-                                        productDetails[index].id
+                      /// Contents Row
+                      Row(
+                        children: [
+                          Container(
+                            width: 3,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              color: !AppManager().isActiveSubscription
+                                  ? Colors.white
+                                  : AppTheme.primaryColor2,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          gapW10,
+                          Flexible(
+                            child: Text(
+                              "Add 5 people.",
+                              style: GoogleFonts.plusJakartaSans(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: !AppManager().isActiveSubscription
                                     ? Colors.white
-                                    : AppTheme.primaryColor2,
-                                shape: BoxShape.circle,
+                                    : AppTheme.titleColor1,
                               ),
                             ),
-                            gapW10,
-                            Flexible(
-                              child: Text(
-                                content,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: activeSubscriptionId ==
-                                          productDetails[index].id
-                                      ? Colors.white
-                                      : AppTheme.titleColor1,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                       gapH2,
                       Align(
                         alignment: Alignment.centerRight,
-                        child: CustomInkWell(
-                          onTap: () async {
-                            await NavigationService.go(
-                              PaymentMethodScreen(
-                                productDetail: productDetails[index],
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: activeSubscriptionId ==
-                                        productDetails[index].id
-                                    ? Colors.white
-                                    : AppTheme.primaryColor2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: activeSubscriptionId ==
-                                      productDetails[index].id
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: !AppManager().isActiveSubscription
                                   ? Colors.white
                                   : AppTheme.primaryColor2,
                             ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: !AppManager().isActiveSubscription
+                                ? Colors.white
+                                : AppTheme.primaryColor2,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
+                ListView.builder(
+                  itemCount: productDetails.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 5, bottom: 20),
+                  itemBuilder: (context, index) {
+                    return CustomInkWell(
+                      onTap: () {
+                        NavigationService.go(
+                          PaymentMethodScreen(
+                              productDetail: productDetails[index]),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          top: 37,
+                          bottom: 24,
+                          left: 24,
+                          right: 24,
+                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 9),
+                        decoration: BoxDecoration(
+                          color:
+                              activeSubscriptionId == productDetails[index].id
+                                  ? null
+                                  : const Color(0xFF5A7D65).withOpacity(0.08),
+                          gradient:
+                              activeSubscriptionId == productDetails[index].id
+                                  ? AppTheme.primaryLinearGradient
+                                  : null,
+                          border: Border.all(color: AppTheme.primaryColor2),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Title and Price Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  productDetails[index].title,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                    color: activeSubscriptionId ==
+                                            productDetails[index].id
+                                        ? Colors.white
+                                        : AppTheme.titleColor1,
+                                  ),
+                                ),
+
+                                /// Price Text
+                                Text(
+                                  "${productDetails[index].price}/ year",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12,
+                                    color: activeSubscriptionId ==
+                                            productDetails[index].id
+                                        ? Colors.white
+                                        : AppTheme.titleColor1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            gapH10,
+
+                            for (String content
+                                in productDetails[index].description.split(","))
+
+                              /// Contents Row
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 3,
+                                    height: 3,
+                                    decoration: BoxDecoration(
+                                      color: activeSubscriptionId ==
+                                              productDetails[index].id
+                                          ? Colors.white
+                                          : AppTheme.primaryColor2,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  gapW10,
+                                  Flexible(
+                                    child: Text(
+                                      content,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12,
+                                        color: activeSubscriptionId ==
+                                                productDetails[index].id
+                                            ? Colors.white
+                                            : AppTheme.titleColor1,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            gapH2,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: CustomInkWell(
+                                onTap: () async {
+                                  await NavigationService.go(
+                                    PaymentMethodScreen(
+                                      productDetail: productDetails[index],
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: activeSubscriptionId ==
+                                              productDetails[index].id
+                                          ? Colors.white
+                                          : AppTheme.primaryColor2,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_forward,
+                                    color: activeSubscriptionId ==
+                                            productDetails[index].id
+                                        ? Colors.white
+                                        : AppTheme.primaryColor2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

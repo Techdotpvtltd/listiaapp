@@ -37,7 +37,7 @@ class SubscriptionRepo {
           kReleaseMode ? const Duration(days: 30) : const Duration(minutes: 5));
       final SubscriptionModel model = SubscriptionModel(
           id: "",
-          periodDuration: "month",
+          periodDuration: "year",
           productId: purchase.productID,
           startTime: startDate,
           endTime: endDate,
