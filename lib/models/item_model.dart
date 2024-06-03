@@ -30,6 +30,7 @@ class ItemModel {
   final ItemCompleteModel? completedBy;
   final String listId;
   final String? unit;
+  final String? amount;
   final ItemBoughtModel? boughtBy;
   final bool isReadyToBuy;
   ItemModel({
@@ -41,6 +42,7 @@ class ItemModel {
     required this.listId,
     this.quantity,
     this.unit,
+    this.amount,
     this.boughtBy,
     this.completedBy,
     required this.isReadyToBuy,
@@ -54,6 +56,7 @@ class ItemModel {
     String? category,
     String? listId,
     String? unit,
+    String? amount,
     int? quantity,
     ItemCompleteModel? completedBy,
     ItemBoughtModel? boughtBy,
@@ -69,6 +72,7 @@ class ItemModel {
       completedBy: completedBy ?? this.completedBy,
       listId: listId ?? this.listId,
       boughtBy: boughtBy ?? this.boughtBy,
+      amount: amount ?? this.amount,
       isReadyToBuy: isReadyToBuy ?? this.isReadyToBuy,
       unit: unit ?? this.unit,
     );
@@ -85,6 +89,7 @@ class ItemModel {
       'listId': listId,
       'isReadyToBuy': isReadyToBuy,
       'unit': unit,
+      'amount': amount,
     };
   }
 
@@ -95,7 +100,7 @@ class ItemModel {
       createdBy: map['createdBy'] as String,
       itemName: (map['itemName'] as String).capitalizeFirstCharacter(),
       category: map['category'] as String? ?? "",
-      quantity: map['quantity'] != null ? map['quantity'] as int : 1,
+      quantity: map['quantity'] != null ? map['quantity'] as int : null,
       completedBy: map['completedBy'] != null
           ? ItemCompleteModel.fromMap(map['completedBy'])
           : null,
@@ -105,6 +110,7 @@ class ItemModel {
       listId: map['listId'] as String,
       isReadyToBuy: map['isReadyToBuy'] as bool? ?? false,
       unit: map['unit'] as String?,
+      amount: map['amount'] as String?,
     );
   }
 

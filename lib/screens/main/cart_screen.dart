@@ -246,17 +246,32 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               gapW6,
-                              Text(
-                                "x${item.quantity.toString()}",
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: AppTheme.subTitleColor2,
-                                  fontSize: 12,
-                                  decorationThickness: 2,
-                                  decoration: isChecked
-                                      ? TextDecoration.lineThrough
-                                      : TextDecoration.none,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    item.unit != null
+                                        ? "${item.amount} ${item.unit}"
+                                        : "",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor2,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (item.quantity != null &&
+                                      item.unit != null)
+                                    gapW6,
+                                  Text(
+                                    item.quantity != null
+                                        ? "x${item.quantity.toString()}"
+                                        : "",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor2,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

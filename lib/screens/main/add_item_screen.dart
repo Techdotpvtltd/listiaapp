@@ -47,6 +47,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   late List<CategoryModel> categories = CategoryRepo().categories;
   TextEditingController nameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
   List<String> categoryNames = [];
 
   void triggerAddItemEvent(ItemBloc bloc) {
@@ -59,8 +60,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
         itemName: nameController.text,
         listId: widget.listId,
         category: selectedCategoryId ?? "",
-        quantity: int.tryParse(quantityController.text) ?? 1,
+        quantity: int.tryParse(quantityController.text),
         unit: selectedUnit,
+        amount: amountController.text,
       ),
     );
   }
@@ -79,8 +81,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
         itemName: nameController.text,
         itemId: itemId,
         category: selectedCategoryId ?? "",
-        quantity: int.tryParse(quantityController.text) ?? 1,
+        quantity: int.tryParse(quantityController.text),
         unit: selectedUnit,
+        amount: amountController.text,
       ),
     );
   }
@@ -95,11 +98,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
   void initState() {
     super.initState();
     updateCatoriesName();
-    quantityController.text = item?.quantity.toString() ?? "1";
+    quantityController.text = item?.quantity.toString() ?? "";
     if (item != null) {
       nameController.text = item?.itemName ?? "";
       selectedCategoryId = item?.category;
       selectedUnit = item?.unit;
+      amountController.text = item?.amount ?? "";
     }
   }
 
@@ -167,6 +171,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               if (state is ItemStateAdded) {
                 CustomSnackBar().success("Item Added");
                 nameController.clear();
+                amountController.clear();
                 quantityController.text = "1";
                 setState(() {
                   selectedCategoryId = null;
@@ -282,16 +287,42 @@ class _AddItemScreenState extends State<AddItemScreen> {
               gapH20,
 
               /// Select Unit Field
-              CustomTextFieldDropdown(
-                hintText: "Select Unit",
-                titleText: "Unit",
-                selectedValue: selectedUnit,
-                items: const ["g", "kg", "Litres", "Mili litres", "Ounces"],
-                onSelectedItem: (unit) {
-                  setState(() {
-                    selectedUnit = unit;
-                  });
-                },
+              Row(
+                children: [
+                  /// Item Name text Filed
+                  Expanded(
+                    child: CustomTextFiled(
+                      controller: amountController,
+                      errorCode: errorCode,
+                      errorText: errorMessage,
+                      isFirstCapitalizeLetter: true,
+                      fieldId: 4,
+                      keyboardType: TextInputType.number,
+                      hintText: "Enter Mass or Volume",
+                      titleText: "Mass\\Volume",
+                    ),
+                  ),
+                  gapW10,
+                  Expanded(
+                    child: CustomTextFieldDropdown(
+                      hintText: "Select Unit",
+                      titleText: "Unit",
+                      selectedValue: selectedUnit,
+                      items: const [
+                        "g",
+                        "kg",
+                        "Litres",
+                        "Mili litres",
+                        "Ounces"
+                      ],
+                      onSelectedItem: (unit) {
+                        setState(() {
+                          selectedUnit = unit;
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -26,6 +26,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
             category: event.category,
             quantity: event.quantity,
             unit: event.unit,
+            amount: event.amount,
           );
           emit(ItemStateAdded());
         } on AppException catch (e) {
@@ -45,6 +46,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
             category: event.category,
             quantity: event.quantity,
             unit: event.unit,
+            amount: event.amount,
           );
           emit(ItemStateUpdated());
         } on AppException catch (e) {

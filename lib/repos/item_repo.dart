@@ -178,10 +178,12 @@ class ItemRepo {
     required String listId,
     required String category,
     String? unit,
+    String? amount,
     int? quantity,
   }) async {
     try {
-      await DataValidation.addItem(title: itemName, category: category);
+      await DataValidation.addItem(
+          title: itemName, category: category, unit: unit, amount: amount);
       final UserModel currentUser = UserRepo().currentUser;
       final ItemModel uploadingModel = ItemModel(
         id: "",
@@ -192,6 +194,7 @@ class ItemRepo {
         listId: listId,
         isReadyToBuy: false,
         quantity: quantity,
+        amount: amount,
         unit: unit,
       );
       final Map<String, dynamic> _ = await FirestoreService()
@@ -211,9 +214,11 @@ class ItemRepo {
     required String category,
     String? unit,
     int? quantity,
+    String? amount,
   }) async {
     try {
-      await DataValidation.addItem(title: itemName, category: category);
+      await DataValidation.addItem(
+          title: itemName, category: category, unit: unit, amount: amount);
       await FirestoreService().updateWithDocId(
           path: FIREBASE_COLLECTION_ITEMS,
           data: {
@@ -221,6 +226,7 @@ class ItemRepo {
             'category': category,
             'quantity': quantity,
             'unit': unit,
+            'amount': amount,
           },
           docId: itemId);
     } catch (e) {
