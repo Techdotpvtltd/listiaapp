@@ -13,12 +13,13 @@ class ItemEventAddNew extends ItemEvent {
   final int? quantity;
   final String listId;
   final String category;
-
+  final String? unit;
   ItemEventAddNew({
     required this.itemName,
     this.quantity,
     required this.listId,
     required this.category,
+    this.unit,
   });
 }
 
@@ -27,12 +28,14 @@ class ItemEventUpdate extends ItemEvent {
   final int? quantity;
   final String itemId;
   final String category;
+  final String? unit;
 
   ItemEventUpdate({
     required this.itemName,
     this.quantity,
     required this.itemId,
     required this.category,
+    this.unit,
   });
 }
 

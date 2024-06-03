@@ -173,12 +173,13 @@ class ItemRepo {
 
   // ===========================API Methods================================
   // Add New Item Method
-  Future<void> addItem(
-      {required String itemName,
-      required String listId,
-      required String category,
-      int? quantity,
-      int? macros}) async {
+  Future<void> addItem({
+    required String itemName,
+    required String listId,
+    required String category,
+    String? unit,
+    int? quantity,
+  }) async {
     try {
       await DataValidation.addItem(title: itemName, category: category);
       final UserModel currentUser = UserRepo().currentUser;
@@ -191,6 +192,7 @@ class ItemRepo {
         listId: listId,
         isReadyToBuy: false,
         quantity: quantity,
+        unit: unit,
       );
       final Map<String, dynamic> _ = await FirestoreService()
           .saveWithSpecificIdFiled(
@@ -207,6 +209,7 @@ class ItemRepo {
     required String itemName,
     required String itemId,
     required String category,
+    String? unit,
     int? quantity,
   }) async {
     try {
@@ -217,6 +220,7 @@ class ItemRepo {
             "itemName": itemName,
             'category': category,
             'quantity': quantity,
+            'unit': unit,
           },
           docId: itemId);
     } catch (e) {

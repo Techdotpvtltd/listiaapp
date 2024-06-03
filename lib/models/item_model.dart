@@ -29,6 +29,7 @@ class ItemModel {
   final int? quantity;
   final ItemCompleteModel? completedBy;
   final String listId;
+  final String? unit;
   final ItemBoughtModel? boughtBy;
   final bool isReadyToBuy;
   ItemModel({
@@ -39,6 +40,7 @@ class ItemModel {
     required this.category,
     required this.listId,
     this.quantity,
+    this.unit,
     this.boughtBy,
     this.completedBy,
     required this.isReadyToBuy,
@@ -51,6 +53,7 @@ class ItemModel {
     String? itemName,
     String? category,
     String? listId,
+    String? unit,
     int? quantity,
     ItemCompleteModel? completedBy,
     ItemBoughtModel? boughtBy,
@@ -67,6 +70,7 @@ class ItemModel {
       listId: listId ?? this.listId,
       boughtBy: boughtBy ?? this.boughtBy,
       isReadyToBuy: isReadyToBuy ?? this.isReadyToBuy,
+      unit: unit ?? this.unit,
     );
   }
 
@@ -80,6 +84,7 @@ class ItemModel {
       'quantity': quantity,
       'listId': listId,
       'isReadyToBuy': isReadyToBuy,
+      'unit': unit,
     };
   }
 
@@ -99,6 +104,7 @@ class ItemModel {
           : null,
       listId: map['listId'] as String,
       isReadyToBuy: map['isReadyToBuy'] as bool? ?? false,
+      unit: map['unit'] as String?,
     );
   }
 
@@ -109,7 +115,7 @@ class ItemModel {
 
   @override
   String toString() {
-    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, quantity: $quantity, isReadyToBuy: $isReadyToBuy)';
+    return 'ItemModel(id: $id,listId: $listId, createdAt: $createdAt, createdBy: $createdBy, itemName: $itemName, category: $category, quantity: $quantity, isReadyToBuy: $isReadyToBuy, unit: $unit)';
   }
 
   @override
@@ -123,6 +129,7 @@ class ItemModel {
         other.category == category &&
         other.quantity == quantity &&
         other.listId == listId &&
+        other.unit == unit &&
         other.boughtBy == boughtBy &&
         other.isReadyToBuy == isReadyToBuy &&
         completedBy == other.completedBy;
@@ -136,6 +143,7 @@ class ItemModel {
         itemName.hashCode ^
         category.hashCode ^
         quantity.hashCode ^
+        unit.hashCode ^
         listId.hashCode ^
         boughtBy.hashCode ^
         isReadyToBuy.hashCode ^

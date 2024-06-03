@@ -41,6 +41,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   int? errorCode;
   String? errorMessage;
   String? selectedCategoryId;
+  String? selectedUnit;
+
   late final ItemModel? item = widget.item;
   late List<CategoryModel> categories = CategoryRepo().categories;
   TextEditingController nameController = TextEditingController();
@@ -58,6 +60,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         listId: widget.listId,
         category: selectedCategoryId ?? "",
         quantity: int.tryParse(quantityController.text) ?? 1,
+        unit: selectedUnit,
       ),
     );
   }
@@ -77,6 +80,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         itemId: itemId,
         category: selectedCategoryId ?? "",
         quantity: int.tryParse(quantityController.text) ?? 1,
+        unit: selectedUnit,
       ),
     );
   }
@@ -95,6 +99,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     if (item != null) {
       nameController.text = item?.itemName ?? "";
       selectedCategoryId = item?.category;
+      selectedUnit = item?.unit;
     }
   }
 
@@ -165,6 +170,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 quantityController.text = "1";
                 setState(() {
                   selectedCategoryId = null;
+                  selectedUnit = null;
                 });
               }
 
@@ -235,7 +241,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               /// Select Category Filed
               CustomTextFieldDropdown(
                 hintText: "Select Category",
-                titleText: "Select Category",
+                titleText: "Category",
                 selectedValue: CategoryRepo()
                     .getCategoryFrom(categoryId: selectedCategoryId ?? "")
                     ?.item,
@@ -272,6 +278,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 hintText: "Enter quantity",
                 titleText: "Quantity",
                 keyboardType: TextInputType.number,
+              ),
+              gapH20,
+
+              /// Select Unit Field
+              CustomTextFieldDropdown(
+                hintText: "Select Unit",
+                titleText: "Unit",
+                selectedValue: selectedUnit,
+                items: const ["g", "kg", "Litres", "Mili litres", "Ounces"],
+                onSelectedItem: (unit) {
+                  setState(() {
+                    selectedUnit = unit;
+                  });
+                },
               ),
             ],
           ),
