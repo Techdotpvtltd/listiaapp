@@ -112,3 +112,16 @@ class ListStateDeleteFailure extends ListState {
 
   ListStateDeleteFailure({required this.exception});
 }
+
+// ===========================Mark List List State================================
+class ListStateMarkCompleting extends ListState {
+  ListStateMarkCompleting({super.isLoading = true});
+}
+
+class ListStateMarkCompleted extends ListState {}
+
+class ListStateMarkCompleteFailure extends ListState {
+  final AppException exception;
+
+  ListStateMarkCompleteFailure({required this.exception});
+}

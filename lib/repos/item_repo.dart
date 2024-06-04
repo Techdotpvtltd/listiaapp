@@ -50,13 +50,13 @@ class ItemRepo {
   int getNumberOfCompletedItemsBy({String? listId}) {
     return listId == null
         ? _items
-            .where((element) =>
-                element.completedBy != null && element.boughtBy == null)
+            .where(
+                (element) => element.isReadyToBuy && element.boughtBy == null)
             .length
         : _items
             .where((element) =>
                 element.listId == listId &&
-                element.completedBy != null &&
+                element.isReadyToBuy &&
                 element.boughtBy == null)
             .length;
   }

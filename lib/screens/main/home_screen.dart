@@ -48,7 +48,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
-  List<ListModel> lists = ListRepo().lists;
+  late List<ListModel> lists = ListRepo().lists;
   List<ListModel> adminLists = ListRepo().adminLists;
 
   void triggerFetchListEvent(ListBloc bloc) {
@@ -109,7 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           }
         }
-
+        if (state is ListStateMarkCompleted) {
+          setState(() {
+            lists = ListRepo().lists;
+          });
+        }
         if (state is ListStateFetchFailure ||
             state is ListStateFetched ||
             state is ListStateFetching ||
@@ -128,6 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is ListStateFetched) {
             triggerFetchItemEvent(context.read<ItemBloc>());
             triggerFetchCategoriesEvent(context.read<CategoryBloc>());
+            setState(() {
+              lists = List.from(ListRepo().lists);
+            });
           }
 
           if (state is ListStateAdminFetched) {

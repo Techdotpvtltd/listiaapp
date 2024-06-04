@@ -298,14 +298,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       isFirstCapitalizeLetter: true,
                       fieldId: 4,
                       keyboardType: TextInputType.number,
-                      hintText: "Enter Mass or Volume",
-                      titleText: "Mass\\Volume",
+                      hintText: "Serving",
+                      titleText: "Serving",
                     ),
                   ),
                   gapW10,
                   Expanded(
                     child: CustomTextFieldDropdown(
-                      hintText: "Select Unit",
+                      hintText: "Select",
                       titleText: "Unit",
                       selectedValue: selectedUnit,
                       items: const [

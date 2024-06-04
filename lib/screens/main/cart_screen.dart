@@ -8,8 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/list/list_bloc.dart';
+import 'package:listi_shop/blocs/list/list_event.dart';
+import 'package:listi_shop/blocs/list/list_state.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
+import 'package:listi_shop/screens/components/custom_snack_bar.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 
 import '../../blocs/item/item_bloc.dart';
@@ -37,6 +41,7 @@ class _CartScreenState extends State<CartScreen> {
       ItemRepo().getCompletedItemsBy(listId: widget.listId);
   List<String> itemsToBeBought = [];
   bool isLoading = false;
+  bool isMarkCompleting = false;
 
   void triggerRemoveItemEvent(ItemBloc bloc, {required String itemId}) {
     bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
@@ -59,6 +64,14 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  void triggerMarkListCompleted(ListBloc bloc) {
+    bloc.add(
+      ListEventMarkCompleted(
+        listId: widget.listId,
+      ),
+    );
+  }
+
   void checkCartListCompleted() {
     if (itemsToBeBought.length >= items.length) {
       CustomDialogs().alertBox(
@@ -67,6 +80,7 @@ class _CartScreenState extends State<CartScreen> {
         positiveTitle: "Yes",
         negativeTitle: "No",
         onPositivePressed: () {
+          triggerMarkListCompleted(context.read<ListBloc>());
           triggerMarkItemsBought(context.read<ItemBloc>());
         },
       );
@@ -91,59 +105,112 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ItemBloc, ItemState>(
-      listener: (context, state) {
-        if (state is ItemStateMarkItemBoughtFailure ||
-            state is ItemStateMarkedItemBought ||
-            state is ItemStateMarkingItemBought) {
-          setState(() {
-            isLoading = state.isLoading;
-          });
+    return MultiBlocListener(
+      listeners: [
+        /// List Listener
+        BlocListener<ListBloc, ListState>(
+          listener: (context, state) {
+            if (state is ListStateMarkCompleteFailure ||
+                state is ListStateMarkCompleted ||
+                state is ListStateMarkCompleting) {
+              setState(() {
+                isMarkCompleting = state.isLoading;
+              });
 
-          if (state is ItemStateMarkedItemBought) {
-            setState(() {
-              items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
-              addItemsToBoughtList();
-            });
-          }
-        }
+              if (state is ListStateMarkCompleteFailure) {
+                CustomSnackBar().error(state.exception.message);
+              }
 
-        if (state is ItemStateUpdated) {
-          setState(() {
-            items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
-            addItemsToBoughtList();
-          });
-        }
+              if (state is ListStateMarkCompleted) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }
+            }
+          },
+        ),
 
-        if (state is ItemStateItemRemoveFromCompleted) {
-          setState(() {
-            items.removeWhere((element) => element.id == state.itemId);
-            addItemsToBoughtList();
-          });
-        }
-      },
+        /// Item Listener
+        BlocListener<ItemBloc, ItemState>(
+          listener: (context, state) {
+            if (state is ItemStateMarkItemBoughtFailure ||
+                state is ItemStateMarkedItemBought ||
+                state is ItemStateMarkingItemBought) {
+              setState(() {
+                isLoading = state.isLoading;
+              });
+
+              if (state is ItemStateMarkedItemBought) {
+                setState(() {
+                  items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
+                  addItemsToBoughtList();
+                });
+              }
+            }
+
+            if (state is ItemStateUpdated) {
+              setState(() {
+                items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
+                addItemsToBoughtList();
+              });
+            }
+
+            if (state is ItemStateItemRemoveFromCompleted) {
+              setState(() {
+                items.removeWhere((element) => element.id == state.itemId);
+                addItemsToBoughtList();
+              });
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: HVPadding(
           horizontal: 12,
           verticle: 0,
-          child: CustomButton(
-            isEnabled: itemsToBeBought.isNotEmpty,
-            isLoading: isLoading,
-            title: "Mark as Bought",
-            onPressed: () {
-              CustomDialogs().alertBox(
-                title: "Buy Confirmation",
-                message:
-                    "Are you sure to mark ${itemsToBeBought.length} items as bought? You'll not able to remove them from cart list.",
-                onPositivePressed: () {
-                  triggerMarkItemsBought(context.read<ItemBloc>());
-                },
-                positiveTitle: "Yes, I'm sure",
-                negativeTitle: "No",
-              );
-            },
+          child: SizedBox(
+            height: (itemsToBeBought.length >= items.length) ? 120 : 50,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CustomButton(
+                  isEnabled: itemsToBeBought.isNotEmpty,
+                  isLoading: isLoading,
+                  title: "Mark as Bought",
+                  onPressed: () {
+                    CustomDialogs().alertBox(
+                      title: "Buy Confirmation",
+                      message:
+                          "Are you sure to mark ${itemsToBeBought.length} items as bought? You'll not able to remove them from cart list.",
+                      onPositivePressed: () {
+                        triggerMarkItemsBought(context.read<ItemBloc>());
+                      },
+                      positiveTitle: "Yes, I'm sure",
+                      negativeTitle: "No",
+                    );
+                  },
+                ),
+                if (itemsToBeBought.length >= items.length) gapH10,
+                if (itemsToBeBought.length >= items.length)
+                  CustomButton(
+                    isLoading: isMarkCompleting,
+                    title: "Shopping Completed",
+                    onlyBorder: true,
+                    onPressed: () {
+                      CustomDialogs().alertBox(
+                        title: "Confirmation",
+                        message: "Did you finish your shopping?",
+                        onPositivePressed: () {
+                          triggerMarkListCompleted(context.read<ListBloc>());
+                          triggerMarkItemsBought(context.read<ItemBloc>());
+                        },
+                        positiveTitle: "Yes, I'm sure",
+                        negativeTitle: "No",
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
         body: SafeArea(
@@ -225,9 +292,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           child: Row(
                             children: [
-                              CustomCheckBox(
-                                isChecked: isChecked,
-                              ),
+                              CustomCheckBox(isChecked: isChecked),
                               gapW10,
                               Expanded(
                                 child: Text(
@@ -236,7 +301,7 @@ class _CartScreenState extends State<CartScreen> {
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.plusJakartaSans(
                                     color: AppTheme.titleColor1,
-                                    fontSize: 18,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     decorationThickness: 2,
                                     decoration: isChecked
@@ -254,7 +319,7 @@ class _CartScreenState extends State<CartScreen> {
                                         : "",
                                     style: GoogleFonts.plusJakartaSans(
                                       color: AppTheme.subTitleColor2,
-                                      fontSize: 12,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -267,7 +332,7 @@ class _CartScreenState extends State<CartScreen> {
                                         : "",
                                     style: GoogleFonts.plusJakartaSans(
                                       color: AppTheme.subTitleColor2,
-                                      fontSize: 12,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

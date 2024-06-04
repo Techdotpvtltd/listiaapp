@@ -101,5 +101,17 @@ class ListBloc extends Bloc<ListEvent, ListState> {
         }
       },
     );
+
+    on<ListEventMarkCompleted>(
+      (event, emit) async {
+        try {
+          emit(ListStateMarkCompleting());
+          await ListRepo().markCompleted(id: event.listId);
+          emit(ListStateMarkCompleted());
+        } on AppException catch (e) {
+          emit(ListStateMarkCompleteFailure(exception: e));
+        }
+      },
+    );
   }
 }

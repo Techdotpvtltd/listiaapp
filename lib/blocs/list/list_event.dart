@@ -44,3 +44,10 @@ class ListEventMove extends ListEvent {
 
   ListEventMove({required this.listId});
 }
+
+/// Mark List Completed
+class ListEventMarkCompleted extends ListEvent {
+  final String listId;
+
+  ListEventMarkCompleted({required this.listId});
+}

@@ -69,6 +69,11 @@ class _ItemListState extends State<ItemList> {
   late final List<ListModel> adminLists = widget.adminLists;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.only(

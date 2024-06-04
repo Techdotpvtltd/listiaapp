@@ -27,7 +27,9 @@ class ListRepo {
   final List<ListModel> _lists = [];
   final List<ListModel> _adminLists = [];
   List<ListModel> get adminLists => _adminLists;
-  List<ListModel> get lists => _lists;
+  List<ListModel> get lists => List<ListModel>.from(_lists)
+      .where((e) => e.isCompleted == false)
+      .toList();
 
   void reset() {
     _instance = ListRepo._internal();
@@ -82,6 +84,27 @@ class ListRepo {
           "title": title,
         },
       );
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  /// Mark Completed List
+  Future<void> markCompleted({
+    required String id,
+  }) async {
+    try {
+      await FirestoreService().updateWithDocId(
+        path: FIREBASE_COLLECTION_LISTS,
+        docId: id,
+        data: {
+          "isCompleted": true,
+        },
+      );
+      final int index = _lists.indexWhere((element) => element.id == id);
+      if (index > -1) {
+        _lists[index] = _lists[index].copyWith(isCompleted: true);
+      }
     } catch (e) {
       throw throwAppException(e: e);
     }
