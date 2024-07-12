@@ -46,7 +46,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
-  late List<ListModel> lists = ListRepo().lists;
+  List<ListModel> lists = ListRepo().lists;
   List<ListModel> adminLists = ListRepo().adminLists;
 
   void triggerFetchListEvent(ListBloc bloc) {
@@ -94,6 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ListBloc, ListState>(
       listener: (context, state) {
+        if (state is ListStateCreated ||
+            state is ListStateUpdated ||
+            state is ListStateNewAdded ||
+            state is ListStateMoved) {
+          setState(() {
+            lists = ListRepo().lists;
+          });
+        }
+
         if (state is ListStateDeleted ||
             state is ListStateDeleting ||
             state is ListStateDeleteFailure) {
@@ -107,25 +116,20 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           }
         }
+
         if (state is ListStateMarkCompleted) {
           setState(() {
             lists = ListRepo().lists;
           });
         }
+
         if (state is ListStateFetchFailure ||
             state is ListStateFetched ||
             state is ListStateFetching ||
-            state is ListStateNewAdded ||
             state is ListStateAdminFetched) {
           setState(() {
             isLoading = state.isLoading;
           });
-
-          if (state is ListStateNewAdded) {
-            setState(() {
-              lists = List.from(ListRepo().lists);
-            });
-          }
 
           if (state is ListStateFetched) {
             triggerFetchItemEvent(context.read<ItemBloc>());
@@ -275,6 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(),
                 )
               : ItemList(
+                  key: GlobalKey(),
                   onItemTap: (index, isAdminList) {
                     NavigationService.go(
                       ListItemDetailScreen(

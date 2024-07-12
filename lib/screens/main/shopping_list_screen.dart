@@ -43,6 +43,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         },
         body: HorizontalPadding(
           child: ItemList(
+            key: GlobalKey(),
             onItemTap: (index, _) {
               NavigationService.go(
                 ListItemDetailScreen(

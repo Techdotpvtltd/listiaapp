@@ -60,6 +60,7 @@ class ItemList extends StatefulWidget {
   final List<ListModel> lists;
   final List<ListModel> adminLists;
   final bool isBoughtScreen;
+
   @override
   State<ItemList> createState() => _ItemListState();
 }
@@ -121,7 +122,7 @@ class _ItemListState extends State<ItemList> {
                   Builder(
                     builder: (context) {
                       final ListModel list = adminLists[index];
-                      return _ItemWidget(
+                      return _ItemAdminWidget(
                         list,
                         () {
                           widget.onItemTap(index, true);
@@ -154,6 +155,207 @@ class _ItemWidget extends StatefulWidget {
 }
 
 class _ItemWidgetState extends State<_ItemWidget> {
+  bool isAddingPressed = false;
+  String? movingListId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: Key(widget.list.id),
+      direction: widget.isBoughtScreen
+          ? DismissDirection.none
+          : (widget.list.createdBy == "admin" &&
+                  widget.list.createdBy != UserRepo().currentUser.uid)
+              ? DismissDirection.none
+              : DismissDirection.endToStart,
+      secondaryBackground: Container(
+        color: Colors.red,
+        child: const Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
+        ),
+      ),
+      background: Container(
+        color: Colors.green,
+        child: const Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left: 20),
+            child: Icon(Icons.edit, color: Colors.white),
+          ),
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Are you sure you want to delete this item?"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+                TextButton(
+                    onPressed: () {
+                      widget.onListDeleted(widget.list);
+                      Navigator.of(context).pop(true);
+                    },
+                    child: const Text("DELETE")),
+              ],
+            );
+          },
+        );
+      },
+      onDismissed: (direction) {
+        // Implement delete functionality here
+        // Call the method to delete the item
+
+        context
+            .read<ListBloc>()
+            .add(ListEventDelete(listId: widget.list.id, itemsIds: []));
+      },
+      child: CustomInkWell(
+        onTap: widget.onItemTapped,
+        child: BlocSelector<ItemBloc, ItemState, List<int>>(
+          selector: (state) {
+            return [
+              ItemRepo().getNumberOfItemsBy(listId: widget.list.id),
+              ItemRepo().getNumberOfCompletedItemsBy(listId: widget.list.id)
+            ];
+          },
+          builder: (context, value) {
+            final int numberOfItems = value.first;
+            final int numberOfCompletedItems = value.last;
+
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEFEFE).withOpacity(0.88),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    offset: const Offset(13, 9),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 30.6,
+                    spreadRadius: 0,
+                  )
+                ],
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.list.title,
+                                maxLines: 2,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.titleColor1,
+                                ),
+                              ),
+                              gapH2,
+                              Text(
+                                "$numberOfCompletedItems / $numberOfItems",
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF238A34),
+                                ),
+                              ),
+                              Text(
+                                widget.list.createdAt
+                                    .dateToString("dd MMMM yyyy"),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.subTitleColor1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ProfilesWidget(
+                          height: 44,
+                          invitedUsers: widget.list.sharedUsers,
+                        ),
+                        FutureBuilder<UserModel?>(
+                          future: UserRepo()
+                              .fetchUser(profileId: widget.list.createdBy),
+                          builder: (context, snapshot) {
+                            return Text.rich(
+                              TextSpan(
+                                text: "Created by ",
+                                children: [
+                                  TextSpan(
+                                    text: widget.list.referBy == "admin"
+                                        ? "ListiShop"
+                                        : snapshot.data?.uid ==
+                                                UserRepo().currentUser.uid
+                                            ? "You"
+                                            : snapshot.data?.name,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: const Color(0xFF676767),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.subTitleColor1,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _ItemAdminWidget extends StatefulWidget {
+  const _ItemAdminWidget(
+      this.list, this.onItemTapped, this.onListDeleted, this.isBoughtScreen);
+  final ListModel list;
+  final VoidCallback onItemTapped;
+  final Function(ListModel) onListDeleted;
+  final bool isBoughtScreen;
+
+  @override
+  State<_ItemAdminWidget> createState() => _ItemAddminWidgetState();
+}
+
+class _ItemAddminWidgetState extends State<_ItemAdminWidget> {
   bool isAddingPressed = false;
   String? movingListId;
 

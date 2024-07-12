@@ -26,20 +26,17 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     });
 
     // Fetch List Event
-    on<ListEventFetch>((event, emit) async {
-      emit(ListStateFetching());
-      await ListRepo().fetchLists(
-        onData: () {
-          emit(ListStateNewAdded());
-        },
-        onAllDataGet: () {
+    on<ListEventFetch>(
+      (event, emit) async {
+        try {
+          emit(ListStateFetching());
+          await ListRepo().fetchLists();
           emit(ListStateFetched());
-        },
-        onError: (e) {
+        } on AppException catch (e) {
           emit(ListStateFetchFailure(exception: e));
-        },
-      );
-    });
+        }
+      },
+    );
 
     // Fetch Admin List Event
     on<ListEventAdminFetch>(

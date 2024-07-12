@@ -24,7 +24,7 @@ class ListRepo {
   ListRepo._internal();
   factory ListRepo() => _instance;
   // ==============================Properties=============================
-  final List<ListModel> _lists = [];
+  List<ListModel> _lists = [];
   final List<ListModel> _adminLists = [];
   List<ListModel> get adminLists => _adminLists;
   List<ListModel> get lists => List<ListModel>.from(_lists)
@@ -84,6 +84,10 @@ class ListRepo {
           "title": title,
         },
       );
+      final int index = _lists.indexWhere((e) => e.id == id);
+      if (index > -1) {
+        _lists[index] = lists[index].copyWith(title: title);
+      }
     } catch (e) {
       throw throwAppException(e: e);
     }
@@ -134,8 +138,29 @@ class ListRepo {
     }
   }
 
+  Future<void> fetchLists() async {
+    try {
+      final UserModel user = UserRepo().currentUser;
+      final List<Map<String, dynamic>> data =
+          await FirestoreService().fetchWithMultipleConditions(
+        collection: FIREBASE_COLLECTION_LISTS,
+        queries: [
+          QueryModel(
+              field: "sharedUsers",
+              value: [user.uid],
+              type: QueryType.arrayContainsAny),
+          QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
+        ],
+      );
+
+      _lists = data.map((e) => ListModel.fromMap(e)).toList();
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
   /// Fetch Lists
-  Future<void> fetchLists(
+  Future<void> fetchLiveLists(
       {required VoidCallback onData,
       required VoidCallback onAllDataGet,
       required Function(AppException) onError,
@@ -213,6 +238,17 @@ class ListRepo {
       );
       if (id != null) {
         await ItemRepo().moveItemsToUser(fromList: listId, forList: id);
+        _lists.insert(
+          0,
+          ListModel(
+            id: id,
+            createdBy: UserRepo().currentUser.uid,
+            title: movedList.title,
+            sharedUsers: [UserRepo().currentUser.uid],
+            createdAt: DateTime.now(),
+            isCompleted: false,
+          ),
+        );
       }
     } catch (e) {
       throw throwAppException(e: e);
