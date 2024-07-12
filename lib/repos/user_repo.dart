@@ -207,20 +207,36 @@ class UserRepo {
     try {
       final List<QueryModel> queries = [];
       if (searchText.isNumeric()) {
-        queries.add(QueryModel(
-            field: "phone", value: searchText, type: QueryType.isEqual));
+        queries.add(
+          QueryModel(
+            field: "phone",
+            value: searchText,
+            type: QueryType.isEqual,
+          ),
+        );
       } else if (searchText.isValidEmail()) {
-        queries.add(QueryModel(
-            field: "email", value: searchText, type: QueryType.isEqual));
+        queries.add(
+          QueryModel(
+            field: "email",
+            value: searchText,
+            type: QueryType.isEqual,
+          ),
+        );
       } else {
-        queries.add(QueryModel(
+        queries.add(
+          QueryModel(
             field: "name",
             value: searchText,
-            type: QueryType.isGreaterThanOrEqual));
-        queries.add(QueryModel(
+            type: QueryType.isGreaterThanOrEqual,
+          ),
+        );
+        queries.add(
+          QueryModel(
             field: "name",
             value: "$searchText\uf8ff",
-            type: QueryType.isLessThanOrEqual));
+            type: QueryType.isLessThanOrEqual,
+          ),
+        );
       }
 
       final List<Map<String, dynamic>> listOfData =
