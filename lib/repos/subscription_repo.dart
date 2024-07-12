@@ -34,11 +34,12 @@ class SubscriptionRepo {
       final DateTime startDate = DateTime.fromMillisecondsSinceEpoch(
           int.tryParse(purchase.transactionDate ?? "0") ?? 0);
       final DateTime endDate = startDate.add(kReleaseMode
-          ? const Duration(days: 365)
-          : const Duration(minutes: 5));
+          ? Duration(days: purchase.productID.contains("annual") ? 365 : 30)
+          : Duration(minutes: purchase.productID.contains("annual") ? 5 : 3));
       final SubscriptionModel model = SubscriptionModel(
           id: "",
-          periodDuration: "year",
+          periodDuration:
+              purchase.productID.contains("annual") ? "year" : "month",
           productId: purchase.productID,
           startTime: startDate,
           endTime: endDate,

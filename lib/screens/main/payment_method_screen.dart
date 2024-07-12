@@ -97,7 +97,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                     ),
                   ),
                   Text(
-                    "/annual",
+                    "/${widget.productDetail.id.contains('annual') ? "annual" : "monthly"}",
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
                       color: AppTheme.primaryColor2,

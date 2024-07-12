@@ -117,8 +117,8 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
               await SubscriptionManager().loadProducts(
             productsId: {
               'household_monthly',
-              'business_monthly',
               'household_annual',
+              'business_monthly',
               'business_annual'
             },
             onNotFoundIDs: (ids) {

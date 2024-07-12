@@ -264,7 +264,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
                                       /// Price Text
                                       Text(
-                                        "${productDetails[index].price}/ annual",
+                                        "${productDetails[index].price}/ ${productDetails[index].id.contains('annual') ? "annual" : "monthly"}",
                                         style: GoogleFonts.plusJakartaSans(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 12,
