@@ -31,6 +31,7 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/list/list_bloc.dart';
 import '../../blocs/list/list_state.dart';
+import '../../managers/app_manager.dart';
 import '../../models/item_model.dart';
 import '../../models/list_model.dart';
 import '../../repos/category_repo.dart';
@@ -67,14 +68,15 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   late List<String> categories = ItemRepo().getCategories(listId: list.id);
 
   List<DropdownMenuModel> getMenuItems() {
-    final items = [
-      DropdownMenuModel(title: 'Add Person', icon: Icons.add),
-    ];
-
+    List<DropdownMenuModel> items = [];
+    if (AppManager().isActiveSubscription) {
+      items.add(DropdownMenuModel(title: 'Add Person', icon: Icons.add));
+    }
     if (isListCreater) {
       items.add(DropdownMenuModel(title: "Edit", icon: Icons.edit));
       items.add(DropdownMenuModel(title: "Delete", icon: Icons.delete));
     }
+
     return items;
   }
 
@@ -209,7 +211,9 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           gapW10,
 
           /// Menu Button
-          if (!widget.isBoughtScreen && !isAdminList)
+          if (!widget.isBoughtScreen &&
+              !isAdminList &&
+              getMenuItems().isNotEmpty)
             CustomMenuDropdown(
               items: getMenuItems(),
               onSelectedItem: (selectedMenu, index) {
@@ -275,9 +279,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
                           },
                           style: const ButtonStyle(
                             backgroundColor:
-                                MaterialStatePropertyAll(Color(0xFFF8F8F8)),
-                            padding:
-                                MaterialStatePropertyAll(EdgeInsets.all(14)),
+                                WidgetStatePropertyAll(Color(0xFFF8F8F8)),
+                            padding: WidgetStatePropertyAll(EdgeInsets.all(14)),
                           ),
                           icon: SvgPicture.asset(
                             AppAssets.bucketIcon,

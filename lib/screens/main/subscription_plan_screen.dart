@@ -171,7 +171,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                 gapW10,
                                 Flexible(
                                   child: Text(
-                                    "Add 5 people.",
+                                    "Only individual user",
                                     style: GoogleFonts.plusJakartaSans(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 12,
@@ -264,7 +264,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
                                       /// Price Text
                                       Text(
-                                        "${productDetails[index].price}/ year",
+                                        "${productDetails[index].price}/ annual",
                                         style: GoogleFonts.plusJakartaSans(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 12,

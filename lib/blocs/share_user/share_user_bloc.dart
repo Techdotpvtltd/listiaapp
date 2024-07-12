@@ -36,7 +36,9 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
         try {
           emit(ShareUserStateInviting());
           await UserRepo().sendInvite(
-              listId: event.listId, invitedUserIds: event.sharedUserIds);
+            listId: event.listId,
+            invitedUserIds: event.sharedUserIds,
+          );
           emit(ShareUserStateInvited());
         } on AppException catch (e) {
           emit(ShareUserStateInviteFailure(exception: e));

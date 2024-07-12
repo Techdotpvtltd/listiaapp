@@ -64,10 +64,10 @@ class _AvatarWidgetState extends State<AvatarWidget> {
                   }
                 },
                 style: const ButtonStyle(
-                  padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
                   visualDensity: VisualDensity.compact,
                   backgroundColor:
-                      MaterialStatePropertyAll(AppTheme.primaryColor1),
+                      WidgetStatePropertyAll(AppTheme.primaryColor1),
                 ),
                 icon: const Icon(
                   Icons.camera_alt_outlined,

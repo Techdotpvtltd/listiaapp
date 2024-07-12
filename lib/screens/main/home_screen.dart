@@ -18,7 +18,6 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
-import 'package:skeletons/skeletons.dart';
 
 import '../../blocs/category/category_bloc.dart';
 import '../../blocs/category/category_event.dart';
@@ -37,7 +36,6 @@ import '../../repos/user_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/dialogs/loaders.dart';
 import 'create_list_screen.dart';
-import 'skeletons/list_skeleton.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -170,9 +168,9 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 32,
             ),
             style: const ButtonStyle(
-              padding: MaterialStatePropertyAll(EdgeInsets.zero),
+              padding: WidgetStatePropertyAll(EdgeInsets.zero),
               visualDensity: VisualDensity.compact,
-              backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+              backgroundColor: WidgetStatePropertyAll(Colors.transparent),
             ),
           ),
         ),
@@ -272,31 +270,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         body: SafeArea(
-          child: Skeleton(
-            isLoading: isLoading,
-            skeleton: const ListSkeleton(),
-            child: ItemList(
-              onItemTap: (index, isAdminList) {
-                NavigationService.go(
-                  ListItemDetailScreen(
-                    list: isAdminList ? adminLists[index] : lists[index],
-                    onAddListPressed: (list) {
-                      triggerMoveToUserEvent(context.read<ListBloc>(), list.id);
-                    },
-                    onDeleteListPressed: (list) {
-                      final List<String> itemIds =
-                          ItemRepo().getItemsIdBy(listId: list.id);
-                      context.read<ListBloc>().add(
-                            ListEventDelete(listId: list.id, itemsIds: itemIds),
-                          );
-                    },
-                  ),
-                );
-              },
-              lists: lists,
-              adminLists: adminLists,
-            ),
-          ),
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ItemList(
+                  onItemTap: (index, isAdminList) {
+                    NavigationService.go(
+                      ListItemDetailScreen(
+                        list: isAdminList ? adminLists[index] : lists[index],
+                        onAddListPressed: (list) {
+                          triggerMoveToUserEvent(
+                              context.read<ListBloc>(), list.id);
+                        },
+                        onDeleteListPressed: (list) {
+                          final List<String> itemIds =
+                              ItemRepo().getItemsIdBy(listId: list.id);
+                          context.read<ListBloc>().add(
+                                ListEventDelete(
+                                    listId: list.id, itemsIds: itemIds),
+                              );
+                        },
+                      ),
+                    );
+                  },
+                  lists: lists,
+                  adminLists: adminLists,
+                ),
         ),
       ),
     );

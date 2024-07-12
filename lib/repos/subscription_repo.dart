@@ -33,8 +33,9 @@ class SubscriptionRepo {
     try {
       final DateTime startDate = DateTime.fromMillisecondsSinceEpoch(
           int.tryParse(purchase.transactionDate ?? "0") ?? 0);
-      final DateTime endDate = startDate.add(
-          kReleaseMode ? const Duration(days: 30) : const Duration(minutes: 5));
+      final DateTime endDate = startDate.add(kReleaseMode
+          ? const Duration(days: 365)
+          : const Duration(minutes: 5));
       final SubscriptionModel model = SubscriptionModel(
           id: "",
           periodDuration: "year",

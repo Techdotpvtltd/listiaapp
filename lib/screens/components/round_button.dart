@@ -21,11 +21,11 @@ class RoundButton extends StatelessWidget {
     return IconButton(
       onPressed: onTap,
       style: ButtonStyle(
-        shadowColor: const MaterialStatePropertyAll(Colors.transparent),
-        surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
-        overlayColor: const MaterialStatePropertyAll(Colors.transparent),
-        fixedSize: const MaterialStatePropertyAll(Size(49, 49)),
-        backgroundColor: MaterialStatePropertyAll(
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+        fixedSize: const WidgetStatePropertyAll(Size(49, 49)),
+        backgroundColor: WidgetStatePropertyAll(
           backgroundColor ?? Colors.white.withOpacity(0.07),
         ),
       ),

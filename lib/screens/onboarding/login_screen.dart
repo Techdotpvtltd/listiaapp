@@ -178,14 +178,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         NavigationService.go(const ForgotPasswordScreen());
                       },
                       style: const ButtonStyle(
-                        shadowColor:
-                            MaterialStatePropertyAll(Colors.transparent),
+                        shadowColor: WidgetStatePropertyAll(Colors.transparent),
                         splashFactory: NoSplash.splashFactory,
                         overlayColor:
-                            MaterialStatePropertyAll(Colors.transparent),
+                            WidgetStatePropertyAll(Colors.transparent),
                         surfaceTintColor:
-                            MaterialStatePropertyAll(Colors.transparent),
-                        padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                            WidgetStatePropertyAll(Colors.transparent),
+                        padding: WidgetStatePropertyAll(EdgeInsets.zero),
                         visualDensity: VisualDensity.compact,
                       ),
                       child: Text(

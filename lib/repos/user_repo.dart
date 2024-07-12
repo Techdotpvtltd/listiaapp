@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:listi_shop/repos/subscription_repo.dart';
 import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../exceptions/exception_parsing.dart';
@@ -168,8 +169,27 @@ class UserRepo {
   Future<void> sendInvite(
       {required String listId, required List<String> invitedUserIds}) async {
     try {
-      if (!AppManager().isActiveSubscription && invitedUserIds.length > 5) {
-        throw DataExceptionSubscriptionRequired();
+      if (!AppManager().isActiveSubscription) {
+        throw DataExceptionSubscriptionRequired(
+            message:
+                "You donn't have limit to share list with others in free plan. Please update your plan to share list with other users.");
+      }
+      final currentSub = SubscriptionRepo().lastSubscription;
+
+      if (currentSub != null) {
+        if (currentSub.title.toLowerCase() == "house" &&
+            invitedUserIds.length > 5) {
+          throw DataExceptionSubscriptionRequired(
+              message:
+                  "You have completed your share limit in this mode. Please update your plan to share list with more users.");
+        }
+
+        if (currentSub.title.toLowerCase() == "business" &&
+            invitedUserIds.length > 20) {
+          throw DataExceptionSubscriptionRequired(
+              message:
+                  "You have completed your share limit in this mode. Please update your plan to share list with more users.");
+        }
       }
       await FirestoreService().updateWithDocId(
           path: FIREBASE_COLLECTION_LISTS,

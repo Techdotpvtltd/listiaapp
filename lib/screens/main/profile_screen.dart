@@ -105,10 +105,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 },
                                 style: const ButtonStyle(
                                   padding:
-                                      MaterialStatePropertyAll(EdgeInsets.zero),
+                                      WidgetStatePropertyAll(EdgeInsets.zero),
                                   visualDensity: VisualDensity.compact,
                                   backgroundColor:
-                                      MaterialStatePropertyAll(Colors.white),
+                                      WidgetStatePropertyAll(Colors.white),
                                 ),
                                 icon: const Icon(
                                   Icons.edit_outlined,

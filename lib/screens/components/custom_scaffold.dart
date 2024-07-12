@@ -77,7 +77,7 @@ class CustomScaffold extends StatelessWidget {
                         NavigationService.back();
                       },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
+                    backgroundColor: WidgetStatePropertyAll(
                       const Color(0xffffffff).withOpacity(0.07),
                     ),
                   ),

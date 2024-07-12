@@ -18,7 +18,6 @@ import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
-import 'package:skeletons/skeletons.dart';
 
 import '../../blocs/share_user/share_user_bloc.dart';
 import '../../blocs/share_user/share_user_event.dart';
@@ -89,8 +88,7 @@ class _ShareScreenState extends State<ShareScreen> {
           if (state is ShareUserStateInviteFailure) {
             if (state.exception is DataExceptionSubscriptionRequired) {
               CustomDialogs().alertBox(
-                message:
-                    "You can send 5 invitations in free mode. Please upgrade your plan to send more invitations.",
+                message: state.exception.message,
                 positiveTitle: "Show Subscription Plan",
                 onPositivePressed: () {
                   NavigationService.go(const SubscriptionPlanScreen());
@@ -131,100 +129,91 @@ class _ShareScreenState extends State<ShareScreen> {
                 },
               ),
               Expanded(
-                child: Skeleton(
-                  isLoading: isSearchingUsers,
-                  skeleton: SkeletonListView(
-                    scrollable: true,
-                  ),
-                  child: users.isEmpty
-                      ? Text(
-                          "Sorry, we're unable to locate any user.",
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.only(top: 22, bottom: 100),
-                          itemCount: users.length,
-                          itemBuilder: (context, index) {
-                            final bool isSelected =
-                                invitedUsers.contains(users[index].uid);
-                            final UserModel user = users[index];
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 11),
-                              child: CustomInkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (isSelected) {
-                                      setState(() {
-                                        invitedUsers.removeWhere(
-                                            (id) => user.uid == id);
-                                      });
-                                    } else {
-                                      setState(() {
-                                        invitedUsers.add(user.uid);
-                                      });
-                                    }
-                                  });
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        /// Profile Widget
-                                        AvatarWidget(
-                                          avatarUrl: user.avatar,
-                                          placeholderChar: user
-                                              .name.characters.firstOrNull
-                                              .toString(),
-                                          width: 38,
-                                          height: 38,
-                                          backgroundColor:
-                                              AppTheme.primaryColor2,
-                                        ),
-                                        // Name Widget
-                                        gapW10,
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              user.name,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                color: AppTheme.titleColor1,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            gapH6,
-                                            Text(
-                                              user.phoneNumber == ""
-                                                  ? user.email
-                                                  : user.phoneNumber,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                color: AppTheme.titleColor1,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    CustomCheckBox(isChecked: isSelected),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                child: users.isEmpty
+                    ? Text(
+                        "Sorry, we're unable to locate any user.",
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
-                ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.only(top: 22, bottom: 100),
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          final bool isSelected =
+                              invitedUsers.contains(users[index].uid);
+                          final UserModel user = users[index];
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            child: CustomInkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    setState(() {
+                                      invitedUsers
+                                          .removeWhere((id) => user.uid == id);
+                                    });
+                                  } else {
+                                    setState(() {
+                                      invitedUsers.add(user.uid);
+                                    });
+                                  }
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      /// Profile Widget
+                                      AvatarWidget(
+                                        avatarUrl: user.avatar,
+                                        placeholderChar: user
+                                            .name.characters.firstOrNull
+                                            .toString(),
+                                        width: 38,
+                                        height: 38,
+                                        backgroundColor: AppTheme.primaryColor2,
+                                      ),
+                                      // Name Widget
+                                      gapW10,
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            user.name,
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: AppTheme.titleColor1,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          gapH6,
+                                          Text(
+                                            user.phoneNumber == ""
+                                                ? user.email
+                                                : user.phoneNumber,
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: AppTheme.titleColor1,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  CustomCheckBox(isChecked: isSelected),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               )
             ],
           ),

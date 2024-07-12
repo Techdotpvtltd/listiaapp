@@ -17,8 +17,8 @@ class SocialIconButton extends StatelessWidget {
       constraints: const BoxConstraints.expand(width: 72, height: 48),
       onPressed: onPressed,
       style: const ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(Color(0xFFF6F6F6)),
-        shape: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(Color(0xFFF6F6F6)),
+        shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
