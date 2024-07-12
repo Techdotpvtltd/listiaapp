@@ -150,7 +150,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       listener: (context, state) {
         if (state is ItemStateAdded ||
             state is ItemStateFetchedAll ||
-            state is ItemStateDeleted) {
+            state is ItemStateDeleted ||
+            state is ItemStateUpdated) {
           setState(() {
             filteredItems();
           });

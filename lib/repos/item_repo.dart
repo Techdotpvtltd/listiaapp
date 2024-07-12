@@ -220,11 +220,16 @@ class ItemRepo {
         amount: amount,
         unit: unit,
       );
-      final Map<String, dynamic> _ = await FirestoreService()
+      final Map<String, dynamic> mapped = await FirestoreService()
           .saveWithSpecificIdFiled(
               path: FIREBASE_COLLECTION_ITEMS,
               data: uploadingModel.toMap(),
               docIdFiled: 'id');
+      final ItemModel updatedItem = ItemModel.fromMap(mapped);
+      final int index = _items.indexWhere((e) => e.id == updatedItem.id);
+      if (index == -1) {
+        _items.add(updatedItem);
+      }
     } catch (e) {
       throw throwAppException(e: e);
     }
@@ -252,6 +257,16 @@ class ItemRepo {
             'amount': amount,
           },
           docId: itemId);
+
+      final int index = _items.indexWhere((e) => e.id == itemId);
+      if (index > -1) {
+        _items[index] = _items[index].copyWith(
+            itemName: itemName,
+            category: category,
+            quantity: quantity,
+            unit: unit,
+            amount: amount);
+      }
     } catch (e) {
       throw throwAppException(e: e);
     }

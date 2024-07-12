@@ -64,6 +64,7 @@ class ListRepo {
               path: FIREBASE_COLLECTION_LISTS,
               data: uploadingList.toMap(),
               docIdFiled: 'id');
+      _lists.insert(0, ListModel.fromMap(mapped));
       return mapped['id'];
     } catch (e) {
       throw throwAppException(e: e);
