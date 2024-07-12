@@ -115,7 +115,12 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
           emit(SubscriptionStateGettingProducts());
           final List<ProductDetails> products =
               await SubscriptionManager().loadProducts(
-            productsId: {'household_monthly', 'business_monthly'},
+            productsId: {
+              'household_monthly',
+              'business_monthly',
+              'household_annual',
+              'business_annual'
+            },
             onNotFoundIDs: (ids) {
               for (final String id in ids) {
                 emit(
