@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:listi_shop/repos/subscription_repo.dart';
@@ -192,9 +193,10 @@ class UserRepo {
         }
       }
       await FirestoreService().updateWithDocId(
-          path: FIREBASE_COLLECTION_LISTS,
-          docId: listId,
-          data: {'sharedUsers': invitedUserIds});
+        path: FIREBASE_COLLECTION_LISTS,
+        docId: listId,
+        data: {'sharedUsers': FieldValue.arrayUnion(invitedUserIds)},
+      );
     } catch (e) {
       throw throwAppException(e: e);
     }
