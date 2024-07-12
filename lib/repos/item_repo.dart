@@ -149,6 +149,29 @@ class ItemRepo {
     return items;
   }
 
+  List<CategorizeItemsModel> getCompletedItemsCategoryBy(
+      {required String listId}) {
+    List<CategorizeItemsModel> categoriesItems = [];
+    final items = _items
+        .where(
+            (element) => element.listId == listId && element.boughtBy == null)
+        .toList();
+    items.sort((a, b) =>
+        a.isReadyToBuy.convertToInt().compareTo(b.isReadyToBuy.convertToInt()));
+
+    Map<String, List<ItemModel>> groupedItems =
+        items.fold({}, (Map<String, List<ItemModel>> map, item) {
+      map[item.category] = [...(map[item.category] ?? []), item];
+      return map;
+    });
+
+    categoriesItems = groupedItems.entries.map((entry) {
+      return CategorizeItemsModel(category: entry.key, items: entry.value);
+    }).toList();
+
+    return categoriesItems;
+  }
+
   List<ItemModel> getItemsBy(
       {String? category,
       required String listId,

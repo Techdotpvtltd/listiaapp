@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/list/list_bloc.dart';
 import 'package:listi_shop/blocs/list/list_event.dart';
 import 'package:listi_shop/blocs/list/list_state.dart';
+import 'package:listi_shop/repos/category_repo.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/custom_snack_bar.dart';
@@ -27,29 +28,32 @@ import '../../utils/dialogs/dialogs.dart';
 import 'components/custom_checkbox.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen(
-      {super.key, required this.scaffoldKey, required this.listId});
+  const CartScreen({
+    super.key,
+    required this.scaffoldKey,
+    required this.categoriesItems,
+    required this.listId,
+  });
   final GlobalKey<ScaffoldState> scaffoldKey;
+  final List<CategorizeItemsModel> categoriesItems;
   final String listId;
-
   @override
   State<CartScreen> createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
-  late List<ItemModel> items =
-      ItemRepo().getCompletedItemsBy(listId: widget.listId);
   List<String> itemsToBeBought = [];
   bool isLoading = false;
   bool isMarkCompleting = false;
-
+  late List<CategorizeItemsModel> categoriesItems = widget.categoriesItems;
   void triggerRemoveItemEvent(ItemBloc bloc, {required String itemId}) {
     bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
     bloc.add(ItemEventUpdateIsReadyToBuy(itemId: itemId, isReadyToBuy: false));
   }
 
   void addItemsToBoughtList() {
-    itemsToBeBought = items
+    itemsToBeBought = categoriesItems
+        .expand((e) => e.items)
         .where((element) => element.isReadyToBuy)
         .map((e) => e.id)
         .toList();
@@ -73,7 +77,8 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void checkCartListCompleted() {
-    if (itemsToBeBought.length >= items.length) {
+    if (itemsToBeBought.length >=
+        categoriesItems.expand((e) => e.items).length) {
       CustomDialogs().alertBox(
         title: "Shopping Completed",
         message: "Did you finish your shopping?",
@@ -140,7 +145,8 @@ class _CartScreenState extends State<CartScreen> {
 
               if (state is ItemStateMarkedItemBought) {
                 setState(() {
-                  items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
+                  categoriesItems = ItemRepo()
+                      .getCompletedItemsCategoryBy(listId: widget.listId);
                   addItemsToBoughtList();
                 });
               }
@@ -148,14 +154,16 @@ class _CartScreenState extends State<CartScreen> {
 
             if (state is ItemStateUpdated) {
               setState(() {
-                items = ItemRepo().getCompletedItemsBy(listId: widget.listId);
+                categoriesItems = ItemRepo()
+                    .getCompletedItemsCategoryBy(listId: widget.listId);
                 addItemsToBoughtList();
               });
             }
 
             if (state is ItemStateItemRemoveFromCompleted) {
               setState(() {
-                items.removeWhere((element) => element.id == state.itemId);
+                categoriesItems = ItemRepo()
+                    .getCompletedItemsCategoryBy(listId: widget.listId);
                 addItemsToBoughtList();
               });
             }
@@ -169,7 +177,10 @@ class _CartScreenState extends State<CartScreen> {
           horizontal: 12,
           verticle: 0,
           child: SizedBox(
-            height: (itemsToBeBought.length >= items.length) ? 120 : 50,
+            height: (itemsToBeBought.length >=
+                    categoriesItems.expand((e) => e.items).length)
+                ? 120
+                : 50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -190,8 +201,11 @@ class _CartScreenState extends State<CartScreen> {
                     );
                   },
                 ),
-                if (itemsToBeBought.length >= items.length) gapH10,
-                if (itemsToBeBought.length >= items.length)
+                if (itemsToBeBought.length >=
+                    categoriesItems.expand((e) => e.items).length)
+                  gapH10,
+                if (itemsToBeBought.length >=
+                    categoriesItems.expand((e) => e.items).length)
                   CustomButton(
                     isLoading: isMarkCompleting,
                     title: "Shopping Completed",
@@ -256,91 +270,121 @@ class _CartScreenState extends State<CartScreen> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.only(top: 40, bottom: 100),
-                    itemCount: items.length,
+                    itemCount: categoriesItems.length,
                     itemBuilder: (context, index) {
-                      final ItemModel item = items[index];
-                      final bool isChecked = itemsToBeBought.contains(item.id);
+                      final CategorizeItemsModel categorizeItemsModel =
+                          categoriesItems[index];
 
-                      return CustomInkWell(
-                        onTap: () {
-                          setState(() {
-                            if (isChecked) {
-                              itemsToBeBought.remove(item.id);
-                              triggerMarkIsReadyToBuyStatus(
-                                  context.read<ItemBloc>(), item.id, false);
-                            } else {
-                              itemsToBeBought.add(item.id);
-                              triggerMarkIsReadyToBuyStatus(
-                                  context.read<ItemBloc>(), item.id, true);
-                              checkCartListCompleted();
-                            }
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 9),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: const Color(0xFF0474ED).withOpacity(0.19),
-                            ),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            CategoryRepo()
+                                    .getCategoryFrom(
+                                        categoryId:
+                                            categorizeItemsModel.category)
+                                    ?.item ??
+                                "Deleted",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: AppTheme.titleColor1,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              CustomCheckBox(isChecked: isChecked),
-                              gapW10,
-                              Expanded(
-                                child: Text(
-                                  item.itemName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.titleColor1,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    decorationThickness: 2,
-                                    decoration: isChecked
-                                        ? TextDecoration.lineThrough
-                                        : TextDecoration.none,
+                          gapH10,
+                          for (final item in categorizeItemsModel.items)
+                            Builder(builder: (context) {
+                              final bool isChecked =
+                                  itemsToBeBought.contains(item.id);
+                              return CustomInkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (isChecked) {
+                                      itemsToBeBought.remove(item.id);
+                                      triggerMarkIsReadyToBuyStatus(
+                                          context.read<ItemBloc>(),
+                                          item.id,
+                                          false);
+                                    } else {
+                                      itemsToBeBought.add(item.id);
+                                      triggerMarkIsReadyToBuyStatus(
+                                          context.read<ItemBloc>(),
+                                          item.id,
+                                          true);
+                                      checkCartListCompleted();
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 9),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: const Color(0xFF0474ED)
+                                          .withOpacity(0.19),
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CustomCheckBox(isChecked: isChecked),
+                                      gapW10,
+                                      Expanded(
+                                        child: Text(
+                                          item.itemName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            color: AppTheme.titleColor1,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            decorationThickness: 2,
+                                            decoration: isChecked
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
+                                          ),
+                                        ),
+                                      ),
+                                      gapW6,
+                                      Row(
+                                        children: [
+                                          Text(
+                                            item.unit != null
+                                                ? "${item.amount} ${item.unit}"
+                                                : "",
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: AppTheme.subTitleColor2,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (item.quantity != null &&
+                                              item.unit != null)
+                                            gapW6,
+                                          Text(
+                                            item.quantity != null
+                                                ? "x${item.quantity.toString()}"
+                                                : "",
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: AppTheme.subTitleColor2,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                              gapW6,
-                              Row(
-                                children: [
-                                  Text(
-                                    item.unit != null
-                                        ? "${item.amount} ${item.unit}"
-                                        : "",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor2,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  if (item.quantity != null &&
-                                      item.unit != null)
-                                    gapW6,
-                                  Text(
-                                    item.quantity != null
-                                        ? "x${item.quantity.toString()}"
-                                        : "",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor2,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                              );
+                            }),
+                        ],
                       );
                     },
                   ),

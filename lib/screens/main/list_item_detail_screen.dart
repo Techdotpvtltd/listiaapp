@@ -200,6 +200,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
           child: CartScreen(
             scaffoldKey: scaffoldKey,
             listId: widget.list.id,
+            categoriesItems: categoryItems,
           ),
         ),
         actions: [
