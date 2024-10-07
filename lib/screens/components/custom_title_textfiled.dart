@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 
 import '../../utils/constants/constants.dart';
+import 'dart:io' show Platform;
 
 class CustomTextFiled extends StatefulWidget {
   const CustomTextFiled({
@@ -21,6 +23,10 @@ class CustomTextFiled extends StatefulWidget {
     this.fieldId,
     this.errorCode,
     this.onSubmitted,
+    this.onChange,
+    this.focusNode,
+    this.textInputAction,
+    this.isFirstCapitalizeLetter = false,
   });
   final String? titleText;
   final String hintText;
@@ -35,8 +41,11 @@ class CustomTextFiled extends StatefulWidget {
   final int? minLines;
   final int? fieldId;
   final int? errorCode;
+  final FocusNode? focusNode;
   final Function(String)? onSubmitted;
-
+  final Function(String)? onChange;
+  final TextInputAction? textInputAction;
+  final bool isFirstCapitalizeLetter;
   @override
   State<CustomTextFiled> createState() => _CustomTextFiledState();
 }
@@ -44,7 +53,7 @@ class CustomTextFiled extends StatefulWidget {
 class _CustomTextFiledState extends State<CustomTextFiled> {
   late bool _isReadOnly;
   bool isFocused = false;
-  final FocusNode textFieldFocus = FocusNode();
+  late final FocusNode textFieldFocus;
   bool isShowPassword = true;
 
   IconData? getTextFiledPrefixIcon() {
@@ -66,7 +75,7 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
   void initState() {
     super.initState();
     _isReadOnly = widget.isReadyOnly;
-
+    textFieldFocus = widget.focusNode ?? FocusNode();
     textFieldFocus.addListener(() {
       setState(() {
         isFocused = textFieldFocus.hasFocus;
@@ -98,8 +107,13 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
         ),
         if (widget.titleText != null) gapH10,
         TextField(
+          canRequestFocus: true,
           focusNode: textFieldFocus,
           controller: widget.controller,
+          textInputAction: widget.textInputAction,
+          textCapitalization: widget.isFirstCapitalizeLetter
+              ? TextCapitalization.sentences
+              : TextCapitalization.none,
           obscureText: widget.keyboardType == TextInputType.visiblePassword &&
               isShowPassword,
           onSubmitted: (value) {
@@ -112,8 +126,21 @@ class _CustomTextFiledState extends State<CustomTextFiled> {
               widget.onTFTap!();
             }
           },
-          keyboardType: widget.keyboardType,
+          keyboardType:
+              (widget.keyboardType == TextInputType.number && Platform.isIOS)
+                  ? const TextInputType.numberWithOptions(
+                      signed: true, decimal: true)
+                  : widget.keyboardType,
+          inputFormatters:
+              (widget.keyboardType == TextInputType.number && Platform.isIOS)
+                  ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9+.-]'))]
+                  : null,
           readOnly: _isReadOnly,
+          onChanged: (value) {
+            if (widget.onChange != null) {
+              widget.onChange!(value);
+            }
+          },
           maxLines: widget.maxLines,
           minLines: widget.minLines,
           style: GoogleFonts.plusJakartaSans(

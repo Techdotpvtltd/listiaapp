@@ -13,18 +13,20 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import '../../utils/constants/app_assets.dart';
 
 class CustomScaffold extends StatelessWidget {
-  const CustomScaffold(
-      {super.key,
-      required this.title,
-      this.body,
-      this.actions,
-      this.backButtonPressed,
-      this.backButtonIcon,
-      this.middleWidget,
-      this.floatingActionButton,
-      this.endDrawer,
-      this.floatingActionButtonLocation,
-      this.scaffoldkey});
+  const CustomScaffold({
+    super.key,
+    required this.title,
+    this.body,
+    this.actions,
+    this.backButtonPressed,
+    this.backButtonIcon,
+    this.middleWidget,
+    this.floatingActionButton,
+    this.endDrawer,
+    this.floatingActionButtonLocation,
+    this.scaffoldkey,
+    this.resizeToAvoidBottomInset,
+  });
   final String title;
   final Widget? body;
   final List<Widget>? actions;
@@ -35,17 +37,22 @@ class CustomScaffold extends StatelessWidget {
   final Widget? endDrawer;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final GlobalKey<ScaffoldState>? scaffoldkey;
+  final bool? resizeToAvoidBottomInset;
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image.asset(
-          AppAssets.background,
-          fit: BoxFit.cover,
+        SizedBox(
+          width: SCREEN_WIDTH,
+          child: Image.asset(
+            AppAssets.background,
+            fit: BoxFit.cover,
+          ),
         ),
         Positioned.fill(
           child: Scaffold(
             key: scaffoldkey,
+            resizeToAvoidBottomInset: resizeToAvoidBottomInset,
             backgroundColor: Colors.transparent,
             floatingActionButton: floatingActionButton,
             floatingActionButtonLocation: floatingActionButtonLocation,
@@ -53,6 +60,7 @@ class CustomScaffold extends StatelessWidget {
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(60),
               child: AppBar(
+                centerTitle: false,
                 title: Text(
                   title,
                   style: GoogleFonts.plusJakartaSans(
@@ -69,7 +77,7 @@ class CustomScaffold extends StatelessWidget {
                         NavigationService.back();
                       },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
+                    backgroundColor: WidgetStatePropertyAll(
                       const Color(0xffffffff).withOpacity(0.07),
                     ),
                   ),

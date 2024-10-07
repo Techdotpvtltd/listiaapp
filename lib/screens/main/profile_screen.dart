@@ -8,21 +8,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/user/user_bloc.dart';
+import 'package:listi_shop/blocs/user/user_state.dart';
+import 'package:listi_shop/models/user_model.dart';
+import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/edit_profile_screen.dart';
 import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
-import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
+import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/auth/auth_event.dart';
 
-class ProfileScreen extends StatelessWidget {
+import 'subscription_plan_screen.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final UserModel user = UserRepo().currentUser;
+
+  void trigegrLogoutEvent(AuthBloc bloc) {
+    CustomDialogs().alertBox(
+      title: "Logout Action",
+      message: "Are you sure to logout this account?",
+      negativeTitle: "No",
+      positiveTitle: "Yes",
+      onPositivePressed: () {
+        bloc.add(AuthEventPerformLogout());
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,59 +68,79 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             /// Profile Widget
-            SizedBox(
-              width: 100,
-              height: 80,
-              child: Stack(
-                children: [
-                  const AvatarWidget(
-                    width: 80,
-                    height: 80,
-                    backgroundColor: AppTheme.primaryColor2,
-                  ),
-                  Positioned(
-                    right: -0,
-                    bottom: 8,
-                    child: SizedBox(
-                      width: 26,
-                      height: 26,
-                      child: IconButton(
-                        onPressed: () {
-                          NavigationService.go(const EditProfileScreen());
-                        },
-                        style: const ButtonStyle(
-                          padding: MaterialStatePropertyAll(EdgeInsets.zero),
-                          visualDensity: VisualDensity.compact,
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.white),
-                        ),
-                        icon: const Icon(
-                          Icons.edit_outlined,
-                          color: AppTheme.primaryColor1,
-                          size: 18,
-                        ),
+            BlocSelector<UserBloc, UserState, UserModel?>(
+              selector: (state) {
+                if (state is UserStateProfileUpdated) {
+                  return state.user;
+                }
+                return UserRepo().currentUser;
+              },
+              builder: (context, stateUser) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 80,
+                      child: Stack(
+                        children: [
+                          AvatarWidget(
+                            avatarUrl: (stateUser ?? user).avatar,
+                            placeholderChar: (stateUser ?? user).name.isNotEmpty
+                                ? (stateUser ?? user).name[0]
+                                : 'U',
+                            width: 80,
+                            height: 80,
+                            backgroundColor: AppTheme.primaryColor2,
+                          ),
+                          Positioned(
+                            right: -0,
+                            bottom: 8,
+                            child: SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: IconButton(
+                                onPressed: () {
+                                  NavigationService.go(
+                                      const EditProfileScreen());
+                                },
+                                style: const ButtonStyle(
+                                  padding:
+                                      WidgetStatePropertyAll(EdgeInsets.zero),
+                                  visualDensity: VisualDensity.compact,
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(Colors.white),
+                                ),
+                                icon: const Icon(
+                                  Icons.edit_outlined,
+                                  color: AppTheme.primaryColor1,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            gapH8,
+                    gapH8,
 
-            /// Name Text
-            Text(
-              "Ali Akbar",
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+                    /// Name Text
+                    Text(
+                      (stateUser ?? user).name,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             /// Email Text
             gapH8,
             Text(
-              "Abc1231234@gmai.com",
+              user.email,
               style: GoogleFonts.plusJakartaSans(
                 color: Colors.white,
                 fontSize: 12,
@@ -116,18 +163,15 @@ class ProfileScreen extends StatelessWidget {
             gapH20,
             _CustomButton(
               "Subscription",
-              () {},
-            ),
-            gapH20,
-            _CustomButton(
-              "Contact us",
-              () {},
+              () {
+                NavigationService.go(const SubscriptionPlanScreen());
+              },
             ),
             const Spacer(),
             CustomButton(
                 title: "Logout",
                 onPressed: () {
-                  NavigationService.offAll(const SplashScreen());
+                  trigegrLogoutEvent(context.read<AuthBloc>());
                 }),
             gapH30,
           ],

@@ -28,18 +28,19 @@ class GetStartedScreen extends StatefulWidget {
 class _GetStartedScreenState extends State<GetStartedScreen> {
   final List<GetStartedModel> model = [
     GetStartedModel(
-        title: 'Welcome to Listia',
-        subTitle:
-            "Make your shopping the easiest and fastest, in advance by making a list of your products with Listia",
-        assetPath: AppAssets.gs2),
+      title: 'ListiShop',
+      subTitle:
+          "Simplify and speed up your shopping experience with ListiShop.",
+      assetPath: AppAssets.gs2,
+    ),
     GetStartedModel(
         title: 'Create and Share',
         subTitle: "Share shopping lists with family and friends",
         assetPath: AppAssets.gs1),
     GetStartedModel(
-        title: 'Smart Categorization',
+        title: 'Synchronised shopping',
         subTitle:
-            "Make your Shopping With  Automatic Grouping Of Products By category",
+            "Experience synchronized shopping on Listi Shop, streamlining collaboration with seamless product grouping by category.",
         assetPath: AppAssets.gs3),
   ];
   final PageController pageController = PageController();
@@ -58,14 +59,14 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               return;
             }
             pageController.nextPage(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.linear);
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.linear,
+            );
           },
         ),
       ),
       body: SafeArea(
         child: PageView(
-          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: model
               .map((e) =>

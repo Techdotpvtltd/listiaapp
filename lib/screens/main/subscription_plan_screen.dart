@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
@@ -17,182 +18,342 @@ import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
-import '../../models/subscription_model.dart';
-
-final List<SubscriptionModel> subscriptions = [
-  SubscriptionModel(
-    id: "0",
-    title: "Silver",
-    contents: [
-      "Add MORE Than 5 People",
-      "Also one boost weekly just for 24 hours",
-    ],
-    price: 19.9,
-    periodDuration: "month",
-  ),
-  SubscriptionModel(
-    id: "1",
-    title: "Gold",
-    contents: [
-      "Add MORE Than 10 People",
-      "Also one boost weekly just for 24 hours",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-    price: 29.9,
-    periodDuration: "month",
-  ),
-  SubscriptionModel(
-    id: "0",
-    title: "Platinum",
-    contents: [
-      "Add unlimited People",
-      "Also one boost weekly just for 24 hours",
-    ],
-    price: 39.9,
-    periodDuration: "month",
-  ),
-];
+import '../../blocs/subscription/subscription_bloc.dart';
+import '../../blocs/subscription/subscription_event.dart';
+import '../../blocs/subscription/subscription_state.dart';
+import '../../managers/app_manager.dart';
+import '../../repos/subscription_repo.dart';
 
 class SubscriptionPlanScreen extends StatefulWidget {
-  const SubscriptionPlanScreen({super.key});
-
+  const SubscriptionPlanScreen({super.key, this.isShowMenu = false});
+  final bool isShowMenu;
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
 }
 
 class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
-  int? selectedIndex;
+  String activeSubscriptionId = AppManager().isActiveSubscription
+      ? SubscriptionRepo().lastSubscription?.productId ?? ""
+      : "";
+  List<ProductDetails> productDetails = [];
+  bool isLoading = false;
+
+  void triggerGetProductsEvent() {
+    context.read<SubscriptionBloc>().add(SubscriptionEventReady());
+  }
+
+  @override
+  void initState() {
+    triggerGetProductsEvent();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffold(
-      title: "Subscription Plan",
-      backButtonIcon: const Icon(
-        Icons.menu,
-        color: Colors.white,
-      ),
-      backButtonPressed: () {
-        context.read<DrawerCubit>().openDrawer();
+    return BlocListener<SubscriptionBloc, SubscriptionState>(
+      listener: (context, state) {
+        if (state is SubscriptionStateGettingProducts ||
+            state is SubscriptionStateGotProducts) {
+          if (state is SubscriptionStateGotProducts) {
+            setState(() {
+              isLoading = state.isLoading;
+            });
+
+            setState(() {
+              productDetails = state.products;
+              productDetails.sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
+              activeSubscriptionId = AppManager().isActiveSubscription
+                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                  : "";
+            });
+          }
+        }
+
+        if (state is SubscriptionStateReady ||
+            state is SubscriptionStateFailure ||
+            state is SubscriptionStateStoreStatus ||
+            state is SubscriptionStatePurchased ||
+            state is SubscriptionStatePurchaseFailure) {
+          if (state is SubscriptionStateFailure) {
+            debugPrint(state.exception.message);
+          }
+
+          if (state is SubscriptionStatePurchaseFailure) {
+            debugPrint(state.exception.message);
+          }
+
+          if (state is SubscriptionStatePurchased) {
+            setState(() {
+              activeSubscriptionId = AppManager().isActiveSubscription
+                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                  : "";
+            });
+          }
+        }
       },
-      body: HVPadding(
-        verticle: 10,
-        child: ListView.builder(
-          itemCount: subscriptions.length,
-          padding: const EdgeInsets.only(top: 40, bottom: 20),
-          itemBuilder: (context, index) {
-            bool isSelected = selectedIndex == index;
-            return CustomInkWell(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.only(
-                    top: 37, bottom: 24, left: 24, right: 24),
-                margin: const EdgeInsets.symmetric(vertical: 9),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? null
-                      : const Color(0xFF5A7D65).withOpacity(0.08),
-                  gradient: isSelected ? AppTheme.primaryLinearGradient : null,
-                  border: Border.all(color: AppTheme.primaryColor2),
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// Title and Price Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          subscriptions[index].title,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.titleColor1,
-                          ),
+      child: CustomScaffold(
+        title: "Subscription Plan",
+        backButtonIcon: widget.isShowMenu
+            ? const Icon(
+                Icons.menu,
+                color: Colors.white,
+              )
+            : null,
+        backButtonPressed: widget.isShowMenu
+            ? () {
+                context.read<DrawerCubit>().openDrawer();
+              }
+            : null,
+        body: HVPadding(
+          verticle: 10,
+          child: SingleChildScrollView(
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    children: [
+                      /// Free Card
+                      Container(
+                        padding: const EdgeInsets.only(
+                          top: 37,
+                          bottom: 24,
+                          left: 24,
+                          right: 24,
                         ),
-
-                        /// Price Text
-                        Text(
-                          "\$${subscriptions[index].price}/ ${subscriptions[index].periodDuration}",
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.titleColor1,
-                          ),
+                        margin: const EdgeInsets.symmetric(vertical: 9),
+                        decoration: BoxDecoration(
+                          color: !AppManager().isActiveSubscription
+                              ? null
+                              : const Color(0xFF5A7D65).withOpacity(0.08),
+                          gradient: !AppManager().isActiveSubscription
+                              ? AppTheme.primaryLinearGradient
+                              : null,
+                          border: Border.all(color: AppTheme.primaryColor2),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                         ),
-                      ],
-                    ),
-                    gapH10,
-
-                    for (String content in subscriptions[index].contents)
-
-                      /// Contents Row
-                      Row(
-                        children: [
-                          Container(
-                            width: 3,
-                            height: 3,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppTheme.primaryColor2,
-                              shape: BoxShape.circle,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Title and Price Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                /// Price Text
+                                Text(
+                                  "Free",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                    color: !AppManager().isActiveSubscription
+                                        ? Colors.white
+                                        : AppTheme.titleColor1,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          gapW10,
-                          Flexible(
-                            child: Text(
-                              content,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppTheme.titleColor1,
+                            gapH10,
+
+                            /// Contents Row
+                            Row(
+                              children: [
+                                Container(
+                                  width: 3,
+                                  height: 3,
+                                  decoration: BoxDecoration(
+                                    color: !AppManager().isActiveSubscription
+                                        ? Colors.white
+                                        : AppTheme.primaryColor2,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                gapW10,
+                                Flexible(
+                                  child: Text(
+                                    "Only individual user",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: !AppManager().isActiveSubscription
+                                          ? Colors.white
+                                          : AppTheme.titleColor1,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            gapH2,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: !AppManager().isActiveSubscription
+                                        ? Colors.white
+                                        : AppTheme.primaryColor2,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  color: !AppManager().isActiveSubscription
+                                      ? Colors.white
+                                      : AppTheme.primaryColor2,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    gapH2,
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: CustomInkWell(
-                        onTap: () {
-                          NavigationService.go(const PaymentMethodScreen());
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppTheme.primaryColor2,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.arrow_forward,
-                            color: isSelected
-                                ? Colors.white
-                                : AppTheme.primaryColor2,
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+                      ListView.builder(
+                        itemCount: productDetails.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 5, bottom: 20),
+                        itemBuilder: (context, index) {
+                          return CustomInkWell(
+                            onTap: () {
+                              NavigationService.go(
+                                PaymentMethodScreen(
+                                    productDetail: productDetails[index]),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                top: 37,
+                                bottom: 24,
+                                left: 24,
+                                right: 24,
+                              ),
+                              margin: const EdgeInsets.symmetric(vertical: 9),
+                              decoration: BoxDecoration(
+                                color: activeSubscriptionId ==
+                                        productDetails[index].id
+                                    ? null
+                                    : const Color(0xFF5A7D65).withOpacity(0.08),
+                                gradient: activeSubscriptionId ==
+                                        productDetails[index].id
+                                    ? AppTheme.primaryLinearGradient
+                                    : null,
+                                border:
+                                    Border.all(color: AppTheme.primaryColor2),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /// Title and Price Row
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        productDetails[index].title,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          color: activeSubscriptionId ==
+                                                  productDetails[index].id
+                                              ? Colors.white
+                                              : AppTheme.titleColor1,
+                                        ),
+                                      ),
+
+                                      /// Price Text
+                                      Text(
+                                        "${productDetails[index].price}/ ${productDetails[index].id.contains('annual') ? "annual" : "monthly"}",
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 12,
+                                          color: activeSubscriptionId ==
+                                                  productDetails[index].id
+                                              ? Colors.white
+                                              : AppTheme.titleColor1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  gapH10,
+
+                                  for (String content in productDetails[index]
+                                      .description
+                                      .split(","))
+
+                                    /// Contents Row
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 3,
+                                          height: 3,
+                                          decoration: BoxDecoration(
+                                            color: activeSubscriptionId ==
+                                                    productDetails[index].id
+                                                ? Colors.white
+                                                : AppTheme.primaryColor2,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        gapW10,
+                                        Flexible(
+                                          child: Text(
+                                            content,
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              color: activeSubscriptionId ==
+                                                      productDetails[index].id
+                                                  ? Colors.white
+                                                  : AppTheme.titleColor1,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  gapH2,
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: CustomInkWell(
+                                      onTap: () async {
+                                        await NavigationService.go(
+                                          PaymentMethodScreen(
+                                            productDetail:
+                                                productDetails[index],
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: activeSubscriptionId ==
+                                                    productDetails[index].id
+                                                ? Colors.white
+                                                : AppTheme.primaryColor2,
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.arrow_forward,
+                                          color: activeSubscriptionId ==
+                                                  productDetails[index].id
+                                              ? Colors.white
+                                              : AppTheme.primaryColor2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );

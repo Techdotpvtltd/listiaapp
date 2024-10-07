@@ -8,24 +8,23 @@ class AvatarWidget extends StatefulWidget {
     super.key,
     this.width,
     this.height,
-    this.onSelectedImage,
     this.avatarUrl,
     this.backgroundColor,
     this.placeholderChar,
+    this.onEditPressed,
   });
   final double? width;
   final double? height;
-  final Function(String)? onSelectedImage;
   final String? avatarUrl;
   final Color? backgroundColor;
   final String? placeholderChar;
+  final VoidCallback? onEditPressed;
 
   @override
   State<AvatarWidget> createState() => _AvatarWidgetState();
 }
 
 class _AvatarWidgetState extends State<AvatarWidget> {
-  late String selectedAvatar = widget.avatarUrl ?? "";
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -38,7 +37,7 @@ class _AvatarWidgetState extends State<AvatarWidget> {
               backgroundColor: widget.placeholderChar != null
                   ? AppTheme.primaryColor1
                   : widget.backgroundColor,
-              url: selectedAvatar,
+              url: widget.avatarUrl ?? "",
               placeholderWidget: LayoutBuilder(
                 builder: (context, constraints) {
                   return Text(
@@ -51,21 +50,30 @@ class _AvatarWidgetState extends State<AvatarWidget> {
                   );
                 },
               ),
-              onTapImage: widget.onSelectedImage != null
-                  ? () {
-                      // selectImage();
-                    }
-                  : () {},
             ),
           ),
           Visibility(
-            visible: widget.onSelectedImage != null,
-            child: const Positioned(
-              right: 5,
-              bottom: 5,
-              child: Icon(
-                Icons.camera_alt,
-                color: AppTheme.primaryColor2,
+            visible: widget.onEditPressed != null,
+            child: Positioned(
+              right: 0,
+              bottom: -6,
+              child: IconButton(
+                onPressed: () {
+                  if (widget.onEditPressed != null) {
+                    widget.onEditPressed!();
+                  }
+                },
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                  visualDensity: VisualDensity.compact,
+                  backgroundColor:
+                      WidgetStatePropertyAll(AppTheme.primaryColor1),
+                ),
+                icon: const Icon(
+                  Icons.camera_alt_outlined,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
           )

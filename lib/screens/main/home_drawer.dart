@@ -10,29 +10,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/auth/auth_event.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_state.dart';
+import 'package:listi_shop/models/user_model.dart';
+import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
-import 'package:listi_shop/screens/main/complete_list_screen.dart';
-import 'package:listi_shop/screens/main/contact_us_screen.dart';
+import 'package:listi_shop/screens/main/shopping_list_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
-import 'package:listi_shop/screens/onboarding/splash_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
-import 'package:listi_shop/utils/extensions/navigation_service.dart';
-
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
+import '../../blocs/user/user_bloc.dart';
+import '../../blocs/user/user_state.dart';
 import '../../models/drawer_model.dart';
+import '../../utils/extensions/navigation_service.dart';
+import '../components/custom_ink_well.dart';
+import 'edit_profile_screen.dart';
 
 final List<DrawerModel> drawerItems = [
   DrawerModel(id: 0, title: "Home", asset: AppAssets.homeIcon),
-  DrawerModel(id: 1, title: "Complete List", asset: AppAssets.listIcon),
+  DrawerModel(id: 1, title: "Shopping Lists", asset: AppAssets.listIcon),
   DrawerModel(id: 2, title: "Profile", asset: AppAssets.userIcon),
-  DrawerModel(id: 3, title: "Contact Us", asset: AppAssets.chatIcon),
   DrawerModel(id: 4, title: "Subscription", asset: AppAssets.historyIcon),
 ];
 
@@ -51,13 +56,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
       case 0:
         return const HomeScreen();
       case 1:
-        return const CompleteListScreen();
+        return const ShoppingListScreen();
       case 2:
         return const ProfileScreen();
       case 3:
-        return const ContactUsScreen();
-      case 4:
-        return const SubscriptionPlanScreen();
+        return const SubscriptionPlanScreen(isShowMenu: true);
       default:
         return const HomeScreen();
     }
@@ -71,31 +74,29 @@ class _HomeDrawerState extends State<HomeDrawer> {
         return Scaffold(
           body: Stack(
             children: [
-              Image.asset(
-                AppAssets.background,
-                fit: BoxFit.cover,
+              Positioned.fill(
+                child: Image.asset(
+                  AppAssets.background,
+                  fit: BoxFit.cover,
+                ),
               ),
               Positioned.fill(
-                child: Stack(
-                  children: [
-                    ZoomDrawer(
-                      controller: bloc.zoomDrawerController,
-                      menuScreen: _DrawerMenuScreen(
-                        onItemTap: (index) {
-                          setState(() {
-                            currentIndex = index;
-                          });
-                          bloc.closeDrawer();
-                        },
-                      ),
-                      mainScreen: currentScreen(),
-                      borderRadius: 30,
-                      showShadow: true,
-                      slideWidth: 260,
-                      mainScreenScale: 0.23,
-                      menuBackgroundColor: Colors.transparent,
-                    ),
-                  ],
+                child: ZoomDrawer(
+                  controller: bloc.zoomDrawerController,
+                  menuScreen: _DrawerMenuScreen(
+                    onItemTap: (index) {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                      bloc.closeDrawer();
+                    },
+                  ),
+                  mainScreen: currentScreen(),
+                  borderRadius: 30,
+                  showShadow: true,
+                  slideWidth: 260,
+                  mainScreenScale: 0.23,
+                  menuBackgroundColor: Colors.transparent,
                 ),
               ),
             ],
@@ -106,9 +107,28 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 }
 
-class _DrawerMenuScreen extends StatelessWidget {
+class _DrawerMenuScreen extends StatefulWidget {
   const _DrawerMenuScreen({required this.onItemTap});
   final Function(int) onItemTap;
+
+  @override
+  State<_DrawerMenuScreen> createState() => _DrawerMenuScreenState();
+}
+
+class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
+  late final UserModel user = UserRepo().currentUser;
+
+  void trigegrLogoutEvent(AuthBloc bloc) {
+    CustomDialogs().alertBox(
+      title: "Logout Action",
+      message: "Are you sure to logout this account?",
+      negativeTitle: "No",
+      positiveTitle: "Yes",
+      onPositivePressed: () {
+        bloc.add(AuthEventPerformLogout());
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,31 +142,51 @@ class _DrawerMenuScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// Profile Widget
-              Container(
-                width: 86,
-                height: 86,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: const AvatarWidget(
-                  avatarUrl:
-                      "https://t4.ftcdn.net/jpg/03/25/73/59/360_F_325735908_TkxHU7okor9CTWHBhkGfdRumONWfIDEb.jpg",
-                  backgroundColor: AppTheme.primaryColor2,
-                ),
-              ),
-              gapH6,
+              CustomInkWell(
+                onTap: () {
+                  context.read<DrawerCubit>().closeDrawer();
+                  NavigationService.go(const EditProfileScreen());
+                },
+                child: BlocSelector<UserBloc, UserState, UserModel?>(
+                    selector: (state) {
+                  if (state is UserStateProfileUpdated) {
+                    return UserRepo().currentUser;
+                  }
+                  return null;
+                }, builder: (context, userState) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: 86,
+                        height: 86,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: AvatarWidget(
+                          avatarUrl: (userState ?? user).avatar,
+                          placeholderChar: (userState ?? user).name.isNotEmpty
+                              ? (userState ?? user).name[0]
+                              : 'U',
+                          backgroundColor: AppTheme.primaryColor2,
+                        ),
+                      ),
+                      gapH6,
 
-              /// Named Widget
-              Text(
-                "Ali Akbar",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
-                ),
+                      /// Named Widget
+                      Text(
+                        (userState ?? user).name,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
               gapH50,
 
@@ -159,7 +199,7 @@ class _DrawerMenuScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: InkWell(
-                          onTap: () => onItemTap(i),
+                          onTap: () => widget.onItemTap(i),
                           child: Row(
                             children: [
                               SvgPicture.asset(drawerItems[i].asset),
@@ -194,7 +234,7 @@ class _DrawerMenuScreen extends StatelessWidget {
                     CustomButton(
                       title: "Logout",
                       onPressed: () {
-                        NavigationService.offAll(const SplashScreen());
+                        trigegrLogoutEvent(context.read<AuthBloc>());
                       },
                       height: 44,
                       backgroundColor: Colors.white.withOpacity(0.4),

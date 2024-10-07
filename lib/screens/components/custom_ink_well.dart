@@ -17,7 +17,7 @@ class CustomInkWell extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       splashColor: Colors.transparent,
-      overlayColor: const MaterialStatePropertyAll(Colors.transparent),
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
       hoverColor: Colors.transparent,
       child: child,
     );

@@ -46,9 +46,9 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: !isLoading && isEnabled ? onPressed : null,
         style: const ButtonStyle(
-          surfaceTintColor: MaterialStatePropertyAll(Colors.transparent),
-          shadowColor: MaterialStatePropertyAll(Colors.transparent),
-          backgroundColor: MaterialStatePropertyAll(Colors.transparent),
+          surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+          shadowColor: WidgetStatePropertyAll(Colors.transparent),
+          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
         ),
         child: isLoading
             ? Center(

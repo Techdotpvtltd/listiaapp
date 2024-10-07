@@ -14,7 +14,7 @@ class HorizontalPadding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 29),
+      padding: EdgeInsets.symmetric(horizontal: value ?? 29),
       child: child,
     );
   }

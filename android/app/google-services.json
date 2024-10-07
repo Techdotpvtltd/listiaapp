@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "47515538677",
+    "project_id": "listi-shop",
+    "storage_bucket": "listi-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47515538677:android:b48711c5bf7c66d5d1e1bc",
+        "android_client_info": {
+          "package_name": "com.techdot.listiShop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "47515538677-lfllmpinu912499875m4ahgd79ljdh0v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techdot.listiShop",
+            "certificate_hash": "8d93f73cd33cca5185a8e1200f3b77c758d751ad"
+          }
+        },
+        {
+          "client_id": "47515538677-2n3dhf743pakkkr90lcdfumlr0t6ucnr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb7PsOfhcGUbch6FtAThSz5Xstzwe-tzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "47515538677-2n3dhf743pakkkr90lcdfumlr0t6ucnr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "47515538677-qbuut6edh134tafgg3iinflvg8a8mljv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.techdot.listiShop"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
