@@ -132,11 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
           });
 
           if (state is ListStateFetched) {
-            triggerFetchItemEvent(context.read<ItemBloc>());
-            triggerFetchCategoriesEvent(context.read<CategoryBloc>());
             setState(() {
               lists = List.from(ListRepo().lists);
             });
+            triggerFetchItemEvent(context.read<ItemBloc>());
+            triggerFetchCategoriesEvent(context.read<CategoryBloc>());
           }
 
           if (state is ListStateAdminFetched) {

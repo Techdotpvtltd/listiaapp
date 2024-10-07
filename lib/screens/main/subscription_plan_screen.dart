@@ -27,6 +27,7 @@ import '../../repos/subscription_repo.dart';
 class SubscriptionPlanScreen extends StatefulWidget {
   const SubscriptionPlanScreen({super.key, this.isShowMenu = false});
   final bool isShowMenu;
+
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
 }
@@ -37,6 +38,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
       : "";
   List<ProductDetails> productDetails = [];
   bool isLoading = false;
+  String selectedSubscriptionType = 'Household'; // Default selection
 
   void triggerGetProductsEvent() {
     context.read<SubscriptionBloc>().add(SubscriptionEventReady());
@@ -48,47 +50,48 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
     super.initState();
   }
 
+  // Method to filter products based on the selected subscription type
+  List<ProductDetails> getFilteredProducts() {
+    if (selectedSubscriptionType == 'Household') {
+      return productDetails
+          .where((product) => product.id.contains('household'))
+          .toList();
+    } else {
+      return productDetails
+          .where((product) => product.id.contains('business'))
+          .toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<SubscriptionBloc, SubscriptionState>(
       listener: (context, state) {
-        if (state is SubscriptionStateGettingProducts ||
-            state is SubscriptionStateGotProducts) {
-          if (state is SubscriptionStateGotProducts) {
-            setState(() {
-              isLoading = state.isLoading;
-            });
-
-            setState(() {
-              productDetails = state.products;
-              productDetails.sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
-              activeSubscriptionId = AppManager().isActiveSubscription
-                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
-                  : "";
-            });
-          }
+        if (state is SubscriptionStateGotProducts) {
+          setState(() {
+            isLoading = state.isLoading;
+            productDetails = state.products;
+            productDetails.sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
+            activeSubscriptionId = AppManager().isActiveSubscription
+                ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                : "";
+          });
         }
 
-        if (state is SubscriptionStateReady ||
-            state is SubscriptionStateFailure ||
-            state is SubscriptionStateStoreStatus ||
-            state is SubscriptionStatePurchased ||
-            state is SubscriptionStatePurchaseFailure) {
-          if (state is SubscriptionStateFailure) {
-            debugPrint(state.exception.message);
-          }
+        if (state is SubscriptionStateFailure) {
+          debugPrint(state.exception.message);
+        }
 
-          if (state is SubscriptionStatePurchaseFailure) {
-            debugPrint(state.exception.message);
-          }
+        if (state is SubscriptionStatePurchaseFailure) {
+          debugPrint(state.exception.message);
+        }
 
-          if (state is SubscriptionStatePurchased) {
-            setState(() {
-              activeSubscriptionId = AppManager().isActiveSubscription
-                  ? SubscriptionRepo().lastSubscription?.productId ?? ""
-                  : "";
-            });
-          }
+        if (state is SubscriptionStatePurchased) {
+          setState(() {
+            activeSubscriptionId = AppManager().isActiveSubscription
+                ? SubscriptionRepo().lastSubscription?.productId ?? ""
+                : "";
+          });
         }
       },
       child: CustomScaffold(
@@ -113,111 +116,137 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                   )
                 : Column(
                     children: [
-                      /// Free Card
-                      Container(
-                        padding: const EdgeInsets.only(
-                          top: 37,
-                          bottom: 24,
-                          left: 24,
-                          right: 24,
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 9),
-                        decoration: BoxDecoration(
-                          color: !AppManager().isActiveSubscription
-                              ? null
-                              : const Color(0xFF5A7D65).withOpacity(0.08),
-                          gradient: !AppManager().isActiveSubscription
-                              ? AppTheme.primaryLinearGradient
-                              : null,
-                          border: Border.all(color: AppTheme.primaryColor2),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// Title and Price Row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                /// Price Text
-                                Text(
-                                  "Free",
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                    color: !AppManager().isActiveSubscription
-                                        ? Colors.white
-                                        : AppTheme.titleColor1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            gapH10,
-
-                            /// Contents Row
-                            Row(
-                              children: [
-                                Container(
-                                  width: 3,
-                                  height: 3,
-                                  decoration: BoxDecoration(
-                                    color: !AppManager().isActiveSubscription
-                                        ? Colors.white
-                                        : AppTheme.primaryColor2,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                gapW10,
-                                Flexible(
-                                  child: Text(
-                                    "Only individual user",
+                      // No subscription active
+                      if (!AppManager().isActiveSubscription)
+                        Container(
+                          padding: const EdgeInsets.only(
+                            top: 37,
+                            bottom: 24,
+                            left: 24,
+                            right: 24,
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 9),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.primaryLinearGradient,
+                            border: Border.all(color: AppTheme.primaryColor2),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// Title and Price Row
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "",
                                     style: GoogleFonts.plusJakartaSans(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      color: !AppManager().isActiveSubscription
-                                          ? Colors.white
-                                          : AppTheme.titleColor1,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            gapH2,
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: !AppManager().isActiveSubscription
-                                        ? Colors.white
-                                        : AppTheme.primaryColor2,
+                                  Text(
+                                    "Free",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_forward,
-                                  color: !AppManager().isActiveSubscription
-                                      ? Colors.white
-                                      : AppTheme.primaryColor2,
+                                ],
+                              ),
+                              gapH10,
+
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 3,
+                                    height: 3,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  gapW10,
+                                  Flexible(
+                                    child: Text(
+                                      "Only individual user",
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              gapH2,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.white,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+
+                      /// Step 1: Choose Subscription Type
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SubscriptionOption(
+                              title: 'Household',
+                              isSelected:
+                                  selectedSubscriptionType == 'Household',
+                              onSelect: () {
+                                setState(() {
+                                  selectedSubscriptionType = 'Household';
+                                });
+                              },
+                            ),
+                            SubscriptionOption(
+                              title: 'Business',
+                              isSelected:
+                                  selectedSubscriptionType == 'Business',
+                              onSelect: () {
+                                setState(() {
+                                  selectedSubscriptionType = 'Business';
+                                });
+                              },
                             ),
                           ],
                         ),
                       ),
+                      gapH20,
+
+                      /// Step 2: Display Monthly/Annual Plans for Selected Type
                       ListView.builder(
-                        itemCount: productDetails.length,
+                        itemCount: getFilteredProducts().length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.only(top: 5, bottom: 20),
                         itemBuilder: (context, index) {
+                          var product = getFilteredProducts()[index];
                           return CustomInkWell(
                             onTap: () {
                               NavigationService.go(
-                                PaymentMethodScreen(
-                                    productDetail: productDetails[index]),
+                                PaymentMethodScreen(productDetail: product),
                               );
                             },
                             child: Container(
@@ -229,12 +258,10 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               ),
                               margin: const EdgeInsets.symmetric(vertical: 9),
                               decoration: BoxDecoration(
-                                color: activeSubscriptionId ==
-                                        productDetails[index].id
+                                color: activeSubscriptionId == product.id
                                     ? null
                                     : const Color(0xFF5A7D65).withOpacity(0.08),
-                                gradient: activeSubscriptionId ==
-                                        productDetails[index].id
+                                gradient: activeSubscriptionId == product.id
                                     ? AppTheme.primaryLinearGradient
                                     : null,
                                 border:
@@ -251,38 +278,32 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        productDetails[index].title,
+                                        product.title,
                                         style: GoogleFonts.plusJakartaSans(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 16,
-                                          color: activeSubscriptionId ==
-                                                  productDetails[index].id
-                                              ? Colors.white
-                                              : AppTheme.titleColor1,
+                                          color:
+                                              activeSubscriptionId == product.id
+                                                  ? Colors.white
+                                                  : AppTheme.titleColor1,
                                         ),
                                       ),
-
-                                      /// Price Text
                                       Text(
-                                        "${productDetails[index].price}/ ${productDetails[index].id.contains('annual') ? "annual" : "monthly"}",
+                                        "${product.price} / ${product.id.contains('annual') ? 'Annual' : 'Monthly'}",
                                         style: GoogleFonts.plusJakartaSans(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 12,
-                                          color: activeSubscriptionId ==
-                                                  productDetails[index].id
-                                              ? Colors.white
-                                              : AppTheme.titleColor1,
+                                          color:
+                                              activeSubscriptionId == product.id
+                                                  ? Colors.white
+                                                  : AppTheme.titleColor1,
                                         ),
                                       ),
                                     ],
                                   ),
                                   gapH10,
-
-                                  for (String content in productDetails[index]
-                                      .description
-                                      .split(","))
-
-                                    /// Contents Row
+                                  for (String content
+                                      in product.description.split(","))
                                     Row(
                                       children: [
                                         Container(
@@ -290,7 +311,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                           height: 3,
                                           decoration: BoxDecoration(
                                             color: activeSubscriptionId ==
-                                                    productDetails[index].id
+                                                    product.id
                                                 ? Colors.white
                                                 : AppTheme.primaryColor2,
                                             shape: BoxShape.circle,
@@ -304,7 +325,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                               fontWeight: FontWeight.w400,
                                               fontSize: 12,
                                               color: activeSubscriptionId ==
-                                                      productDetails[index].id
+                                                      product.id
                                                   ? Colors.white
                                                   : AppTheme.titleColor1,
                                             ),
@@ -319,9 +340,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                       onTap: () async {
                                         await NavigationService.go(
                                           PaymentMethodScreen(
-                                            productDetail:
-                                                productDetails[index],
-                                          ),
+                                              productDetail: product),
                                         );
                                       },
                                       child: Container(
@@ -329,7 +348,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                             color: activeSubscriptionId ==
-                                                    productDetails[index].id
+                                                    product.id
                                                 ? Colors.white
                                                 : AppTheme.primaryColor2,
                                           ),
@@ -337,10 +356,10 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                         ),
                                         child: Icon(
                                           Icons.arrow_forward,
-                                          color: activeSubscriptionId ==
-                                                  productDetails[index].id
-                                              ? Colors.white
-                                              : AppTheme.primaryColor2,
+                                          color:
+                                              activeSubscriptionId == product.id
+                                                  ? Colors.white
+                                                  : AppTheme.primaryColor2,
                                         ),
                                       ),
                                     ),
@@ -353,6 +372,41 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       ),
                     ],
                   ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Helper Widget for Subscription Options (Household, Business)
+class SubscriptionOption extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+  final VoidCallback onSelect;
+
+  const SubscriptionOption({
+    super.key,
+    required this.title,
+    required this.isSelected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryColor1 : Colors.grey[200],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          title,
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : Colors.black,
           ),
         ),
       ),

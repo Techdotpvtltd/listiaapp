@@ -330,11 +330,12 @@ class ItemRepo {
       onAllDataGet: onGetAll,
       onCompleted: (listener) {},
       queries: [
-        QueryModel(
-          field: "listId",
-          value: ListRepo().lists.map((e) => e.id).toList(),
-          type: QueryType.whereIn,
-        ),
+        if (ListRepo().lists.isNotEmpty)
+          QueryModel(
+            field: "listId",
+            value: ListRepo().lists.map((e) => e.id).toList(),
+            type: QueryType.whereIn,
+          ),
         QueryModel(field: "createdAt", value: false, type: QueryType.orderBy),
       ],
     );
@@ -383,11 +384,12 @@ class ItemRepo {
       onAllDataGet: onGetAll,
       onCompleted: (listener) {},
       queries: [
-        QueryModel(
-          field: "listId",
-          value: ListRepo().adminLists.map((e) => e.id).toList(),
-          type: QueryType.whereIn,
-        ),
+        if (ListRepo().adminLists.isNotEmpty)
+          QueryModel(
+            field: "listId",
+            value: ListRepo().adminLists.map((e) => e.id).toList(),
+            type: QueryType.whereIn,
+          ),
         QueryModel(field: "createdAt", value: false, type: QueryType.orderBy),
       ],
     );
