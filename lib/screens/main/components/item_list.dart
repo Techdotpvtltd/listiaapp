@@ -162,12 +162,10 @@ class _ItemWidgetState extends State<_ItemWidget> {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(widget.list.id),
-      direction: widget.isBoughtScreen
+      direction: (widget.list.createdBy == "admin" &&
+              widget.list.createdBy != UserRepo().currentUser.uid)
           ? DismissDirection.none
-          : (widget.list.createdBy == "admin" &&
-                  widget.list.createdBy != UserRepo().currentUser.uid)
-              ? DismissDirection.none
-              : DismissDirection.endToStart,
+          : DismissDirection.endToStart,
       secondaryBackground: Container(
         color: Colors.red,
         child: const Align(
