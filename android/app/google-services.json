@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "47515538677-rpb9rt8fpt86l7ioan5f6bdk1df32266.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techdot.listiShop",
+            "certificate_hash": "099d77741eb60ca0e62f113333076faae1b36515"
+          }
+        },
+        {
           "client_id": "47515538677-2n3dhf743pakkkr90lcdfumlr0t6ucnr.apps.googleusercontent.com",
           "client_type": 3
         }

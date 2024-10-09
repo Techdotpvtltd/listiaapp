@@ -278,30 +278,35 @@ class _HomeScreenState extends State<HomeScreen> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : ItemList(
-                  key: GlobalKey(),
-                  onItemTap: (index, isAdminList) {
-                    NavigationService.go(
-                      ListItemDetailScreen(
-                        list: isAdminList ? adminLists[index] : lists[index],
-                        onAddListPressed: (list) {
-                          triggerMoveToUserEvent(
-                              context.read<ListBloc>(), list.id);
-                        },
-                        onDeleteListPressed: (list) {
-                          final List<String> itemIds =
-                              ItemRepo().getItemsIdBy(listId: list.id);
-                          context.read<ListBloc>().add(
-                                ListEventDelete(
-                                    listId: list.id, itemsIds: itemIds),
-                              );
-                        },
-                      ),
-                    );
-                  },
-                  lists: lists,
-                  adminLists: adminLists,
-                ),
+              : lists.isEmpty && adminLists.isEmpty
+                  ? const Center(
+                      child: Text("Oops! we can't find any shopping list"),
+                    )
+                  : ItemList(
+                      key: GlobalKey(),
+                      onItemTap: (index, isAdminList) {
+                        NavigationService.go(
+                          ListItemDetailScreen(
+                            list:
+                                isAdminList ? adminLists[index] : lists[index],
+                            onAddListPressed: (list) {
+                              triggerMoveToUserEvent(
+                                  context.read<ListBloc>(), list.id);
+                            },
+                            onDeleteListPressed: (list) {
+                              final List<String> itemIds =
+                                  ItemRepo().getItemsIdBy(listId: list.id);
+                              context.read<ListBloc>().add(
+                                    ListEventDelete(
+                                        listId: list.id, itemsIds: itemIds),
+                                  );
+                            },
+                          ),
+                        );
+                      },
+                      lists: lists,
+                      adminLists: adminLists,
+                    ),
         ),
       ),
     );

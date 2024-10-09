@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>47515538677-qbuut6edh134tafgg3iinflvg8a8mljv.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.47515538677-qbuut6edh134tafgg3iinflvg8a8mljv</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>47515538677-lfllmpinu912499875m4ahgd79ljdh0v.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAYU5lVWkslnVEYSMbH_cQPRVjOxPd0uE4</string>
 	<key>GCM_SENDER_ID</key>
@@ -11,7 +17,7 @@
 	<key>BUNDLE_ID</key>
 	<string>com.techdot.listiShop</string>
 	<key>PROJECT_ID</key>
-	<string>ListiShop</string>
+	<string>listi-shop</string>
 	<key>STORAGE_BUCKET</key>
 	<string>listi-shop.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>

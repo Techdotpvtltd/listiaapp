@@ -239,17 +239,17 @@ class ListRepo {
       );
       if (id != null) {
         await ItemRepo().moveItemsToUser(fromList: listId, forList: id);
-        _lists.insert(
-          0,
-          ListModel(
-            id: id,
-            createdBy: UserRepo().currentUser.uid,
-            title: movedList.title,
-            sharedUsers: [UserRepo().currentUser.uid],
-            createdAt: DateTime.now(),
-            isCompleted: false,
-          ),
-        );
+        // _lists.insert(
+        //   0,
+        //   ListModel(
+        //     id: id,
+        //     createdBy: UserRepo().currentUser.uid,
+        //     title: movedList.title,
+        //     sharedUsers: [UserRepo().currentUser.uid],
+        //     createdAt: DateTime.now(),
+        //     isCompleted: false,
+        //   ),
+        // );
       }
     } catch (e) {
       throw throwAppException(e: e);

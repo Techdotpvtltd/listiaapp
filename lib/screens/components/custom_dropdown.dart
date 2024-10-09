@@ -83,10 +83,10 @@ class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
                 .toList(),
             value: widget.selectedValue,
             onChanged: (value) {
-              if (value?.toLowerCase() == "add new") {
+              if (value == null) {
                 return;
               }
-              widget.onSelectedItem(value ?? "");
+              widget.onSelectedItem(value);
             },
             hint: Text(
               widget.hintText,

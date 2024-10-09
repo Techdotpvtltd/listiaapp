@@ -251,25 +251,25 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     .getCategoryFrom(categoryId: selectedCategoryId ?? "")
                     ?.item,
                 items: categoryNames,
-                onSelectedItem: (category) {
-                  if (category != "") {
-                    if (category.toLowerCase() == "add new") {
-                      CustomDialogs().showTextField(
-                        title: "Add Category",
-                        tfHint: "Enter Category Name:",
-                        buttonTitle: "Save",
-                        onDone: (value) {
-                          triggerAddCategoryEvent(
-                              context.read<CategoryBloc>(), value);
-                        },
-                      );
-                      return;
-                    }
+                onSelectedItem: (menu) {
+                  if (menu.toLowerCase() == "add new") {
+                    debugPrint("trigger");
+                    CustomDialogs().showTextField(
+                      title: "Add Category",
+                      tfHint: "Enter Category Name:",
+                      buttonTitle: "Save",
+                      onDone: (value) {
+                        triggerAddCategoryEvent(
+                            context.read<CategoryBloc>(), value);
+                      },
+                    );
+                    return;
+                  }
+                  if (menu != "") {
                     setState(() {
                       selectedCategoryId = categories
                           .firstWhere((element) =>
-                              element.item.toLowerCase() ==
-                              category.toLowerCase())
+                              element.item.toLowerCase() == menu.toLowerCase())
                           .id;
                     });
                   }
