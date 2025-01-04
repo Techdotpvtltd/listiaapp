@@ -19,14 +19,15 @@ import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
-import 'package:listi_shop/screens/main/shopping_list_screen.dart';
 import 'package:listi_shop/screens/main/home_screen.dart';
 import 'package:listi_shop/screens/main/profile_screen.dart';
+import 'package:listi_shop/screens/main/shopping_list_screen.dart';
 import 'package:listi_shop/screens/main/subscription_plan_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/dialogs/dialogs.dart';
+
 import '../../blocs/user/user_bloc.dart';
 import '../../blocs/user/user_state.dart';
 import '../../models/drawer_model.dart';
@@ -237,7 +238,7 @@ class _DrawerMenuScreenState extends State<_DrawerMenuScreen> {
                         trigegrLogoutEvent(context.read<AuthBloc>());
                       },
                       height: 44,
-                      backgroundColor: Colors.white.withOpacity(0.4),
+                      backgroundColor: Colors.white.withValues(alpha: 0.4),
                     ),
                   ],
                 ),

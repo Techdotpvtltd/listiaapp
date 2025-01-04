@@ -196,7 +196,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         endDrawer: Container(
           width: SCREEN_WIDTH * 0.7,
           decoration: BoxDecoration(
-            color: const Color(0xFFFEFEFE).withOpacity(0.87),
+            color: const Color(0xFFFEFEFE).withValues(alpha: 0.87),
           ),
           child: CartScreen(
             scaffoldKey: scaffoldKey,
@@ -491,9 +491,10 @@ class _ItemListState extends State<_ItemList> {
                                     begin: const Alignment(0.99, -0.10),
                                     end: const Alignment(-0.99, 0.1),
                                     colors: [
-                                      const Color(0xFF30A94A).withOpacity(0.02),
-                                      const Color(0x002EA346)
-                                          .withOpacity(isBought ? 0.3 : 0.09),
+                                      const Color(0xFF30A94A)
+                                          .withValues(alpha: 0.02),
+                                      const Color(0x002EA346).withValues(
+                                          alpha: isBought ? 0.3 : 0.09),
                                     ],
                                   )
                                 : null,

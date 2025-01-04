@@ -78,7 +78,7 @@ class CustomScaffold extends StatelessWidget {
                       },
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(
-                      const Color(0xffffffff).withOpacity(0.07),
+                      const Color(0xffffffff).withValues(alpha: 0.07),
                     ),
                   ),
                   icon: backButtonIcon ??

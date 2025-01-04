@@ -234,11 +234,11 @@ class _ItemWidgetState extends State<_ItemWidget> {
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEFEFE).withOpacity(0.88),
+                color: const Color(0xFFFEFEFE).withValues(alpha: 0.88),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                     offset: const Offset(13, 9),
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 30.6,
                     spreadRadius: 0,
                   )
@@ -435,11 +435,11 @@ class _ItemAddminWidgetState extends State<_ItemAdminWidget> {
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEFEFE).withOpacity(0.88),
+                color: const Color(0xFFFEFEFE).withValues(alpha: 0.88),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                     offset: const Offset(13, 9),
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 30.6,
                     spreadRadius: 0,
                   )

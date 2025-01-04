@@ -77,7 +77,7 @@ class _CategoryListViewState extends State<CategoryListView> {
                     : null,
                 border: selectedIndex == index
                     ? null
-                    : Border.all(color: Colors.black.withOpacity(0.09)),
+                    : Border.all(color: Colors.black.withValues(alpha: 0.09)),
                 borderRadius: const BorderRadius.all(Radius.circular(27)),
               ),
               child: Center(
@@ -88,7 +88,7 @@ class _CategoryListViewState extends State<CategoryListView> {
                     fontWeight: FontWeight.w700,
                     color: selectedIndex == index
                         ? Colors.white
-                        : AppTheme.subTitleColor2.withOpacity(0.7),
+                        : AppTheme.subTitleColor2.withValues(alpha: 0.7),
                   ),
                 ),
               ),

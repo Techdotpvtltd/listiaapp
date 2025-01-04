@@ -26,7 +26,7 @@ class RoundButton extends StatelessWidget {
         overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         fixedSize: const WidgetStatePropertyAll(Size(49, 49)),
         backgroundColor: WidgetStatePropertyAll(
-          backgroundColor ?? Colors.white.withOpacity(0.07),
+          backgroundColor ?? Colors.white.withValues(alpha: 0.07),
         ),
       ),
       icon: icon,

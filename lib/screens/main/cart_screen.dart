@@ -325,7 +325,7 @@ class _CartScreenState extends State<CartScreen> {
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       color: const Color(0xFF0474ED)
-                                          .withOpacity(0.19),
+                                          .withValues(alpha: 0.19),
                                     ),
                                     borderRadius: const BorderRadius.all(
                                       Radius.circular(10),

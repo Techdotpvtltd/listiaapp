@@ -158,9 +158,6 @@ class FirestoreService {
         case QueryType.limitToLast: // Add OrderBy query first
           query = query.limitToLast(condition.value);
           break;
-        default:
-          query = collectionReference;
-          break;
       }
     }
     // debugPrint(query.parameters.toString());

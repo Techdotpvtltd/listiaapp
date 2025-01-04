@@ -175,7 +175,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w700,
                           fontSize: 11,
-                          color: const Color(0xFF414141).withOpacity(0.67),
+                          color:
+                              const Color(0xFF414141).withValues(alpha: 0.67),
                         ),
                         TextSpan(
                           text: "I agree to Terms ",
@@ -185,7 +186,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 11,
-                                color: AppTheme.titleColor1.withOpacity(0.67),
+                                color: AppTheme.titleColor1
+                                    .withValues(alpha: 0.67),
                               ),
                             ),
                             TextSpan(
@@ -216,7 +218,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
-                      color: AppTheme.titleColor1.withOpacity(0.67),
+                      color: AppTheme.titleColor1.withValues(alpha: 0.67),
                     ),
 
                     /// Already have Account Widgets

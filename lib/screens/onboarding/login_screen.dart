@@ -5,6 +5,8 @@
 // Date:        03-04-24 14:37:57 -- Wednesday
 // Description:
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +28,6 @@ import 'package:listi_shop/utils/extensions/navigation_service.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../utils/dialogs/dialogs.dart';
-import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -242,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
-                      color: AppTheme.titleColor1.withOpacity(0.67),
+                      color: AppTheme.titleColor1.withValues(alpha: 0.67),
                     ),
                     TextSpan(
                       text: "Don’t have an account? ",

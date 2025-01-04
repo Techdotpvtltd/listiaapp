@@ -260,7 +260,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               decoration: BoxDecoration(
                                 color: activeSubscriptionId == product.id
                                     ? null
-                                    : const Color(0xFF5A7D65).withOpacity(0.08),
+                                    : const Color(0xFF5A7D65)
+                                        .withValues(alpha: 0.08),
                                 gradient: activeSubscriptionId == product.id
                                     ? AppTheme.primaryLinearGradient
                                     : null,
