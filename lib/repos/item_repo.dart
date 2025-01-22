@@ -206,7 +206,7 @@ class ItemRepo {
   }) async {
     try {
       await DataValidation.addItem(
-          title: itemName, category: category, unit: unit, amount: amount);
+          title: itemName, category: category, unit: unit);
       final UserModel currentUser = UserRepo().currentUser;
       final ItemModel uploadingModel = ItemModel(
         id: "",
@@ -246,7 +246,7 @@ class ItemRepo {
   }) async {
     try {
       await DataValidation.addItem(
-          title: itemName, category: category, unit: unit, amount: amount);
+          title: itemName, category: category, unit: unit);
       await FirestoreService().updateWithDocId(
           path: FIREBASE_COLLECTION_ITEMS,
           data: {

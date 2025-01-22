@@ -202,6 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomButton(
                       title: "Login",
                       isLoading: isLoading,
+                      height: 52,
+                      textSize: 20,
                       onPressed: () {
                         triggerLoginEvent(context.read<AuthBloc>());
                       }),

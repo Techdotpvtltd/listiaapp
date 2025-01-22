@@ -24,7 +24,7 @@ class NotificationScreen extends StatelessWidget {
       body: HorizontalPadding(
         child: isTrue == "true"
             ? const Center(
-                child: Text("No notification to read."),
+                child: Text("No notifications to read."),
               )
             : ListView.builder(
                 itemCount: 5,

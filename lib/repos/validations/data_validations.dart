@@ -28,18 +28,14 @@ class DataValidation {
   }
 
   static Future<void> addItem(
-      {required String title,
-      required String category,
-      String? unit,
-      String? amount}) async {
+      {required String title, required String category, String? unit}) async {
     if (title == "") {
       throw AuthExceptionRequiredField(
           message: "Please Enter item name.", errorCode: 1);
     }
 
-    if ((unit != null) && (amount == "")) {
-      throw AuthExceptionRequiredField(
-          message: "Please Enter Mass\\Volume", errorCode: 4);
+    if (unit == null) {
+      throw AuthExceptionRequiredField(message: "Please select unit");
     }
 
     // if (category == "") {

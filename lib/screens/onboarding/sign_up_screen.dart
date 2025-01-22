@@ -207,6 +207,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   /// Sign up button
                   CustomButton(
                     title: "Sign Up",
+                    height: 52,
+                    textSize: 20,
                     isLoading: isLoading,
                     onPressed: () {
                       triggerSignupEvent(context.read<AuthBloc>());

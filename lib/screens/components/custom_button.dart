@@ -16,6 +16,7 @@ class CustomButton extends StatelessWidget {
     this.onlyBorder = false,
     this.textColor,
     this.backgroundColor,
+    this.textSize,
   });
   final String title;
   final VoidCallback onPressed;
@@ -26,6 +27,7 @@ class CustomButton extends StatelessWidget {
   final bool onlyBorder;
   final Color? textColor;
   final Color? backgroundColor;
+  final double? textSize;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class CustomButton extends StatelessWidget {
                       : onlyBorder
                           ? AppTheme.primaryColor2
                           : Colors.white,
-                  fontSize: 16,
+                  fontSize: textSize ?? 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),

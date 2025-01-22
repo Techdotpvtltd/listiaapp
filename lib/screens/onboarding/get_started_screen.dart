@@ -28,19 +28,19 @@ class GetStartedScreen extends StatefulWidget {
 class _GetStartedScreenState extends State<GetStartedScreen> {
   final List<GetStartedModel> model = [
     GetStartedModel(
-      title: 'ListiShop',
-      subTitle:
-          "Simplify and speed up your shopping experience with ListiShop.",
+      title: 'Welcome to ListiShop',
+      subTitle: "Your smart, hassle-free shopping companion.",
       assetPath: AppAssets.gs2,
     ),
     GetStartedModel(
-        title: 'Create and Share',
-        subTitle: "Share shopping lists with family and friends",
+        title: 'Create and share shopping lists',
+        subTitle:
+            "Easily create lists and share them with family and friends for seamless grocery planning.",
         assetPath: AppAssets.gs1),
     GetStartedModel(
-        title: 'Synchronised shopping',
+        title: 'Stay in Sync, Shop Smarter!',
         subTitle:
-            "Experience synchronized shopping on Listi Shop, streamlining collaboration with seamless product grouping by category.",
+            "Real-time updates keep everyone on the same page while shopping.",
         assetPath: AppAssets.gs3),
   ];
   final PageController pageController = PageController();
@@ -52,7 +52,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: HorizontalPadding(
         child: CustomButton(
-          title: currentIndex != 2 ? "Next" : "Get Started",
+          title: "Step ${currentIndex + 1} of 3",
           onPressed: () {
             if (currentIndex == 2) {
               NavigationService.offAll(const LoginScreen());
@@ -99,6 +99,7 @@ class _PageViewItemWidget extends StatelessWidget {
           gapH50,
           Text(
             model.title,
+            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 26,
               fontWeight: FontWeight.w600,

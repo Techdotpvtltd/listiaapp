@@ -221,7 +221,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               gapH2,
               Text(
-                "Please fill the information to add new item in the list.",
+                "Please fill in the information to add new items to the list.",
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w400,
                   fontSize: 9,
@@ -298,7 +298,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       isFirstCapitalizeLetter: true,
                       fieldId: 4,
                       keyboardType: TextInputType.number,
-                      hintText: "Serving",
+                      hintText: "Optional",
                       titleText: "Serving",
                     ),
                   ),
@@ -311,9 +311,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       items: const [
                         "g",
                         "kg",
-                        "Litres",
-                        "Mili litres",
-                        "Ounces"
+                        "mg",
+                        "ml",
+                        "l",
+                        "cl",
+                        "oz",
                       ],
                       onSelectedItem: (unit) {
                         setState(() {

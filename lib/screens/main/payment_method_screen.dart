@@ -5,6 +5,8 @@
 // Date:        05-04-24 11:13:07 -- Friday
 // Description:
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,7 +24,6 @@ import '../../blocs/subscription/subscription_event.dart';
 import '../../blocs/subscription/subscription_state.dart';
 import '../../managers/app_manager.dart';
 import '../../utils/dialogs/dialogs.dart';
-import 'dart:io' show Platform;
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key, required this.productDetail});

@@ -280,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : lists.isEmpty && adminLists.isEmpty
                   ? const Center(
-                      child: Text("Oops! we can't find any shopping list"),
+                      child: Text("Oops! we can't find any shopping lists"),
                     )
                   : ItemList(
                       key: GlobalKey(),

@@ -39,14 +39,13 @@ class CustomDialogs {
       barrierDismissible: barrierDismissible,
       builder: (context) => AlertDialog(
         surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         content: Container(
           height: SCREEN_HEIGHT * 0.40,
           width: SCREEN_WIDTH,
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.all(
-              Radius.circular(15),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
