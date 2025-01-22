@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   : false;
                             }, builder: (context, _) {
                               return Text(
-                                "Product in ${lists.length} lists",
+                                "Products in ${lists.length} lists",
                                 style: GoogleFonts.plusJakartaSans(
                                   color: const Color(0xFFD3D3D3),
                                   fontSize: 10,

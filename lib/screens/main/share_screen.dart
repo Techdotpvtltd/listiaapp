@@ -41,6 +41,7 @@ class _ShareScreenState extends State<ShareScreen> {
   late List<String> invitedUsers = widget.list.sharedUsers;
   bool isSearchingUsers = false;
   bool isInvitingUsers = false;
+  bool didMadeSearch = false;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -65,6 +66,7 @@ class _ShareScreenState extends State<ShareScreen> {
             state is ShareUserStateSearched) {
           setState(() {
             isSearchingUsers = state.isLoading;
+            didMadeSearch = true;
           });
 
           if (state is ShareUserStateSearched) {
@@ -82,7 +84,9 @@ class _ShareScreenState extends State<ShareScreen> {
           });
 
           if (state is ShareUserStateInvited) {
-            CustomDialogs().successBox(message: "Invitaions sent.");
+            CustomDialogs().successBox(message: "Invitations sent.");
+            invitedUsers.clear();
+            setState(() {});
           }
 
           if (state is ShareUserStateInviteFailure) {
@@ -106,6 +110,7 @@ class _ShareScreenState extends State<ShareScreen> {
           child: CustomButton(
             isLoading: isInvitingUsers,
             title: "Invite Now",
+            isEnabled: invitedUsers.isNotEmpty,
             onPressed: () {
               triggerInviteEvent(context.read<ShareUserBloc>());
             },
@@ -130,11 +135,16 @@ class _ShareScreenState extends State<ShareScreen> {
               ),
               Expanded(
                 child: users.isEmpty
-                    ? Text(
-                        "Sorry, we're unable to locate any user.",
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    ? Center(
+                        child: Text(
+                          didMadeSearch
+                              ? "Sorry, we're unable to locate any user."
+                              : "Please type user name, email or phone in search box.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       )
                     : ListView.builder(

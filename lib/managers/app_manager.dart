@@ -5,10 +5,12 @@
 // Date:        30-04-24 19:26:07 -- Tuesday
 // Description:
 
+import 'package:flutter/foundation.dart';
+
 class AppManager {
   static final AppManager _instance = AppManager._internal();
   AppManager._internal();
   factory AppManager() => _instance;
 
-  bool isActiveSubscription = false;
+  bool isActiveSubscription = kDebugMode;
 }

@@ -34,9 +34,9 @@ class DataValidation {
           message: "Please Enter item name.", errorCode: 1);
     }
 
-    if (unit == null) {
-      throw AuthExceptionRequiredField(message: "Please select unit");
-    }
+    // if (unit == null) {
+    //   throw AuthExceptionRequiredField(message: "Please select unit");
+    // }
 
     // if (category == "") {
     //   throw AuthExceptionRequiredField(message: "Please select a category");
