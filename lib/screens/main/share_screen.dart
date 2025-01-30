@@ -38,7 +38,7 @@ class ShareScreen extends StatefulWidget {
 class _ShareScreenState extends State<ShareScreen> {
   List<int> selectedIndex = [];
   List<UserModel> users = [];
-  late List<String> invitedUsers = widget.list.sharedUsers;
+  late List<UserInfoModel> inviteUsers = [];
   bool isSearchingUsers = false;
   bool isInvitingUsers = false;
   bool didMadeSearch = false;
@@ -54,7 +54,7 @@ class _ShareScreenState extends State<ShareScreen> {
 
   void triggerInviteEvent(ShareUserBloc bloc) {
     bloc.add(SharedUserEventSendInvite(
-        listId: widget.list.id, sharedUserIds: invitedUsers));
+        listId: widget.list.id, sharedUserIds: inviteUsers));
   }
 
   @override
@@ -85,7 +85,7 @@ class _ShareScreenState extends State<ShareScreen> {
 
           if (state is ShareUserStateInvited) {
             CustomDialogs().successBox(message: "Invitations sent.");
-            invitedUsers.clear();
+            inviteUsers.clear();
             setState(() {});
           }
 
@@ -110,7 +110,7 @@ class _ShareScreenState extends State<ShareScreen> {
           child: CustomButton(
             isLoading: isInvitingUsers,
             title: "Invite Now",
-            isEnabled: invitedUsers.isNotEmpty,
+            isEnabled: inviteUsers.isNotEmpty,
             onPressed: () {
               triggerInviteEvent(context.read<ShareUserBloc>());
             },
@@ -151,8 +151,10 @@ class _ShareScreenState extends State<ShareScreen> {
                         padding: const EdgeInsets.only(top: 22, bottom: 100),
                         itemCount: users.length,
                         itemBuilder: (context, index) {
-                          final bool isSelected =
-                              invitedUsers.contains(users[index].uid);
+                          final bool isSelected = inviteUsers.indexWhere(
+                                  (e) => e.uid == users[index].uid) >
+                              -1;
+
                           final UserModel user = users[index];
 
                           return Padding(
@@ -162,12 +164,20 @@ class _ShareScreenState extends State<ShareScreen> {
                                 setState(() {
                                   if (isSelected) {
                                     setState(() {
-                                      invitedUsers
-                                          .removeWhere((id) => user.uid == id);
+                                      inviteUsers.removeWhere(
+                                        (e) => user.uid == e.uid,
+                                      );
                                     });
                                   } else {
                                     setState(() {
-                                      invitedUsers.add(user.uid);
+                                      inviteUsers.add(
+                                        UserInfoModel(
+                                            uid: user.uid,
+                                            name: user.name,
+                                            email: user.email,
+                                            avatar: user.avatar,
+                                            phoneNumber: user.phoneNumber),
+                                      );
                                     });
                                   }
                                 });

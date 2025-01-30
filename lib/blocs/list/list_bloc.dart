@@ -5,6 +5,7 @@
 // Date:        22-04-24 17:12:38 -- Monday
 // Description:
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../exceptions/app_exceptions.dart';
@@ -33,6 +34,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
           await ListRepo().fetchLists();
           emit(ListStateFetched());
         } on AppException catch (e) {
+          debugPrint(e.message.toString());
           emit(ListStateFetchFailure(exception: e));
         }
       },

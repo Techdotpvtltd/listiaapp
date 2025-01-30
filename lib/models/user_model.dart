@@ -97,3 +97,79 @@ class UserModel {
         createdAt.hashCode;
   }
 }
+
+class UserInfoModel {
+  final String uid;
+  final String name;
+  final String email;
+  final String avatar;
+  final String phoneNumber;
+  UserInfoModel({
+    required this.uid,
+    required this.name,
+    required this.email,
+    required this.avatar,
+    required this.phoneNumber,
+  });
+
+  UserInfoModel copyWith({
+    String? uid,
+    String? name,
+    String? email,
+    String? avatar,
+    String? phoneNumber,
+  }) {
+    return UserInfoModel(
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      avatar: avatar ?? this.avatar,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'uid': uid,
+      'name': name,
+      'email': email,
+      'avatar': avatar,
+      'phoneNumber': phoneNumber,
+    };
+  }
+
+  factory UserInfoModel.fromMap(Map<String, dynamic> map) {
+    return UserInfoModel(
+      uid: map['uid'] as String,
+      name: map['name'] as String,
+      email: map['email'] as String,
+      avatar: map['avatar'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'UserInfoModel(uid: $uid, name: $name, email: $email, avatar: $avatar, phoneNumber: $phoneNumber)';
+  }
+
+  @override
+  bool operator ==(covariant UserInfoModel other) {
+    if (identical(this, other)) return true;
+
+    return other.uid == uid &&
+        other.name == name &&
+        other.email == email &&
+        other.avatar == avatar &&
+        other.phoneNumber == phoneNumber;
+  }
+
+  @override
+  int get hashCode {
+    return uid.hashCode ^
+        name.hashCode ^
+        email.hashCode ^
+        avatar.hashCode ^
+        phoneNumber.hashCode;
+  }
+}

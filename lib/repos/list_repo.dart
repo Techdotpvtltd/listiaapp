@@ -55,7 +55,15 @@ class ListRepo {
           createdBy: user.uid,
           title: title,
           isCompleted: false,
-          sharedUsers: [user.uid],
+          sharedUsers: [
+            UserInfoModel(
+                uid: user.uid,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar,
+                phoneNumber: user.phoneNumber),
+          ],
+          sharedUserIds: [user.uid],
           referBy: referBy,
           referListId: referListId,
           createdAt: DateTime.now());
@@ -147,7 +155,7 @@ class ListRepo {
         collection: FIREBASE_COLLECTION_LISTS,
         queries: [
           QueryModel(
-              field: "sharedUsers",
+              field: "sharedUserIds",
               value: [user.uid],
               type: QueryType.arrayContainsAny),
           QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),
@@ -189,7 +197,7 @@ class ListRepo {
       onCompleted: (listener) {},
       queries: [
         QueryModel(
-            field: "sharedUsers",
+            field: "sharedUserIds",
             value: [user.uid],
             type: QueryType.arrayContainsAny),
         QueryModel(field: 'createdAt', value: true, type: QueryType.orderBy),

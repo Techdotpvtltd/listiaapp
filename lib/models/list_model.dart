@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:listi_shop/models/user_model.dart';
 import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 // Project: 	   listi_shop
@@ -16,7 +17,8 @@ class ListModel {
   final String id;
   final String createdBy;
   final String title;
-  final List<String> sharedUsers;
+  final List<UserInfoModel> sharedUsers;
+  final List<String> sharedUserIds;
   final DateTime createdAt;
   final bool isCompleted;
   String? referBy;
@@ -29,6 +31,7 @@ class ListModel {
     required this.sharedUsers,
     required this.createdAt,
     required this.isCompleted,
+    required this.sharedUserIds,
     this.referBy,
     this.referListId,
   });
@@ -37,10 +40,11 @@ class ListModel {
     String? id,
     String? createdBy,
     String? title,
-    List<String>? sharedUsers,
+    List<UserInfoModel>? sharedUsers,
     DateTime? createdAt,
     bool? isCompleted,
     String? referBy,
+    List<String>? sharedUserIds,
     String? referListId,
   }) {
     return ListModel(
@@ -52,6 +56,7 @@ class ListModel {
       createdAt: createdAt ?? this.createdAt,
       referBy: referBy ?? this.referBy,
       referListId: referListId ?? this.referListId,
+      sharedUserIds: sharedUserIds ?? this.sharedUserIds,
     );
   }
 
@@ -60,11 +65,12 @@ class ListModel {
       'id': id,
       'createdBy': createdBy,
       'title': title.capitalizeFirstCharacter(),
-      'sharedUsers': sharedUsers,
+      'sharedList': sharedUsers.map((e) => e.toMap()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
       'isCompleted': isCompleted,
       'referBy': referBy,
       'referListId': referListId,
+      'sharedUserIds': sharedUserIds,
     };
   }
 
@@ -76,9 +82,16 @@ class ListModel {
       referListId: map['referListId'] as String?,
       isCompleted: map['isCompleted'] as bool? ?? false,
       title: map['title'] as String,
-      sharedUsers: (map['sharedUsers'] as List<dynamic>)
-          .map((e) => e.toString())
-          .toList(),
+      sharedUsers: map['sharedList'] != null
+          ? (map['sharedList'] as List<dynamic>)
+              .map((e) => UserInfoModel.fromMap(e))
+              .toList()
+          : [],
+      sharedUserIds: map['sharedUserIds'] != null
+          ? (map['sharedUserIds'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList()
+          : [],
       createdAt: (map['createdAt'] as Timestamp).toDate(),
     );
   }

@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:listi_shop/repos/subscription_repo.dart';
 import 'package:listi_shop/utils/extensions/string_extension.dart';
 
-import '../../exceptions/exception_parsing.dart';
-
-import '../../web_services/firestore_services.dart';
 import '../../exceptions/data_exceptions.dart';
+import '../../exceptions/exception_parsing.dart';
+import '../../web_services/firestore_services.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../managers/app_manager.dart';
 import '../models/user_model.dart';
@@ -168,7 +167,8 @@ class UserRepo {
   }
 
   Future<void> sendInvite(
-      {required String listId, required List<String> invitedUserIds}) async {
+      {required String listId,
+      required List<UserInfoModel> inviteUsers}) async {
     try {
       if (!AppManager().isActiveSubscription) {
         throw DataExceptionSubscriptionRequired(
@@ -179,14 +179,14 @@ class UserRepo {
 
       if (currentSub != null) {
         if (currentSub.title.toLowerCase() == "house" &&
-            invitedUserIds.length > 5) {
+            inviteUsers.length > 5) {
           throw DataExceptionSubscriptionRequired(
               message:
                   "You have completed your share limit in this mode. Please update your plan to share list with more users.");
         }
 
         if (currentSub.title.toLowerCase() == "business" &&
-            invitedUserIds.length > 20) {
+            inviteUsers.length > 20) {
           throw DataExceptionSubscriptionRequired(
               message:
                   "You have completed your share limit in this mode. Please update your plan to share list with more users.");
@@ -195,7 +195,12 @@ class UserRepo {
       await FirestoreService().updateWithDocId(
         path: FIREBASE_COLLECTION_LISTS,
         docId: listId,
-        data: {'sharedUsers': FieldValue.arrayUnion(invitedUserIds)},
+        data: {
+          'sharedList':
+              FieldValue.arrayUnion(inviteUsers.map((e) => e.toMap()).toList()),
+          'sharedUserIds':
+              FieldValue.arrayUnion(inviteUsers.map((e) => e.uid).toList())
+        },
       );
     } catch (e) {
       throw throwAppException(e: e);
