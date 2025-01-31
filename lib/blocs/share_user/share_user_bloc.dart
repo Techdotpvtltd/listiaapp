@@ -7,6 +7,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:listi_shop/repos/share_repo.dart';
 
 import '../../exceptions/app_exceptions.dart';
 import '../../models/user_model.dart';
@@ -35,7 +36,7 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
       (event, emit) async {
         try {
           emit(ShareUserStateInviting());
-          await UserRepo().sendInvite(
+          await ShareRepo().sendInvite(
             listId: event.listId,
             inviteUsers: event.sharedUserIds,
           );

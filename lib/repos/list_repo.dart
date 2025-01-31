@@ -129,12 +129,12 @@ class ListRepo {
     required List<String> itemsIds,
   }) async {
     try {
-      await FirestoreService().delete(
+      await FirestoreService().deleteOld(
         collection: FIREBASE_COLLECTION_LISTS,
         docId: id,
       );
       for (final String itemId in itemsIds) {
-        await FirestoreService().delete(
+        await FirestoreService().deleteOld(
           collection: FIREBASE_COLLECTION_ITEMS,
           docId: itemId,
         );
@@ -180,17 +180,32 @@ class ListRepo {
       onError: (e) {
         onError(throwAppException(e: e));
       },
-      onData: (Map<String, dynamic> data) {
-        final ListModel model = ListModel.fromMap(data);
+      onAdded: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
         final int index =
             _lists.indexWhere((element) => element.id == model.id);
-
-        if (index > -1) {
-          _lists[index] = model;
-        } else {
+        if (index < 0) {
           _lists.add(model);
         }
+        onData();
+      },
+      onUpdated: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
+        final int index =
+            _lists.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _lists[index] = model;
+        }
 
+        onData();
+      },
+      onRemoved: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
+        final int index =
+            _lists.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _lists.removeAt(index);
+        }
         onData();
       },
       onAllDataGet: onAllDataGet,
@@ -216,14 +231,31 @@ class ListRepo {
       onError: (e) {
         onError(throwAppException(e: e));
       },
-      onData: (Map<String, dynamic> data) {
-        final ListModel model = ListModel.fromMap(data);
+      onAdded: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
+        final int index =
+            _adminLists.indexWhere((element) => element.id == model.id);
+        if (index < 0) {
+          _adminLists.add(model);
+        }
+        onData();
+      },
+      onUpdated: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
         final int index =
             _adminLists.indexWhere((element) => element.id == model.id);
         if (index > -1) {
           _adminLists[index] = model;
-        } else {
-          _adminLists.add(model);
+        }
+
+        onData();
+      },
+      onRemoved: (p0) {
+        final ListModel model = ListModel.fromMap(p0);
+        final int index =
+            _adminLists.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _adminLists.removeAt(index);
         }
         onData();
       },

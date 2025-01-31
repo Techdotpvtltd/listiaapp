@@ -29,9 +29,9 @@ import '../components/custom_dropdown.dart';
 import '../components/custom_snack_bar.dart';
 
 class AddItemScreen extends StatefulWidget {
-  const AddItemScreen({super.key, required this.listId, this.item});
   final String listId;
   final ItemModel? item;
+  const AddItemScreen({super.key, required this.listId, this.item});
   @override
   State<AddItemScreen> createState() => _AddItemScreenState();
 }
@@ -49,63 +49,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   List<String> categoryNames = [];
-
-  void triggerAddItemEvent(ItemBloc bloc) {
-    setState(() {
-      errorCode = null;
-    });
-
-    bloc.add(
-      ItemEventAddNew(
-        itemName: nameController.text,
-        listId: widget.listId,
-        category: selectedCategoryId ?? "",
-        quantity: int.tryParse(quantityController.text),
-        unit: selectedUnit,
-        amount: amountController.text,
-      ),
-    );
-  }
-
-  void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
-    bloc.add(CategoryEventAdd(category: categoryName));
-  }
-
-  void triggerUpdateItemEvent(ItemBloc bloc, {required String itemId}) {
-    setState(() {
-      errorCode = null;
-    });
-
-    bloc.add(
-      ItemEventUpdate(
-        itemName: nameController.text,
-        itemId: itemId,
-        category: selectedCategoryId ?? "",
-        quantity: int.tryParse(quantityController.text),
-        unit: selectedUnit,
-        amount: amountController.text,
-      ),
-    );
-  }
-
-  void updateCatoriesName() {
-    categoryNames.clear();
-    categoryNames = categories.map((e) => e.item).toList();
-    categoryNames.insert(0, "Add New");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    updateCatoriesName();
-    quantityController.text = item?.quantity.toString() ?? "";
-    if (item != null) {
-      nameController.text = item?.itemName ?? "";
-      selectedCategoryId = item?.category;
-      selectedUnit = item?.unit;
-      amountController.text = item?.amount ?? "";
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -331,5 +274,62 @@ class _AddItemScreenState extends State<AddItemScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateCatoriesName();
+    quantityController.text = item?.quantity.toString() ?? "";
+    if (item != null) {
+      nameController.text = item?.itemName ?? "";
+      selectedCategoryId = item?.category;
+      selectedUnit = item?.unit;
+      amountController.text = item?.amount ?? "";
+    }
+  }
+
+  void triggerAddCategoryEvent(CategoryBloc bloc, String categoryName) {
+    bloc.add(CategoryEventAdd(category: categoryName));
+  }
+
+  void triggerAddItemEvent(ItemBloc bloc) {
+    setState(() {
+      errorCode = null;
+    });
+
+    bloc.add(
+      ItemEventAddNew(
+        itemName: nameController.text,
+        listId: widget.listId,
+        category: selectedCategoryId ?? "",
+        quantity: int.tryParse(quantityController.text),
+        unit: selectedUnit,
+        amount: amountController.text,
+      ),
+    );
+  }
+
+  void triggerUpdateItemEvent(ItemBloc bloc, {required String itemId}) {
+    setState(() {
+      errorCode = null;
+    });
+
+    bloc.add(
+      ItemEventUpdate(
+        itemName: nameController.text,
+        itemId: itemId,
+        category: selectedCategoryId ?? "",
+        quantity: int.tryParse(quantityController.text),
+        unit: selectedUnit,
+        amount: amountController.text,
+      ),
+    );
+  }
+
+  void updateCatoriesName() {
+    categoryNames.clear();
+    categoryNames = categories.map((e) => e.item).toList();
+    categoryNames.insert(0, "Add New");
   }
 }

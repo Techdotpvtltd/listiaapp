@@ -293,7 +293,7 @@ class ItemRepo {
   Future<void> deleteItem({required String itemId}) async {
     try {
       await FirestoreService()
-          .delete(collection: FIREBASE_COLLECTION_ITEMS, docId: itemId);
+          .deleteOld(collection: FIREBASE_COLLECTION_ITEMS, docId: itemId);
       _items.removeWhere(
           (element) => element.id.toLowerCase() == itemId.toLowerCase());
     } catch (e) {
@@ -310,21 +310,37 @@ class ItemRepo {
     await FirestoreService().fetchWithListener(
       collection: FIREBASE_COLLECTION_ITEMS,
       onError: (e) => throwAppException(e: e),
-      onData: (data) {
-        final ItemModel model = ItemModel.fromMap(data);
-
+      onAdded: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
         final int index =
             _items.indexWhere((element) => element.id == model.id);
-        if (index > -1) {
-          // If Item Already existed
-          _items[index] = model;
-        } else {
+        if (index < 0) {
           _items.add(model);
         }
         _items.sort((a, b) {
           return (a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)
               .compareTo(0);
         });
+        onGetData();
+      },
+      onUpdated: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _items[index] = model;
+        }
+
+        onGetData();
+      },
+      onRemoved: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _items.removeAt(index);
+        }
+
         onGetData();
       },
       onAllDataGet: onGetAll,
@@ -365,20 +381,37 @@ class ItemRepo {
     await FirestoreService().fetchWithListener(
       collection: FIREBASE_COLLECTION_ITEMS_ADMIN,
       onError: (e) => throwAppException(e: e),
-      onData: (data) {
-        final ItemModel model = ItemModel.fromMap(data);
+      onAdded: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
         final int index =
             _items.indexWhere((element) => element.id == model.id);
-        if (index > -1) {
-          // If Item Already existed
-          _items[index] = model;
-        } else {
+        if (index < 0) {
           _items.add(model);
         }
         _items.sort((a, b) {
           return (a.completedBy?.completedAt.millisecondsSinceEpoch ?? 0)
               .compareTo(0);
         });
+        onGetData();
+      },
+      onUpdated: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _items[index] = model;
+        }
+
+        onGetData();
+      },
+      onRemoved: (p0) {
+        final ItemModel model = ItemModel.fromMap(p0);
+        final int index =
+            _items.indexWhere((element) => element.id == model.id);
+        if (index > -1) {
+          _items.removeAt(index);
+        }
+
         onGetData();
       },
       onAllDataGet: onGetAll,

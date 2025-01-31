@@ -1,16 +1,13 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:listi_shop/repos/subscription_repo.dart';
 import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../exceptions/data_exceptions.dart';
 import '../../exceptions/exception_parsing.dart';
 import '../../web_services/firestore_services.dart';
 import '../exceptions/auth_exceptions.dart';
-import '../managers/app_manager.dart';
 import '../models/user_model.dart';
 import '../utils/constants/firebase_collections.dart';
 import '../web_services/query_model.dart';
@@ -163,47 +160,6 @@ class UserRepo {
     } catch (e) {
       debugPrint(e.toString());
       throw DataExceptionUnknown(message: e.toString());
-    }
-  }
-
-  Future<void> sendInvite(
-      {required String listId,
-      required List<UserInfoModel> inviteUsers}) async {
-    try {
-      if (!AppManager().isActiveSubscription) {
-        throw DataExceptionSubscriptionRequired(
-            message:
-                "You donn't have limit to share list with others in free plan. Please update your plan to share list with other users.");
-      }
-      final currentSub = SubscriptionRepo().lastSubscription;
-
-      if (currentSub != null) {
-        if (currentSub.title.toLowerCase() == "house" &&
-            inviteUsers.length > 5) {
-          throw DataExceptionSubscriptionRequired(
-              message:
-                  "You have completed your share limit in this mode. Please update your plan to share list with more users.");
-        }
-
-        if (currentSub.title.toLowerCase() == "business" &&
-            inviteUsers.length > 20) {
-          throw DataExceptionSubscriptionRequired(
-              message:
-                  "You have completed your share limit in this mode. Please update your plan to share list with more users.");
-        }
-      }
-      await FirestoreService().updateWithDocId(
-        path: FIREBASE_COLLECTION_LISTS,
-        docId: listId,
-        data: {
-          'sharedList':
-              FieldValue.arrayUnion(inviteUsers.map((e) => e.toMap()).toList()),
-          'sharedUserIds':
-              FieldValue.arrayUnion(inviteUsers.map((e) => e.uid).toList())
-        },
-      );
-    } catch (e) {
-      throw throwAppException(e: e);
     }
   }
 

@@ -21,6 +21,7 @@ import 'package:listi_shop/screens/main/cart_screen.dart';
 import 'package:listi_shop/screens/main/components/item_type_list.dart';
 import 'package:listi_shop/screens/main/components/profiles_widget.dart';
 import 'package:listi_shop/screens/main/share_screen.dart';
+import 'package:listi_shop/screens/main/share_uses_list_screen.dart';
 import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
@@ -42,18 +43,215 @@ import '../components/custom_dropdown.dart';
 import 'create_list_screen.dart';
 
 class ListItemDetailScreen extends StatefulWidget {
+  final ListModel list;
+  final bool isBoughtScreen;
+  final Function(ListModel)? onAddListPressed;
+  final Function(ListModel)? onDeleteListPressed;
   const ListItemDetailScreen(
       {super.key,
       required this.list,
       this.isBoughtScreen = false,
       this.onAddListPressed,
       this.onDeleteListPressed});
-  final ListModel list;
-  final bool isBoughtScreen;
-  final Function(ListModel)? onAddListPressed;
-  final Function(ListModel)? onDeleteListPressed;
   @override
   State<ListItemDetailScreen> createState() => _ListItemDetailScreenState();
+}
+
+class _ItemList extends StatefulWidget {
+  final List<ItemModel> items;
+  final Function(ItemModel) onItemSelected;
+  final Function(ItemModel) onItemDeselected;
+  final List<String> categories;
+  const _ItemList(
+      {required this.items,
+      required this.onItemSelected,
+      required this.onItemDeselected,
+      required this.categories});
+  @override
+  State<_ItemList> createState() => _ItemListState();
+}
+
+class _ItemListState extends State<_ItemList> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (int index = 0; index < widget.items.length; index++)
+          Builder(
+            builder: (context) {
+              final ItemModel item = widget.items[index];
+              bool isSelected = item.completedBy != null;
+              bool isBought = item.boughtBy != null;
+
+              return Dismissible(
+                key: Key(item.id), // Use a unique key for each item
+                background: Container(
+                  alignment: Alignment.centerLeft,
+                  color: Colors.blue,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                ),
+                secondaryBackground: Container(
+                  alignment: Alignment.centerRight,
+                  color: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                confirmDismiss: (direction) async {
+                  if (direction == DismissDirection.startToEnd) {
+                    onEditMenuPressed(item);
+                    return false; // Return false to prevent the item from being dismissed
+                  } else if (direction == DismissDirection.endToStart) {
+                    return await onDeleteMenuPressed(
+                        item); // Return true to dismiss the item
+                  }
+                  return false;
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomInkWell(
+                        onTap: () {
+                          setState(() {
+                            if (!isSelected) {
+                              widget.onItemSelected(item);
+                            } else {
+                              widget.onItemDeselected(item);
+                            }
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 15),
+                          decoration: BoxDecoration(
+                            gradient: isSelected
+                                ? LinearGradient(
+                                    begin: const Alignment(0.99, -0.10),
+                                    end: const Alignment(-0.99, 0.1),
+                                    colors: [
+                                      const Color(0xFF30A94A)
+                                          .withValues(alpha: 0.02),
+                                      const Color(0x002EA346).withValues(
+                                          alpha: isBought ? 0.3 : 0.09),
+                                    ],
+                                  )
+                                : null,
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppTheme.primaryColor2
+                                  : const Color(0xFFF3F3F3),
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(24)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.itemName,
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.titleColor1,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    item.unit != null
+                                        ? "${item.amount} ${item.unit}"
+                                        : "",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor2,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (item.quantity != null &&
+                                      item.unit != null)
+                                    gapW6,
+                                  Text(
+                                    item.quantity != null
+                                        ? "x${item.quantity.toString()}"
+                                        : "",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.subTitleColor2,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              ///
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: item.createdBy == UserRepo().currentUser.uid &&
+                          !isBought,
+                      child: CustomMenuDropdown(
+                        icon: const Icon(
+                          Icons.more_vert_outlined,
+                          color: Colors.black,
+                        ),
+                        items: [
+                          DropdownMenuModel(icon: Icons.edit, title: "Edit"),
+                          DropdownMenuModel(
+                              icon: Icons.delete, title: "Delete"),
+                        ],
+                        onSelectedItem: (value, index) {
+                          if (value.toLowerCase() == "edit") {
+                            onEditMenuPressed(item);
+                          }
+
+                          if (value.toLowerCase() == "delete") {
+                            onDeleteMenuPressed(item);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+      ],
+    );
+  }
+
+  Future<bool> onDeleteMenuPressed(ItemModel model) async {
+    Completer<void> completer = Completer<void>();
+    bool value = false;
+    CustomDialogs().deleteBox(
+      title: "Item Deletion",
+      message: "Are you sure to delete this ${model.itemName} item?.",
+      onPositivePressed: () {
+        context.read<ItemBloc>().add(ItemEventDeleted(itemId: model.id));
+        value = true;
+        completer.complete();
+      },
+      onNegativePressed: () {
+        value = false;
+        completer.complete();
+        NavigationService.back();
+      },
+    );
+    completer.future;
+    return value;
+  }
+
+  void onEditMenuPressed(ItemModel model) {
+    NavigationService.go(
+      AddItemScreen(
+        listId: model.listId,
+        item: model,
+      ),
+    );
+  }
 }
 
 class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
@@ -66,83 +264,6 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       UserRepo().currentUser.uid == widget.list.createdBy;
   bool isAddListLoading = false;
   late List<String> categories = ItemRepo().getCategories(listId: list.id);
-
-  List<DropdownMenuModel> getMenuItems() {
-    List<DropdownMenuModel> items = [];
-    if (AppManager().isActiveSubscription) {
-      items.add(DropdownMenuModel(title: 'Add Person', icon: Icons.add));
-    }
-    if (isListCreater) {
-      items.add(DropdownMenuModel(title: "Edit", icon: Icons.edit));
-      items.add(DropdownMenuModel(title: "Delete", icon: Icons.delete));
-    }
-
-    return items;
-  }
-
-  void triggerDeleteListEvent() {
-    CustomDialogs().deleteBox(
-        title: "Delete List",
-        message:
-            "Are you sure to delete this list? This will delete all the items and shared user data. This process will not be undo.",
-        onPositivePressed: () {
-          if (widget.onDeleteListPressed != null) {
-            widget.onDeleteListPressed!(list);
-          }
-        });
-  }
-
-  void navigateToShareScreen() {
-    NavigationService.go(ShareScreen(list: list));
-  }
-
-  void navigateToUpdateList() {
-    NavigationService.go(CreateListScreen(updatedList: list));
-  }
-
-  void onMenuPressed({required String selectedMenu}) {
-    switch (selectedMenu.toLowerCase()) {
-      case 'add person':
-        navigateToShareScreen();
-        break;
-      case 'edit':
-        navigateToUpdateList();
-        break;
-      case 'delete':
-        triggerDeleteListEvent();
-        break;
-    }
-  }
-
-  void filteredItems({String? searchText}) {
-    setState(() {
-      categories = ItemRepo().getCategories(listId: list.id);
-    });
-    categoryItems = ItemRepo().filteredItems(
-      searchText: searchText,
-      categories: selectedCategory.toLowerCase() == "all"
-          ? categories
-          : [selectedCategory],
-      listId: widget.list.id,
-      isShowBoughtItemsOnly: widget.isBoughtScreen,
-    );
-  }
-
-  void triggerMarkCompleteItemEvent(ItemBloc bloc,
-      {required String selectedItemId}) {
-    bloc.add(ItemEventMarkComplete(itemId: selectedItemId));
-  }
-
-  void triggerMarkUnCompleteItemEvent(ItemBloc bloc, {required String itemId}) {
-    bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    filteredItems();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +330,13 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             ProfilesWidget(
               invitedUsers: widget.list.sharedUsers,
               height: 50,
+              onTap: () {
+                if (isListCreater) {
+                  NavigationService.go(ShareUsersListScreen(
+                    invitedUsers: widget.list.sharedUsers,
+                  ));
+                }
+              },
             ),
           gapW10,
 
@@ -386,201 +514,85 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       ),
     );
   }
-}
 
-class _ItemList extends StatefulWidget {
-  const _ItemList(
-      {required this.items,
-      required this.onItemSelected,
-      required this.onItemDeselected,
-      required this.categories});
-  final List<ItemModel> items;
-  final Function(ItemModel) onItemSelected;
-  final Function(ItemModel) onItemDeselected;
-  final List<String> categories;
-  @override
-  State<_ItemList> createState() => _ItemListState();
-}
-
-class _ItemListState extends State<_ItemList> {
-  void onEditMenuPressed(ItemModel model) {
-    NavigationService.go(
-      AddItemScreen(
-        listId: model.listId,
-        item: model,
-      ),
+  void filteredItems({String? searchText}) {
+    setState(() {
+      categories = ItemRepo().getCategories(listId: list.id);
+    });
+    categoryItems = ItemRepo().filteredItems(
+      searchText: searchText,
+      categories: selectedCategory.toLowerCase() == "all"
+          ? categories
+          : [selectedCategory],
+      listId: widget.list.id,
+      isShowBoughtItemsOnly: widget.isBoughtScreen,
     );
   }
 
-  Future<bool> onDeleteMenuPressed(ItemModel model) async {
-    Completer<void> completer = Completer<void>();
-    bool value = false;
+  List<DropdownMenuModel> getMenuItems() {
+    List<DropdownMenuModel> items = [];
+    if (AppManager().isActiveSubscription) {
+      items.add(DropdownMenuModel(title: 'Add Person', icon: Icons.add));
+    }
+    if (isListCreater) {
+      items.add(DropdownMenuModel(title: "Edit", icon: Icons.edit));
+      items.add(DropdownMenuModel(title: "Delete", icon: Icons.delete));
+    }
+
+    if (!isListCreater) {
+      items.add(DropdownMenuModel(title: "Leave", icon: Icons.exit_to_app));
+    }
+
+    return items;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    filteredItems();
+  }
+
+  void navigateToShareScreen() {
+    NavigationService.go(ShareScreen(list: list));
+  }
+
+  void navigateToUpdateList() {
+    NavigationService.go(CreateListScreen(updatedList: list));
+  }
+
+  void onMenuPressed({required String selectedMenu}) {
+    switch (selectedMenu.toLowerCase()) {
+      case 'add person':
+        navigateToShareScreen();
+        break;
+      case 'edit':
+        navigateToUpdateList();
+        break;
+      case 'delete':
+        triggerDeleteListEvent();
+        break;
+    }
+  }
+
+  void triggerDeleteListEvent() {
     CustomDialogs().deleteBox(
-      title: "Item Deletion",
-      message: "Are you sure to delete this ${model.itemName} item?.",
-      onPositivePressed: () {
-        context.read<ItemBloc>().add(ItemEventDeleted(itemId: model.id));
-        value = true;
-        completer.complete();
-      },
-      onNegativePressed: () {
-        value = false;
-        completer.complete();
-        NavigationService.back();
-      },
-    );
-    completer.future;
-    return value;
+        title: "Delete List",
+        message:
+            "Are you sure to delete this list? This will delete all the items and shared user data. This process will not be undo.",
+        onPositivePressed: () {
+          if (widget.onDeleteListPressed != null) {
+            widget.onDeleteListPressed!(list);
+          }
+        });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (int index = 0; index < widget.items.length; index++)
-          Builder(
-            builder: (context) {
-              final ItemModel item = widget.items[index];
-              bool isSelected = item.completedBy != null;
-              bool isBought = item.boughtBy != null;
+  void triggerMarkCompleteItemEvent(ItemBloc bloc,
+      {required String selectedItemId}) {
+    bloc.add(ItemEventMarkComplete(itemId: selectedItemId));
+  }
 
-              return Dismissible(
-                key: Key(item.id), // Use a unique key for each item
-                background: Container(
-                  alignment: Alignment.centerLeft,
-                  color: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.edit, color: Colors.white),
-                ),
-                secondaryBackground: Container(
-                  alignment: Alignment.centerRight,
-                  color: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
-                confirmDismiss: (direction) async {
-                  if (direction == DismissDirection.startToEnd) {
-                    onEditMenuPressed(item);
-                    return false; // Return false to prevent the item from being dismissed
-                  } else if (direction == DismissDirection.endToStart) {
-                    return await onDeleteMenuPressed(
-                        item); // Return true to dismiss the item
-                  }
-                  return false;
-                },
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomInkWell(
-                        onTap: () {
-                          setState(() {
-                            if (!isSelected) {
-                              widget.onItemSelected(item);
-                            } else {
-                              widget.onItemDeselected(item);
-                            }
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 15),
-                          decoration: BoxDecoration(
-                            gradient: isSelected
-                                ? LinearGradient(
-                                    begin: const Alignment(0.99, -0.10),
-                                    end: const Alignment(-0.99, 0.1),
-                                    colors: [
-                                      const Color(0xFF30A94A)
-                                          .withValues(alpha: 0.02),
-                                      const Color(0x002EA346).withValues(
-                                          alpha: isBought ? 0.3 : 0.09),
-                                    ],
-                                  )
-                                : null,
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppTheme.primaryColor2
-                                  : const Color(0xFFF3F3F3),
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(24)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                item.itemName,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: AppTheme.titleColor1,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    item.unit != null
-                                        ? "${item.amount} ${item.unit}"
-                                        : "",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor2,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  if (item.quantity != null &&
-                                      item.unit != null)
-                                    gapW6,
-                                  Text(
-                                    item.quantity != null
-                                        ? "x${item.quantity.toString()}"
-                                        : "",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: AppTheme.subTitleColor2,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              ///
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: item.createdBy == UserRepo().currentUser.uid &&
-                          !isBought,
-                      child: CustomMenuDropdown(
-                        icon: const Icon(
-                          Icons.more_vert_outlined,
-                          color: Colors.black,
-                        ),
-                        items: [
-                          DropdownMenuModel(icon: Icons.edit, title: "Edit"),
-                          DropdownMenuModel(
-                              icon: Icons.delete, title: "Delete"),
-                        ],
-                        onSelectedItem: (value, index) {
-                          if (value.toLowerCase() == "edit") {
-                            onEditMenuPressed(item);
-                          }
-
-                          if (value.toLowerCase() == "delete") {
-                            onDeleteMenuPressed(item);
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          )
-      ],
-    );
+  void triggerMarkUnCompleteItemEvent(ItemBloc bloc, {required String itemId}) {
+    bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
   }
 }

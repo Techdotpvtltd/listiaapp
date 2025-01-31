@@ -8,7 +8,8 @@ const String FIREBASE_COLLECTION_USER_PROFILES =
     "${kReleaseMode ? "Rel-" : "Dev-"}Avatars";
 const String FIREBASE_COLLECTION_LISTS =
     "${kReleaseMode ? "Rel-" : "Dev-"}Lists";
-
+const String FIREBASE_COLLECTION_REQUESTS =
+    "${kReleaseMode ? "Rel-" : "Dev-"}Requests";
 const String FIREBASE_COLLECTION_ITEMS =
     "${kReleaseMode ? "Rel-" : "Dev-"}Items";
 const FIREBASE_COLLECTION_CATEGORY =
