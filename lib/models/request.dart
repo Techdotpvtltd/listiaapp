@@ -13,8 +13,8 @@ enum RequestStatus { pending, accepted, rejected, canceled }
 
 class RequestModel {
   final String uid;
-  final String sharedBy;
-  final UserInfoModel sharedUser;
+  final UserInfoModel sharedBy;
+  final UserInfoModel sharedTo;
   final String listId;
   final DateTime createdAt;
   final String listTitle;
@@ -22,7 +22,7 @@ class RequestModel {
   RequestModel({
     required this.uid,
     required this.sharedBy,
-    required this.sharedUser,
+    required this.sharedTo,
     required this.listId,
     required this.createdAt,
     required this.listTitle,
@@ -31,8 +31,8 @@ class RequestModel {
 
   RequestModel copyWith({
     String? uid,
-    String? sharedBy,
-    UserInfoModel? sharedUser,
+    UserInfoModel? sharedBy,
+    UserInfoModel? sharedTo,
     String? listId,
     DateTime? createdAt,
     String? listTitle,
@@ -41,7 +41,7 @@ class RequestModel {
     return RequestModel(
         uid: uid ?? this.uid,
         sharedBy: sharedBy ?? this.sharedBy,
-        sharedUser: sharedUser ?? this.sharedUser,
+        sharedTo: sharedTo ?? this.sharedTo,
         listId: listId ?? this.listId,
         createdAt: createdAt ?? this.createdAt,
         status: status ?? this.status,
@@ -51,8 +51,8 @@ class RequestModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uid': uid,
-      'sharedBy': sharedBy,
-      'sharedUser': sharedUser.toMap(),
+      'sharedTo': sharedTo.toMap(),
+      'sharedBy': sharedBy.toMap(),
       'listId': listId,
       'createdAt': Timestamp.fromDate(createdAt),
       'listTitle': listTitle,
@@ -63,9 +63,8 @@ class RequestModel {
   factory RequestModel.fromMap(Map<String, dynamic> map) {
     return RequestModel(
       uid: map['uid'] as String,
-      sharedBy: map['sharedBy'] as String,
-      sharedUser:
-          UserInfoModel.fromMap(map['sharedUser'] as Map<String, dynamic>),
+      sharedBy: UserInfoModel.fromMap(map['sharedBy'] as Map<String, dynamic>),
+      sharedTo: UserInfoModel.fromMap(map['sharedTo'] as Map<String, dynamic>),
       listId: map['listId'] as String,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
       listTitle: map['listTitle'] as String? ?? "",
@@ -76,7 +75,7 @@ class RequestModel {
 
   @override
   String toString() {
-    return 'ShareListModel(uid: $uid, sharedBy: $sharedBy, sharedUser: $sharedUser, listId: $listId, createdAt: $createdAt, listTitle: $listTitle, status: $status)';
+    return 'ShareListModel(uid: $uid, sharedBy: $sharedBy, sharedBy: $sharedBy, sharedTo: $sharedTo, listId: $listId, createdAt: $createdAt, listTitle: $listTitle, status: $status)';
   }
 
   @override
@@ -85,7 +84,7 @@ class RequestModel {
 
     return other.uid == uid &&
         other.sharedBy == sharedBy &&
-        other.sharedUser == sharedUser &&
+        other.sharedTo == sharedTo &&
         other.listId == listId &&
         other.listTitle == listTitle &&
         other.status == status &&
@@ -96,7 +95,7 @@ class RequestModel {
   int get hashCode {
     return uid.hashCode ^
         sharedBy.hashCode ^
-        sharedUser.hashCode ^
+        sharedTo.hashCode ^
         listId.hashCode ^
         status.hashCode ^
         listTitle.hashCode ^

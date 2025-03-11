@@ -55,30 +55,21 @@ class ShareRepo {
         }
       }
 
-      for (final UserInfoModel inviteUser in inviteUsers) {
+      for (final UserInfoModel invitingUser in inviteUsers) {
         final RequestModel model = RequestModel(
-            uid: inviteUser.uid,
-            sharedBy: user.uid,
-            sharedUser: userInfoModel,
+            uid: "",
+            sharedBy: userInfoModel,
+            sharedTo: invitingUser,
             listId: list.id,
             listTitle: list.title,
             status: RequestStatus.pending,
             createdAt: DateTime.now());
-        await FirestoreService().saveWithDocId(
-            path: FIREBASE_COLLECTION_REQUESTS,
-            docId: inviteUser.uid,
-            data: model.toMap());
+        await FirestoreService().saveWithSpecificIdFiled(
+          path: FIREBASE_COLLECTION_REQUESTS,
+          data: model.toMap(),
+          docIdFiled: 'uid',
+        );
       }
-      // await FirestoreService().updateWithDocId(
-      //   path: FIREBASE_COLLECTION_SHARE_USERS,
-      //   docId: listId,
-      //   data: {
-      //     'sharedList':
-      //         FieldValue.arrayUnion(inviteUsers.map((e) => e.toMap()).toList()),
-      //     'sharedUserIds':
-      //         FieldValue.arrayUnion(inviteUsers.map((e) => e.uid).toList())
-      //   },
-      // );
     } catch (e) {
       throw throwAppException(e: e);
     }
