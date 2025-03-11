@@ -42,6 +42,7 @@ class _ShareScreenState extends State<ShareScreen> {
   bool isSearchingUsers = false;
   bool isInvitingUsers = false;
   bool didMadeSearch = false;
+  late final List<String> alreadyInvitedUsers = widget.list.sharedUserIds;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -54,7 +55,9 @@ class _ShareScreenState extends State<ShareScreen> {
 
   void triggerInviteEvent(ShareUserBloc bloc) {
     bloc.add(SharedUserEventSendInvite(
-        listId: widget.list.id, sharedUserIds: inviteUsers));
+      list: widget.list,
+      sharedUserIds: inviteUsers,
+    ));
   }
 
   @override
@@ -156,11 +159,15 @@ class _ShareScreenState extends State<ShareScreen> {
                               -1;
 
                           final UserModel user = users[index];
+                          final bool isAlreadyInvited =
+                              alreadyInvitedUsers.contains(users[index].uid);
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 11),
                             child: CustomInkWell(
                               onTap: () {
+                                if (isAlreadyInvited) return;
+
                                 setState(() {
                                   if (isSelected) {
                                     setState(() {
@@ -196,7 +203,9 @@ class _ShareScreenState extends State<ShareScreen> {
                                             .toString(),
                                         width: 38,
                                         height: 38,
-                                        backgroundColor: AppTheme.primaryColor2,
+                                        backgroundColor: isAlreadyInvited
+                                            ? Colors.grey[500]
+                                            : AppTheme.primaryColor2,
                                       ),
                                       // Name Widget
                                       gapW10,
@@ -207,7 +216,9 @@ class _ShareScreenState extends State<ShareScreen> {
                                           Text(
                                             user.name,
                                             style: GoogleFonts.plusJakartaSans(
-                                              color: AppTheme.titleColor1,
+                                              color: isAlreadyInvited
+                                                  ? Colors.grey[500]
+                                                  : AppTheme.titleColor1,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700,
                                             ),
@@ -218,7 +229,9 @@ class _ShareScreenState extends State<ShareScreen> {
                                                 ? user.email
                                                 : user.phoneNumber,
                                             style: GoogleFonts.plusJakartaSans(
-                                              color: AppTheme.titleColor1,
+                                              color: isAlreadyInvited
+                                                  ? Colors.grey[500]
+                                                  : AppTheme.titleColor1,
                                               fontSize: 10,
                                               fontWeight: FontWeight.w500,
                                             ),

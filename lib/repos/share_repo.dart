@@ -6,6 +6,7 @@
 // Description:
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/web_services/firestore_services.dart';
@@ -27,9 +28,11 @@ class ShareRepo {
       email: user.email,
       avatar: user.avatar,
       phoneNumber: user.phoneNumber);
-  Future<void> sendInvite(
-      {required String listId,
-      required List<UserInfoModel> inviteUsers}) async {
+  Future<void> sendInvite({
+    required ListModel list,
+    required List<UserInfoModel> inviteUsers,
+    required int totalInvited,
+  }) async {
     try {
       if (!AppManager().isActiveSubscription) {
         throw DataExceptionSubscriptionRequired(
@@ -39,15 +42,13 @@ class ShareRepo {
       final currentSub = SubscriptionRepo().lastSubscription;
 
       if (currentSub != null) {
-        if (currentSub.title.toLowerCase() == "house" &&
-            inviteUsers.length > 5) {
+        if (currentSub.title.toLowerCase() == "house" && totalInvited > 5) {
           throw DataExceptionSubscriptionRequired(
               message:
                   "You have completed your share limit in this mode. Please update your plan to share list with more users.");
         }
 
-        if (currentSub.title.toLowerCase() == "business" &&
-            inviteUsers.length > 20) {
+        if (currentSub.title.toLowerCase() == "business" && totalInvited > 20) {
           throw DataExceptionSubscriptionRequired(
               message:
                   "You have completed your share limit in this mode. Please update your plan to share list with more users.");
@@ -59,7 +60,9 @@ class ShareRepo {
             uid: inviteUser.uid,
             sharedBy: user.uid,
             sharedUser: userInfoModel,
-            listId: listId,
+            listId: list.id,
+            listTitle: list.title,
+            status: RequestStatus.pending,
             createdAt: DateTime.now());
         await FirestoreService().saveWithDocId(
             path: FIREBASE_COLLECTION_REQUESTS,

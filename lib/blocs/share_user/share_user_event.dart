@@ -5,6 +5,7 @@
 // Date:        30-04-24 15:14:59 -- Tuesday
 // Description:
 
+import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/user_model.dart';
 
 abstract class ShareUserEvent {}
@@ -17,11 +18,12 @@ class ShareUserEventSearch extends ShareUserEvent {
 }
 
 class SharedUserEventSendInvite extends ShareUserEvent {
-  final String listId;
+  final ListModel list;
   final List<UserInfoModel> sharedUserIds;
-
-  SharedUserEventSendInvite(
-      {required this.listId, required this.sharedUserIds});
+  SharedUserEventSendInvite({
+    required this.list,
+    required this.sharedUserIds,
+  });
 }
 
 class SharedUserEventFetchInvitedUsers extends ShareUserEvent {
