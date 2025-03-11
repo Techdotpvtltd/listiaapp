@@ -72,13 +72,15 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           setState(() {
             isLoading = state.isLoading;
             productDetails = state.products;
-            activeProduct =
-                state.products.firstWhere((e) => e.id == activeSubscriptionId);
-
             productDetails.sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
             activeSubscriptionId = AppManager().isActiveSubscription
                 ? SubscriptionRepo().lastSubscription?.productId ?? ""
                 : "";
+
+            if (activeSubscriptionId != "") {
+              activeProduct = state.products
+                  .firstWhere((e) => e.id == activeSubscriptionId);
+            }
           });
         }
 
