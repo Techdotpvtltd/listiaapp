@@ -6,7 +6,11 @@
 // Description:
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/share_user/share_user_bloc.dart';
+import 'package:listi_shop/blocs/share_user/share_user_event.dart';
+import 'package:listi_shop/blocs/share_user/share_user_state.dart';
 import 'package:listi_shop/managers/app_manager.dart';
 import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
@@ -321,77 +325,94 @@ class __PendingUserTabState extends State<_PendingUserTab> {
               ),
             ],
           )
-        : ListView.builder(
-            padding: const EdgeInsets.only(top: 10),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final RequestModel request = requests[index];
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 11),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Row(
-                        children: [
-                          /// Profile Widget
-                          AvatarWidget(
-                            avatarUrl: request.sharedTo.avatar,
-                            placeholderChar: request
-                                .sharedTo.name.characters.firstOrNull
-                                .toString(),
-                            width: 38,
-                            height: 38,
-                            backgroundColor: AppTheme.primaryColor2,
-                          ),
-                          // Name Widget
-                          gapW10,
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  request.sharedTo.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.titleColor1,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                gapH6,
-                                Text(
-                                  request.sharedTo.phoneNumber == ""
-                                      ? request.sharedTo.email
-                                      : request.sharedTo.phoneNumber,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: AppTheme.titleColor1,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CustomButton(
-                      title: "Remove",
-                      onPressed: () {},
-                      width: 100,
-                      height: 30,
-                      textSize: 12,
-                      onlyBorder: true,
-                    )
-                  ],
-                ),
-              );
+        : BlocListener<ShareUserBloc, ShareUserState>(
+            listener: (context, state) {
+              if (state is ShareUserStateRemovedRequest) {
+                setState(() {
+                  requests.removeWhere((e) => e.uid == state.requestId);
+                });
+              }
             },
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 10),
+              itemCount: requests.length,
+              itemBuilder: (context, index) {
+                final RequestModel request = requests[index];
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Row(
+                          children: [
+                            /// Profile Widget
+                            AvatarWidget(
+                              avatarUrl: request.sharedTo.avatar,
+                              placeholderChar: request
+                                  .sharedTo.name.characters.firstOrNull
+                                  .toString(),
+                              width: 38,
+                              height: 38,
+                              backgroundColor: AppTheme.primaryColor2,
+                            ),
+                            // Name Widget
+                            gapW10,
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    request.sharedTo.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.titleColor1,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  gapH6,
+                                  Text(
+                                    request.sharedTo.phoneNumber == ""
+                                        ? request.sharedTo.email
+                                        : request.sharedTo.phoneNumber,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: AppTheme.titleColor1,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      CustomButton(
+                        title: "Remove",
+                        onPressed: () {
+                          triggerRemoveRequestEvent(request.uid);
+                        },
+                        width: 100,
+                        height: 30,
+                        textSize: 12,
+                        onlyBorder: true,
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
           );
+  }
+
+  void triggerRemoveRequestEvent(String requestId) {
+    context
+        .read<ShareUserBloc>()
+        .add(ShareUserEventRemoveRequest(requestId: requestId));
   }
 }

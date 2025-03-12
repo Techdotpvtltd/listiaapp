@@ -281,6 +281,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
             if (state is ShareUserStateFetchedPendingRequests) {
               _requests = state.requests;
             }
+
+            if (state is ShareUserStateInvited) {
+              _requests.addAll(state.requests);
+            }
           },
         ),
 

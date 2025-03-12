@@ -48,7 +48,8 @@ class ShareUserStateInviteFailure extends ShareUserState {
 }
 
 class ShareUserStateInvited extends ShareUserState {
-  ShareUserStateInvited();
+  final List<RequestModel> requests;
+  ShareUserStateInvited(this.requests);
 }
 
 // ===========================Find Invited Users================================
@@ -65,4 +66,10 @@ class ShareUserStateFetchedPendingRequests extends ShareUserState {
   ShareUserStateFetchedPendingRequests({
     required this.requests,
   });
+}
+
+class ShareUserStateRemovedRequest extends ShareUserState {
+  final String requestId;
+
+  ShareUserStateRemovedRequest({required this.requestId});
 }

@@ -33,6 +33,11 @@ class SharedUserEventFetchInvitedUsers extends ShareUserEvent {
 
 class SharedUserEventFetchPendingRequests extends ShareUserEvent {
   final String listId;
-
   SharedUserEventFetchPendingRequests({required this.listId});
+}
+
+class ShareUserEventRemoveRequest extends ShareUserEvent {
+  final String requestId;
+
+  ShareUserEventRemoveRequest({required this.requestId});
 }

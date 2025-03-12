@@ -39,12 +39,12 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
           final int totalInvited =
               event.list.sharedUserIds.length + event.sharedUserIds.length;
 
-          await ShareRepo().sendInvite(
+          final requests = await ShareRepo().sendInvite(
             list: event.list,
             inviteUsers: event.sharedUserIds,
             totalInvited: totalInvited,
           );
-          emit(ShareUserStateInvited());
+          emit(ShareUserStateInvited(requests));
         } on AppException catch (e) {
           emit(ShareUserStateInviteFailure(exception: e));
         }
@@ -70,6 +70,18 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
         try {
           final requests = await ShareRepo().fetchPendingRequest(event.listId);
           emit(ShareUserStateFetchedPendingRequests(requests: requests));
+        } on AppException catch (e) {
+          debugPrint(e.message);
+        }
+      },
+    );
+
+    // on request withdraw
+    on<ShareUserEventRemoveRequest>(
+      (event, emit) async {
+        try {
+          await ShareRepo().removeRequest(event.requestId);
+          emit(ShareUserStateRemovedRequest(requestId: event.requestId));
         } on AppException catch (e) {
           debugPrint(e.message);
         }
