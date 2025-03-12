@@ -75,25 +75,16 @@ class ShareRepo {
     }
   }
 
-  Future<List<RequestModel>> fetchPendingRequest() async {
+  Future<List<RequestModel>> fetchPendingRequest(String listId) async {
     try {
       final data = await FirestoreService().fetchWithMultipleConditions(
-          collection: FIREBASE_COLLECTION_REQUESTS,
-          queries: [
-            QueryModel(
-                field: "sharedBy", value: user.uid, type: QueryType.isEqual),
-            QueryModel(field: "uid", value: false, type: QueryType.orderBy),
-            QueryModel(field: "", value: 10, type: QueryType.limit),
-            if (lastSnapDoc != null)
-              QueryModel(
-                  field: "",
-                  value: lastSnapDoc,
-                  type: QueryType.startAfterDocument),
-          ],
-          lastDocSnapshot: (last) {
-            lastSnapDoc = last;
-          });
-
+        collection: FIREBASE_COLLECTION_REQUESTS,
+        queries: [
+          QueryModel(
+              field: "sharedBy.uid", value: user.uid, type: QueryType.isEqual),
+          QueryModel(field: "listId", value: listId, type: QueryType.isEqual),
+        ],
+      );
       return data.map((e) => RequestModel.fromMap(e)).toList();
     } catch (e) {
       throw throwAppException(e: e);

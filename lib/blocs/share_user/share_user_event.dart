@@ -30,3 +30,9 @@ class SharedUserEventFetchInvitedUsers extends ShareUserEvent {
   final List<String> sharedUserIds;
   SharedUserEventFetchInvitedUsers({required this.sharedUserIds});
 }
+
+class SharedUserEventFetchPendingRequests extends ShareUserEvent {
+  final String listId;
+
+  SharedUserEventFetchPendingRequests({required this.listId});
+}

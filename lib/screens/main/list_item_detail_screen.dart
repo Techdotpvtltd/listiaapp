@@ -11,6 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/share_user/share_user_bloc.dart';
+import 'package:listi_shop/blocs/share_user/share_user_event.dart';
+import 'package:listi_shop/blocs/share_user/share_user_state.dart';
+import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
@@ -264,20 +268,34 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       UserRepo().currentUser.uid == widget.list.createdBy;
   bool isAddListLoading = false;
   late List<String> categories = ItemRepo().getCategories(listId: list.id);
+  late final List<RequestModel> _requests;
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ItemBloc, ItemState>(
-      listener: (context, state) {
-        if (state is ItemStateAdded ||
-            state is ItemStateFetchedAll ||
-            state is ItemStateDeleted ||
-            state is ItemStateUpdated) {
-          setState(() {
-            filteredItems();
-          });
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        // ===========================Share Bloc================================
+
+        BlocListener<ShareUserBloc, ShareUserState>(
+          listener: (ctx, state) {
+            if (state is ShareUserStateFetchedPendingRequests) {
+              _requests = state.requests;
+            }
+          },
+        ),
+
+        // ===========================Item Bloc================================
+        BlocListener<ItemBloc, ItemState>(listener: (context, state) {
+          if (state is ItemStateAdded ||
+              state is ItemStateFetchedAll ||
+              state is ItemStateDeleted ||
+              state is ItemStateUpdated) {
+            setState(() {
+              filteredItems();
+            });
+          }
+        }),
+      ],
       child: CustomScaffold(
         title: list.title,
         scaffoldkey: scaffoldKey,
@@ -332,9 +350,10 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
               height: 50,
               onTap: () {
                 if (isListCreater) {
-                  NavigationService.go(ShareUsersListScreen(
-                    invitedUsers: widget.list.sharedUsers,
-                  ));
+                  NavigationService.go(
+                    ShareUsersListScreen(
+                        list: widget.list, requests: _requests),
+                  );
                 }
               },
             ),
@@ -531,8 +550,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 
   List<DropdownMenuModel> getMenuItems() {
     List<DropdownMenuModel> items = [];
-    if (AppManager().isActiveSubscription) {
-      items.add(DropdownMenuModel(title: 'Add Person', icon: Icons.add));
+    if (AppManager().isActiveSubscription && isListCreater) {
+      items.add(DropdownMenuModel(title: 'Share List', icon: Icons.share));
     }
     if (isListCreater) {
       items.add(DropdownMenuModel(title: "Edit", icon: Icons.edit));
@@ -550,11 +569,12 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
   void initState() {
     super.initState();
 
+    triggerFetchPendingRequestsEvent();
     filteredItems();
   }
 
   void navigateToShareScreen() {
-    NavigationService.go(ShareScreen(list: list));
+    NavigationService.go(ShareScreen(list: list, requests: _requests));
   }
 
   void navigateToUpdateList() {
@@ -563,7 +583,7 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 
   void onMenuPressed({required String selectedMenu}) {
     switch (selectedMenu.toLowerCase()) {
-      case 'add person':
+      case 'share list':
         navigateToShareScreen();
         break;
       case 'edit':
@@ -572,6 +592,8 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       case 'delete':
         triggerDeleteListEvent();
         break;
+      case 'leave':
+        triggerLeftListEvent();
     }
   }
 
@@ -587,6 +609,16 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
         });
   }
 
+  void triggerLeftListEvent() {
+    CustomDialogs().alertBox(
+      title: "Leave List Confirmation",
+      positiveTitle: "Leave",
+      message:
+          "Are you sure you want to leave this list? You will no longer have access to this list and its items.",
+      onPositivePressed: () {},
+    );
+  }
+
   void triggerMarkCompleteItemEvent(ItemBloc bloc,
       {required String selectedItemId}) {
     bloc.add(ItemEventMarkComplete(itemId: selectedItemId));
@@ -594,5 +626,11 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
 
   void triggerMarkUnCompleteItemEvent(ItemBloc bloc, {required String itemId}) {
     bloc.add(ItemEventRemoveItemComplete(itemId: itemId));
+  }
+
+  void triggerFetchPendingRequestsEvent() {
+    context
+        .read<ShareUserBloc>()
+        .add(SharedUserEventFetchPendingRequests(listId: widget.list.id));
   }
 }

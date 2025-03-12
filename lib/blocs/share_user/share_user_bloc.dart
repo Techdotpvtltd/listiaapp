@@ -63,5 +63,17 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
         }
       },
     );
+
+    // on Pending Request fetch for a list
+    on<SharedUserEventFetchPendingRequests>(
+      (event, emit) async {
+        try {
+          final requests = await ShareRepo().fetchPendingRequest(event.listId);
+          emit(ShareUserStateFetchedPendingRequests(requests: requests));
+        } on AppException catch (e) {
+          debugPrint(e.message);
+        }
+      },
+    );
   }
 }

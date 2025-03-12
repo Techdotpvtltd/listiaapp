@@ -75,7 +75,7 @@ class RequestModel {
 
   @override
   String toString() {
-    return 'ShareListModel(uid: $uid, sharedBy: $sharedBy, sharedBy: $sharedBy, sharedTo: $sharedTo, listId: $listId, createdAt: $createdAt, listTitle: $listTitle, status: $status)';
+    return 'RequestModel(uid: $uid, sharedBy: $sharedBy, sharedBy: $sharedBy, sharedTo: $sharedTo, listId: $listId, createdAt: $createdAt, listTitle: $listTitle, status: $status)';
   }
 
   @override

@@ -5,6 +5,8 @@
 // Date:        30-04-24 15:11:39 -- Tuesday
 // Description:
 
+import 'package:listi_shop/models/request.dart';
+
 import '../../exceptions/app_exceptions.dart';
 import '../../models/user_model.dart';
 
@@ -54,4 +56,13 @@ class ShareUserStateFoundInvitedUsers extends ShareUserState {
   final List<UserModel> users;
 
   ShareUserStateFoundInvitedUsers({required this.users});
+}
+
+// ===========================Fetching Pendings================================
+class ShareUserStateFetchedPendingRequests extends ShareUserState {
+  final List<RequestModel> requests;
+
+  ShareUserStateFetchedPendingRequests({
+    required this.requests,
+  });
 }

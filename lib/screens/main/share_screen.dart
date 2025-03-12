@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
@@ -29,8 +30,9 @@ import '../../utils/dialogs/dialogs.dart';
 import '../../utils/extensions/navigation_service.dart';
 
 class ShareScreen extends StatefulWidget {
-  const ShareScreen({super.key, required this.list});
+  const ShareScreen({super.key, required this.list, required this.requests});
   final ListModel list;
+  final List<RequestModel> requests;
   @override
   State<ShareScreen> createState() => _ShareScreenState();
 }
@@ -58,6 +60,13 @@ class _ShareScreenState extends State<ShareScreen> {
       list: widget.list,
       sharedUserIds: inviteUsers,
     ));
+  }
+
+  @override
+  void initState() {
+    alreadyInvitedUsers
+        .addAll(widget.requests.map((e) => e.sharedTo.uid).toList());
+    super.initState();
   }
 
   @override
