@@ -31,7 +31,19 @@ class ListBloc extends Bloc<ListEvent, ListState> {
       (event, emit) async {
         try {
           emit(ListStateFetching());
-          await ListRepo().fetchLists();
+          // await ListRepo().fetchLists();
+          await ListRepo().fetchLiveLists(
+            onAllDataGet: () {
+              emit(ListStateFetched());
+            },
+            onData: () {
+              emit(ListStateFetched());
+            },
+            onError: (p0) {
+              debugPrint(p0.message.toString());
+              emit(ListStateFetchFailure(exception: p0));
+            },
+          );
           emit(ListStateFetched());
         } on AppException catch (e) {
           debugPrint(e.message.toString());

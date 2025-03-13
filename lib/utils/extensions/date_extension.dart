@@ -23,4 +23,16 @@ extension DateTimeExt on DateTime {
     }
     return dateToString("dd-MMM-yyyy");
   }
+
+  String formatDateToString() {
+    final days = DateTime.now().difference(this).inDays;
+    if (days == 0) {
+      return dateToString("hh:mm a");
+    }
+    if (days == 1) {
+      return "Yesterday at hh:mm a";
+    }
+
+    return dateToString("dd-MMM-yyyy hh:mm a");
+  }
 }

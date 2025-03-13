@@ -87,5 +87,20 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
         }
       },
     );
+
+    // on request accept
+    on<ShareUserEventAddUser>(
+      (event, emit) async {
+        try {
+          emit(ShareUserStateAccepting());
+          await ShareRepo()
+              .addUser(listId: event.listId, requestId: event.requestId);
+          emit(ShareUserStateAccepted());
+        } on AppException catch (e) {
+          debugPrint(e.message);
+          emit(ShareUserStateAcceptFailure(exception: e));
+        }
+      },
+    );
   }
 }

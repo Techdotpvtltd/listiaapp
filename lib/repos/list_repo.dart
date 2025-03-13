@@ -6,6 +6,7 @@
 // Description:
 
 import 'package:flutter/widgets.dart';
+import 'package:listi_shop/web_services/reference_model.dart';
 
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
@@ -307,6 +308,26 @@ class ListRepo {
             docId: listId,
             data: {"isCompleted": true});
       }
+    }
+  }
+
+  /// Return List
+  Future<ListModel?> fetchList({required String listId}) async {
+    try {
+      final data = await FirestoreService().fetch(refs: [
+        FirePathReference(
+            type: FIREReferenceType.collection,
+            path: FIREBASE_COLLECTION_LISTS),
+        FirePathReference(type: FIREReferenceType.doc, path: listId)
+      ]);
+
+      if (data != null) {
+        return ListModel.fromMap(data);
+      }
+
+      return null;
+    } catch (e) {
+      throw throwAppException(e: e);
     }
   }
 }

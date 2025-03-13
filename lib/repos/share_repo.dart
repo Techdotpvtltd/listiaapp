@@ -8,6 +8,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
+import 'package:listi_shop/repos/list_repo.dart';
 import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/web_services/firestore_services.dart';
 import 'package:listi_shop/web_services/query_model.dart';
@@ -80,6 +81,8 @@ class ShareRepo {
     }
   }
 
+  /// [fetchPendingRequest] will fetch all the pending requests to users
+  /// for a list.
   Future<List<RequestModel>> fetchPendingRequest(String listId) async {
     try {
       final data = await FirestoreService().fetchWithMultipleConditions(
@@ -104,6 +107,63 @@ class ShareRepo {
             path: FIREBASE_COLLECTION_REQUESTS),
         FirePathReference(type: FIREReferenceType.doc, path: requestId),
       ], docId: requestId);
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  /// [fetchRequestsFor] will fetch pending requests for a user
+  /// it will show on notification screen so that a user can aceept
+  /// or reject it
+  Future<List<RequestModel>> fetchRequestsFor() async {
+    try {
+      final data = await FirestoreService().fetchRecords(
+        refs: [
+          FirePathReference(
+              type: FIREReferenceType.collection,
+              path: FIREBASE_COLLECTION_REQUESTS),
+        ],
+        queries: [
+          QueryModel(
+              field: "sharedTo.uid", value: user.uid, type: QueryType.isEqual)
+        ],
+      );
+      return data.map((e) => RequestModel.fromMap(e)).toList();
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  Future<void> addUser(
+      {required String listId, required String requestId}) async {
+    try {
+      final userId = user.uid;
+
+      // Check list is existed
+      final list = await ListRepo().fetchList(listId: listId);
+      if (list == null) {
+        removeRequest(requestId);
+        throw DataExceptionNotFound(
+            message: "The requested list was not found.");
+      }
+
+      // Check if user already added
+      if (list.sharedUserIds.contains(userId)) {
+        removeRequest(requestId);
+        throw DataExceptionUnknown(
+            message: "You are already a member of this list.");
+      }
+      // add user to a list
+      await FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_LISTS,
+          docId: listId,
+          data: {
+            "sharedList": FieldValue.arrayUnion([userInfoModel.toMap()]),
+            "sharedUserIds": FieldValue.arrayUnion([userId]),
+          });
+
+      // remove request
+      removeRequest(requestId);
     } catch (e) {
       throw throwAppException(e: e);
     }

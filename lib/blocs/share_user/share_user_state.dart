@@ -73,3 +73,17 @@ class ShareUserStateRemovedRequest extends ShareUserState {
 
   ShareUserStateRemovedRequest({required this.requestId});
 }
+
+// ===========================Accept or Reject================================
+
+class ShareUserStateAccepting extends ShareUserState {
+  ShareUserStateAccepting({super.isLoading = true});
+}
+
+class ShareUserStateAcceptFailure extends ShareUserState {
+  final AppException exception;
+
+  ShareUserStateAcceptFailure({required this.exception});
+}
+
+class ShareUserStateAccepted extends ShareUserState {}

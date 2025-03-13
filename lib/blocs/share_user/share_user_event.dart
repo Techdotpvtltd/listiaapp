@@ -41,3 +41,10 @@ class ShareUserEventRemoveRequest extends ShareUserEvent {
 
   ShareUserEventRemoveRequest({required this.requestId});
 }
+
+class ShareUserEventAddUser extends ShareUserEvent {
+  final String listId;
+  final String requestId;
+
+  ShareUserEventAddUser({required this.listId, required this.requestId});
+}
