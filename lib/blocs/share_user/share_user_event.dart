@@ -48,3 +48,10 @@ class ShareUserEventAddUser extends ShareUserEvent {
 
   ShareUserEventAddUser({required this.listId, required this.requestId});
 }
+
+class ShareUserEventRemoveUsers extends ShareUserEvent {
+  final String listId;
+  final List<UserInfoModel> users;
+
+  ShareUserEventRemoveUsers({required this.listId, required this.users});
+}

@@ -15,9 +15,11 @@ import 'package:listi_shop/managers/app_manager.dart';
 import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
+import 'package:listi_shop/screens/components/custom_snack_bar.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
 import 'package:listi_shop/screens/main/share_screen.dart';
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
 
 import '../../models/user_model.dart';
 import '../../repos/user_repo.dart';
@@ -130,6 +132,7 @@ class _ShareUsersListScreenState extends State<ShareUsersListScreen> {
                 children: [
                   _InvitedUsers(
                     users: List.from(widget.list.sharedUsers),
+                    listId: widget.list.id,
                     didInviteButtonPressed: () {
                       NavigationService.go(ShareScreen(
                           list: widget.list, requests: widget.requests));
@@ -155,10 +158,12 @@ class _ShareUsersListScreenState extends State<ShareUsersListScreen> {
 
 class _InvitedUsers extends StatefulWidget {
   const _InvitedUsers(
-      {required this.users, required this.didInviteButtonPressed});
+      {required this.users,
+      required this.didInviteButtonPressed,
+      required this.listId});
   final List<UserInfoModel> users;
   final VoidCallback didInviteButtonPressed;
-
+  final String listId;
   @override
   State<_InvitedUsers> createState() => _InvitedUsersState();
 }
@@ -175,116 +180,155 @@ class _InvitedUsersState extends State<_InvitedUsers> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: users.isEmpty
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 30,
-                  children: [
-                    const Text(
-                      "No invitations sent yet. Start by inviting users to join.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
-                    CustomButton(
-                      title: "Send Invites",
-                      isEnabled: AppManager().isActiveSubscription,
-                      onPressed: widget.didInviteButtonPressed,
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.only(top: 10),
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final bool isSelected = removedUsers
-                            .indexWhere((e) => e.uid == users[index].uid) >
-                        -1;
+    return BlocListener<ShareUserBloc, ShareUserState>(
+      listener: (context, state) {
+        if (state is ShareUserStateRemoved ||
+            state is ShareUserStateRemoving ||
+            state is ShareUserStateRemoveFailure) {
+          setState(() {
+            isLoading = state.isLoading;
+          });
 
-                    final UserInfoModel user = users[index];
+          if (state is ShareUserStateRemoved) {
+            for (final u in removedUsers) {
+              widget.users.removeWhere((e) => e.uid == u.uid);
+              users.removeWhere((e) => e.uid == u.uid);
+            }
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 11),
-                      child: CustomInkWell(
-                        onTap: () {
-                          if (!isSelected) {
-                            final int index =
-                                users.indexWhere((e) => e.uid == user.uid);
-                            if (index > -1) {
-                              removedUsers.add(user);
-                            }
-                          } else {
-                            final int index = removedUsers
-                                .indexWhere((e) => e.uid == user.uid);
-                            if (index > -1) {
-                              removedUsers.removeAt(index);
-                            }
-                          }
-                          setState(() {});
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                /// Profile Widget
-                                AvatarWidget(
-                                  avatarUrl: user.avatar,
-                                  placeholderChar: user
-                                      .name.characters.firstOrNull
-                                      .toString(),
-                                  width: 38,
-                                  height: 38,
-                                  backgroundColor: AppTheme.primaryColor2,
-                                ),
-                                // Name Widget
-                                gapW10,
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      user.name,
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: AppTheme.titleColor1,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    gapH6,
-                                    Text(
-                                      user.phoneNumber == ""
-                                          ? user.email
-                                          : user.phoneNumber,
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: AppTheme.titleColor1,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            CustomCheckBox(isChecked: isSelected),
-                          ],
+            setState(() {});
+          }
+
+          if (state is ShareUserStateRemoveFailure) {
+            CustomSnackBar().error(state.exception.message);
+          }
+        }
+      },
+      child: Column(
+        children: [
+          Expanded(
+            child: users.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 30,
+                    children: [
+                      const Text(
+                        "No invitations sent yet. Start by inviting users to join.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
                         ),
                       ),
-                    );
-                  },
-                ),
-        ),
-        CustomButton(
-          isLoading: isLoading,
-          title: "Remove Selected",
-          isEnabled: removedUsers.isNotEmpty,
-          onPressed: () {},
-        )
-      ],
+                      CustomButton(
+                        title: "Send Invites",
+                        isEnabled: AppManager().isActiveSubscription,
+                        onPressed: widget.didInviteButtonPressed,
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(top: 10),
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final bool isSelected = removedUsers
+                              .indexWhere((e) => e.uid == users[index].uid) >
+                          -1;
+
+                      final UserInfoModel user = users[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 11),
+                        child: CustomInkWell(
+                          onTap: () {
+                            if (!isSelected) {
+                              final int index =
+                                  users.indexWhere((e) => e.uid == user.uid);
+                              if (index > -1) {
+                                removedUsers.add(user);
+                              }
+                            } else {
+                              final int index = removedUsers
+                                  .indexWhere((e) => e.uid == user.uid);
+                              if (index > -1) {
+                                removedUsers.removeAt(index);
+                              }
+                            }
+                            setState(() {});
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  /// Profile Widget
+                                  AvatarWidget(
+                                    avatarUrl: user.avatar,
+                                    placeholderChar: user
+                                        .name.characters.firstOrNull
+                                        .toString(),
+                                    width: 38,
+                                    height: 38,
+                                    backgroundColor: AppTheme.primaryColor2,
+                                  ),
+                                  // Name Widget
+                                  gapW10,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        user.name,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: AppTheme.titleColor1,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      gapH6,
+                                      Text(
+                                        user.phoneNumber == ""
+                                            ? user.email
+                                            : user.phoneNumber,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: AppTheme.titleColor1,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              CustomCheckBox(isChecked: isSelected),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          CustomButton(
+            isLoading: isLoading,
+            title: "Remove Selected",
+            isEnabled: removedUsers.isNotEmpty,
+            onPressed: () {
+              CustomDialogs().alertBox(
+                title: "Remove Users Confirmation",
+                message: "Are you sure to remove these users from the list?",
+                positiveTitle: "Yes, Remove",
+                onPositivePressed: () {
+                  triggerRemoveUsersEvent();
+                },
+              );
+            },
+          )
+        ],
+      ),
     );
+  }
+
+  void triggerRemoveUsersEvent() {
+    context.read<ShareUserBloc>().add(
+        ShareUserEventRemoveUsers(listId: widget.listId, users: removedUsers));
   }
 }
 

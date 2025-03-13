@@ -134,6 +134,7 @@ class ShareRepo {
     }
   }
 
+  /// [addUser] will add user to this list
   Future<void> addUser(
       {required String listId, required String requestId}) async {
     try {
@@ -164,6 +165,33 @@ class ShareRepo {
 
       // remove request
       removeRequest(requestId);
+    } catch (e) {
+      throw throwAppException(e: e);
+    }
+  }
+
+  /// [removeUsers] will remove list of users from the list
+  Future<void> removeUsers({
+    required String listId,
+    required List<UserInfoModel> users,
+  }) async {
+    try {
+      // Check list is existed
+      final list = await ListRepo().fetchList(listId: listId);
+      if (list == null) {
+        throw DataExceptionNotFound(
+            message: "The requested list was not found.");
+      }
+
+      final userIds = users.map((e) => e.uid).toList();
+      final usersMap = users.map((e) => e.toMap()).toList();
+      await FirestoreService().updateWithDocId(
+          path: FIREBASE_COLLECTION_LISTS,
+          docId: listId,
+          data: {
+            "sharedList": FieldValue.arrayRemove(usersMap),
+            "sharedUserIds": FieldValue.arrayRemove(userIds),
+          });
     } catch (e) {
       throw throwAppException(e: e);
     }

@@ -102,5 +102,20 @@ class ShareUserBloc extends Bloc<ShareUserEvent, ShareUserState> {
         }
       },
     );
+
+    // remove users from list
+    on<ShareUserEventRemoveUsers>(
+      (event, emit) async {
+        try {
+          emit(ShareUserStateRemoving());
+          await ShareRepo()
+              .removeUsers(listId: event.listId, users: event.users);
+          emit(ShareUserStateRemoved());
+        } on AppException catch (e) {
+          debugPrint(e.message);
+          emit(ShareUserStateRemoveFailure(exception: e));
+        }
+      },
+    );
   }
 }

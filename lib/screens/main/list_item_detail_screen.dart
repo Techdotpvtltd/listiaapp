@@ -619,7 +619,17 @@ class _ListItemDetailScreenState extends State<ListItemDetailScreen> {
       positiveTitle: "Leave",
       message:
           "Are you sure you want to leave this list? You will no longer have access to this list and its items.",
-      onPositivePressed: () {},
+      onPositivePressed: () {
+        final user = UserRepo().currentUser;
+        final userModel =
+            widget.list.sharedUsers.firstWhere((e) => e.uid == user.uid);
+        context.read<ShareUserBloc>().add(ShareUserEventRemoveUsers(
+              listId: widget.list.id,
+              users: [userModel],
+            ));
+
+        NavigationService.back();
+      },
     );
   }
 
