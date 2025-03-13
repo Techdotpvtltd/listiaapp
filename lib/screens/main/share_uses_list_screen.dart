@@ -47,6 +47,19 @@ class _ShareUsersListScreenState extends State<ShareUsersListScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       title: "Invited Users",
+      actions: [
+        if (AppManager().isActiveSubscription)
+          IconButton(
+            onPressed: () {
+              NavigationService.go(
+                  ShareScreen(list: widget.list, requests: widget.requests));
+            },
+            icon: const Icon(
+              Icons.share,
+              color: Colors.white,
+            ),
+          )
+      ],
       body: HVPadding(
         verticle: 30,
         child: Column(
