@@ -10,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:listi_shop/blocs/drawer_cubit/drawer_cubit.dart';
+import 'package:listi_shop/screens/components/avatar_widget.dart';
+import 'package:listi_shop/screens/components/custom_ink_well.dart';
 import 'package:listi_shop/screens/components/round_button.dart';
 import 'package:listi_shop/screens/main/components/item_list.dart';
 import 'package:listi_shop/screens/main/list_item_detail_screen.dart';
@@ -218,16 +220,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     /// Profile Button
                     Row(
                       children: [
-                        RoundButton(
-                          onTap: () {
-                            context.read<DrawerCubit>().openDrawer();
-                          },
-                          icon: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
+                        UserRepo().currentUser.avatar != ""
+                            ? CustomInkWell(
+                                onTap: () {
+                                  context.read<DrawerCubit>().openDrawer();
+                                },
+                                child: AvatarWidget(
+                                  width: 44,
+                                  height: 44,
+                                  avatarUrl: UserRepo().currentUser.avatar,
+                                ),
+                              )
+                            : RoundButton(
+                                onTap: () {
+                                  context.read<DrawerCubit>().openDrawer();
+                                },
+                                icon: const Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
                         gapW12,
 
                         /// Text Widgets
