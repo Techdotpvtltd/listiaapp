@@ -6,12 +6,12 @@ import 'package:listi_shop/utils/extensions/string_extension.dart';
 
 import '../../exceptions/data_exceptions.dart';
 import '../../exceptions/exception_parsing.dart';
-import '../../web_services/firestore_services.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../models/user_model.dart';
+import '../services/web_services/firestore_services.dart';
+import '../services/web_services/query_model.dart';
+import '../services/web_services/storage_services.dart';
 import '../utils/constants/firebase_collections.dart';
-import '../web_services/query_model.dart';
-import '../web_services/storage_services.dart';
 import 'validations/data_validations.dart';
 
 class UserRepo {

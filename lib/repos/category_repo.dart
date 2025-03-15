@@ -8,9 +8,9 @@
 import '../exceptions/exception_parsing.dart';
 import '../models/category_model.dart';
 import '../models/user_model.dart';
+import '../services/web_services/firestore_services.dart';
+import '../services/web_services/query_model.dart';
 import '../utils/constants/firebase_collections.dart';
-import '../web_services/firestore_services.dart';
-import '../web_services/query_model.dart';
 import 'list_repo.dart';
 import 'user_repo.dart';
 import 'validations/data_validations.dart';

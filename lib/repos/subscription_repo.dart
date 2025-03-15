@@ -5,6 +5,7 @@
 // Date:        28-05-24 16:49:07 -- Tuesday
 // Description:
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:listi_shop/repos/user_repo.dart';
@@ -13,10 +14,9 @@ import 'package:ntp/ntp.dart';
 import '../exceptions/exception_parsing.dart';
 import '../managers/app_manager.dart';
 import '../models/subscription_model.dart';
+import '../services/web_services/firestore_services.dart';
+import '../services/web_services/query_model.dart';
 import '../utils/constants/firebase_collections.dart';
-import '../web_services/firestore_services.dart';
-import '../web_services/query_model.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
 
 class SubscriptionRepo {
   // ===========================Singleton InStance================================

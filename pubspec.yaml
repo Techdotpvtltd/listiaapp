@@ -53,6 +53,11 @@ dependencies:
   dropdown_button2: ^2.3.9
   in_app_purchase: ^3.2.0
   ntp: ^2.0.0
+  timezone: ^0.10.0
+  flutter_local_notifications: ^18.0.1
+  firebase_messaging: ^15.2.4
+  shared_preferences: ^2.5.2
+  another_flushbar: ^1.12.30
 
 dev_dependencies:
   flutter_test:

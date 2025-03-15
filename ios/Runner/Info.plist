@@ -45,6 +45,8 @@
 	<string>This app requires access to the camera in order to capture images for your profile.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the photo library in order to upload images for your profile.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>ListiShop would like to access push notification permission to keep you updates.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

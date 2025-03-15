@@ -10,9 +10,9 @@ import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/repos/list_repo.dart';
 import 'package:listi_shop/repos/user_repo.dart';
-import 'package:listi_shop/web_services/firestore_services.dart';
-import 'package:listi_shop/web_services/query_model.dart';
-import 'package:listi_shop/web_services/reference_model.dart';
+import 'package:listi_shop/services/web_services/firestore_services.dart';
+import 'package:listi_shop/services/web_services/query_model.dart';
+import 'package:listi_shop/services/web_services/reference_model.dart';
 
 import '../exceptions/data_exceptions.dart';
 import '../exceptions/exception_parsing.dart';

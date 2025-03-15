@@ -33,6 +33,7 @@ import '../../models/list_model.dart';
 import '../../repos/item_repo.dart';
 import '../../repos/list_repo.dart';
 import '../../repos/user_repo.dart';
+import '../../services/notifications/notification_manager.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../../utils/dialogs/loaders.dart';
 import 'create_list_screen.dart';
@@ -81,6 +82,19 @@ class _HomeScreenState extends State<HomeScreen> {
     bloc.add(SubscriptionEventGetLast());
   }
 
+  void _handleNotifications() async {
+    await Future.wait([
+      notificationManager.ensureInitialized(), //Initialize Push Notification
+    ]);
+
+    /// This will load [NotificationScreen] when a app open through a notification
+    notificationManager.onClick(
+      (remote) {
+        NavigationService.go(const NotificationScreen());
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     triggerAdminFetchListEvent(context.read<ListBloc>());
     triggerGetLastSubscriptionEvent(context.read<SubscriptionBloc>());
     triggerSubscriptionListenerEvent(context.read<SubscriptionBloc>());
+    _handleNotifications();
   }
 
   @override

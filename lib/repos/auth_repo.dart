@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
 import '../exceptions/app_exceptions.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
+import '../services/web_services/firebase_auth_serivces.dart';
 import '../utils/utils.dart';
-import '../web_services/firebase_auth_serivces.dart';
 import 'category_repo.dart';
 import 'item_repo.dart';
 import 'list_repo.dart';

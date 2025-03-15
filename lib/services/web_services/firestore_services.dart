@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../exceptions/data_exceptions.dart';
+import '../../exceptions/data_exceptions.dart';
 import 'query_model.dart';
 import 'reference_model.dart';
 
