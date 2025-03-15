@@ -37,7 +37,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
       ? SubscriptionRepo().lastSubscription?.productId ?? ""
       : "";
   List<ProductDetails> productDetails = [];
-  bool isLoading = false;
+  bool isLoading = true;
   String selectedSubscriptionType = 'Household'; // Default selection
   ProductDetails? activeProduct;
 
