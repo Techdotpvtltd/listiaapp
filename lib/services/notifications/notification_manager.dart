@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../utils/dialogs/snack_bar.dart';
 import '../local_storage_services.dart';
 import 'push_notification_services.dart';
 
@@ -43,16 +46,20 @@ class NotificationManager {
   }
 
   Future<void> _subscribeToAllNotifications() async {
-    if (isAllSubscribed) {
-      return;
-    }
+    try {
+      if (isAllSubscribed) {
+        return;
+      }
 
-    if (enabledNotifications) {
-      await PushNotificationServices().subscribe(
-          forTopic: "user-${FirebaseAuth.instance.currentUser?.uid}");
-    }
+      if (enabledNotifications) {
+        await PushNotificationServices().subscribe(
+            forTopic: "user-${FirebaseAuth.instance.currentUser?.uid}");
+      }
 
-    await _localStorageServices.saveEnsureNotificationEnabled(true);
+      await _localStorageServices.saveEnsureNotificationEnabled(true);
+    } catch (e) {
+      log("_subscribeToAllNotifications", error: e);
+    }
   }
 
   Future<void> unscribeServices() async {
@@ -108,9 +115,9 @@ class NotificationManager {
 
       debugPrint("Notification Data: $data");
       // LocalNotificationServices.showNotification(message);
-      // CustomSnack.notification(message.notification?.title ?? "Notification",
-      //     message.notification?.body ?? "",
-      //     position: FlushbarPosition.TOP, durationnInSeconds: 3);
+      CustomSnack.notification(message.notification?.title ?? "Notification",
+          message.notification?.body ?? "",
+          position: FlushbarPosition.TOP, durationnInSeconds: 3);
     });
   }
 

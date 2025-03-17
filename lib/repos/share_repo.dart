@@ -10,6 +10,7 @@ import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/repos/list_repo.dart';
 import 'package:listi_shop/repos/user_repo.dart';
+import 'package:listi_shop/services/notifications/fire_notification.dart';
 import 'package:listi_shop/services/web_services/firestore_services.dart';
 import 'package:listi_shop/services/web_services/query_model.dart';
 import 'package:listi_shop/services/web_services/reference_model.dart';
@@ -75,6 +76,20 @@ class ShareRepo {
 
         requests.add(RequestModel.fromMap(data));
       }
+
+      for (final inviteUser in inviteUsers) {
+        FireNotification.fire(
+            title: "Join List Request",
+            description: "${user.name} has requested you to join ${list.title}",
+            topic: "user-${inviteUser.uid}",
+            additionalData: {
+              "listId": list.id,
+              "senderId": user.uid,
+              "senderName": user.name
+            },
+            type: 'invite');
+      }
+
       return requests;
     } catch (e) {
       throw throwAppException(e: e);
@@ -165,6 +180,12 @@ class ShareRepo {
 
       // remove request
       removeRequest(requestId);
+      FireNotification.fire(
+          title: "Request Accepted",
+          description:
+              "${user.name} has accepted your request for ${list.title}",
+          topic: "user-${list.createdBy}",
+          type: "invite-status");
     } catch (e) {
       throw throwAppException(e: e);
     }

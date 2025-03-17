@@ -14,7 +14,6 @@ import 'package:listi_shop/blocs/list/list_state.dart';
 import 'package:listi_shop/repos/category_repo.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_ink_well.dart';
-import 'package:listi_shop/screens/components/custom_snack_bar.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 
 import '../../blocs/item/item_bloc.dart';
@@ -25,6 +24,7 @@ import '../../repos/item_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
 import '../../utils/dialogs/dialogs.dart';
+import '../../utils/dialogs/snack_bar.dart';
 import 'components/custom_checkbox.dart';
 
 class CartScreen extends StatefulWidget {
@@ -123,7 +123,7 @@ class _CartScreenState extends State<CartScreen> {
               });
 
               if (state is ListStateMarkCompleteFailure) {
-                CustomSnackBar().error(state.exception.message);
+                CustomSnack.error("Oops", state.exception.message);
               }
 
               if (state is ListStateMarkCompleted) {

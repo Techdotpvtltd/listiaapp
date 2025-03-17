@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:listi_shop/services/local_storage_services.dart';
+import 'package:listi_shop/services/notifications/push_notification_services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../exceptions/app_exceptions.dart';
@@ -76,10 +78,13 @@ class AuthRepo {
 
   /// Perform Logout
   Future<void> performLogout() async {
+    PushNotificationServices()
+        .unsubscribe(forTopic: "user-${UserRepo().currentUser.uid}");
     FirebaseAuthService().logoutUser();
-    UserRepo().clearAll();
     ListRepo().reset();
     ItemRepo().reset();
+    LocalStorageServices().clearAll();
+    UserRepo().clearAll();
     CategoryRepo().reset();
   }
 

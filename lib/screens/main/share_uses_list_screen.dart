@@ -15,7 +15,6 @@ import 'package:listi_shop/managers/app_manager.dart';
 import 'package:listi_shop/models/list_model.dart';
 import 'package:listi_shop/models/request.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
-import 'package:listi_shop/screens/components/custom_snack_bar.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/components/custom_checkbox.dart';
 import 'package:listi_shop/screens/main/share_screen.dart';
@@ -25,6 +24,7 @@ import '../../models/user_model.dart';
 import '../../repos/user_repo.dart';
 import '../../utils/constants/app_theme.dart';
 import '../../utils/constants/constants.dart';
+import '../../utils/dialogs/snack_bar.dart';
 import '../../utils/extensions/navigation_service.dart';
 import '../components/avatar_widget.dart';
 import '../components/custom_button.dart';
@@ -212,7 +212,7 @@ class _InvitedUsersState extends State<_InvitedUsers> {
           }
 
           if (state is ShareUserStateRemoveFailure) {
-            CustomSnackBar().error(state.exception.message);
+            CustomSnack.error("Oops", state.exception.message);
           }
         }
       },

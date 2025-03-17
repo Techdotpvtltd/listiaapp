@@ -14,6 +14,7 @@ import 'package:listi_shop/screens/components/custom_title_textfiled.dart';
 import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/dialogs/snack_bar.dart';
 
 import '../../blocs/category/category_bloc.dart';
 import '../../blocs/category/category_event.dart';
@@ -26,7 +27,6 @@ import '../../models/item_model.dart';
 import '../../repos/category_repo.dart';
 import '../../utils/dialogs/dialogs.dart';
 import '../components/custom_dropdown.dart';
-import '../components/custom_snack_bar.dart';
 
 class AddItemScreen extends StatefulWidget {
   final String listId;
@@ -112,7 +112,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
 
               if (state is ItemStateAdded) {
-                CustomSnackBar().success("Item Added");
+                CustomSnack.success("Success", "Item added to list");
                 nameController.clear();
                 amountController.clear();
                 quantityController.text = "1";
@@ -123,7 +123,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
 
               if (state is ItemStateUpdated) {
-                CustomSnackBar().success("Item Updated");
+                CustomSnack.success("Success", "Item updated");
               }
             }
           },

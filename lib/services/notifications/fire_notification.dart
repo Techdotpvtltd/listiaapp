@@ -18,19 +18,22 @@ class FireNotification {
     required String type,
     Map<String, dynamic>? additionalData,
   }) async {
-    const String fcmUrl = 'https://sendnotification-pw4v2bw3fa-uc.a.run.app';
+    const String fcmUrl =
+        'https://c9trp80947.execute-api.eu-north-1.amazonaws.com/default';
 
     // Payload for the notification
     final Map<String, dynamic> notification = {
-      "topic": topic,
-      'notification': {
-        'title': title,
-        'body': description,
+      "message": {
+        "topic": topic,
+        'notification': {
+          'title': title,
+          'body': description,
+        },
+        'data': {
+          'type': type,
+          "additionalData": jsonEncode(additionalData),
+        }
       },
-      'data': {
-        'type': type,
-        "payload": jsonEncode(additionalData),
-      }
     };
 
     debugPrint(notification.toString());

@@ -5,6 +5,8 @@
 // Date:        03-04-24 19:11:54 -- Wednesday
 // Description:
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -85,16 +87,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleNotifications() async {
-    await Future.wait([
-      notificationManager.ensureInitialized(), //Initialize Push Notification
-    ]);
+    try {
+      await Future.wait([
+        notificationManager.ensureInitialized(), //Initialize Push Notification
+      ]);
 
-    /// This will load [NotificationScreen] when a app open through a notification
-    notificationManager.onClick(
-      (remote) {
-        NavigationService.go(const NotificationScreen());
-      },
-    );
+      /// This will load [NotificationScreen] when a app open through a notification
+      notificationManager.onClick(
+        (remote) {
+          NavigationService.go(const NotificationScreen());
+        },
+      );
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   @override
