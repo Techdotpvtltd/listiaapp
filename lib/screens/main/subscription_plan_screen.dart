@@ -5,6 +5,7 @@
 // Date:        05-04-24 10:38:04 -- Friday
 // Description:
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +16,10 @@ import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/payment_method_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/dialogs/loaders.dart';
+import 'package:listi_shop/utils/dialogs/snack_bar.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
 import '../../blocs/subscription/subscription_bloc.dart';
@@ -113,6 +117,54 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                 context.read<DrawerCubit>().openDrawer();
               }
             : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text.rich(
+            TextSpan(
+              text: "By purchasing this subscription, you agree to our ",
+              children: [
+                TextSpan(
+                  text: "Privacy Policy",
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      launchUrl(Uri.parse(
+                          "https://pro-akbar.github.io/fitness-terms-page/listi-privacy.html"));
+                    },
+                  style: const TextStyle(
+                    color: AppTheme.primaryColor1,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppTheme.primaryColor1,
+                  ),
+                ),
+                const TextSpan(text: " & "),
+                TextSpan(
+                  text: "Terms and Conditions",
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      launchUrl(Uri.parse(
+                          "https://pro-akbar.github.io/fitness-terms-page/listi-terms.html"));
+                    },
+                  style: const TextStyle(
+                    color: AppTheme.primaryColor1,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppTheme.primaryColor1,
+                  ),
+                ),
+                const TextSpan(
+                    text:
+                        ".Your subscription will automatically renew unless canceled at least 24 hours before the end of the current period."),
+              ],
+            ),
+            style: const TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w400,
+              fontSize: 11,
+            ),
+          ),
+        ),
         body: HVPadding(
           verticle: 10,
           child: SingleChildScrollView(
@@ -209,6 +261,22 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      CustomInkWell(
+                        onTap: () async {
+                          Loader().show();
+                          await Future.delayed(const Duration(seconds: 2));
+                          Loader().hide();
+                          CustomSnack.error("Sorry",
+                              "No active subscription found to restore.");
+                        },
+                        child: const Text(
+                          "Restore",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
 

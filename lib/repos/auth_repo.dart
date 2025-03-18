@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:listi_shop/services/local_storage_services.dart';
 import 'package:listi_shop/services/notifications/push_notification_services.dart';
@@ -8,6 +9,8 @@ import '../exceptions/app_exceptions.dart';
 import '../exceptions/auth_exceptions.dart';
 import '../exceptions/exception_parsing.dart';
 import '../services/web_services/firebase_auth_serivces.dart';
+import '../services/web_services/firestore_services.dart';
+import '../utils/constants/firebase_collections.dart';
 import '../utils/utils.dart';
 import 'category_repo.dart';
 import 'item_repo.dart';
@@ -37,6 +40,14 @@ class AuthRepo {
     } catch (e) {
       throw throwAppException(e: e);
     }
+  }
+
+  Future<void> performDeletion() async {
+    debugPrint("Deleting UserData from firebase...");
+    await FirestoreService().deleteOld(
+        collection: FIREBASE_COLLECTION_USER, docId: currentUser()?.uid ?? '');
+    debugPrint("Deleting Account from firebase...");
+    FirebaseAuthService().deleteAccount();
   }
 
 //  RegisteredAUser ====================================

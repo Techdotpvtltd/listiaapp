@@ -25,6 +25,10 @@ class FirebaseAuthService {
     return credential;
   }
 
+  Future<void> deleteAccount() async {
+    FirebaseAuth.instance.currentUser?.delete();
+  }
+
   Future<void> sendEmailVerifcationLink() async {
     _auth.currentUser?.sendEmailVerification();
   }

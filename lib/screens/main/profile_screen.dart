@@ -8,6 +8,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:listi_shop/blocs/auth/auth_bloc.dart';
+import 'package:listi_shop/blocs/auth/auth_event.dart';
 import 'package:listi_shop/blocs/user/user_bloc.dart';
 import 'package:listi_shop/blocs/user/user_state.dart';
 import 'package:listi_shop/models/user_model.dart';
@@ -15,18 +17,15 @@ import 'package:listi_shop/repos/user_repo.dart';
 import 'package:listi_shop/screens/components/avatar_widget.dart';
 import 'package:listi_shop/screens/components/custom_button.dart';
 import 'package:listi_shop/screens/components/custom_scaffold.dart';
-import 'package:listi_shop/screens/components/paddings.dart';
 import 'package:listi_shop/screens/main/edit_profile_screen.dart';
 import 'package:listi_shop/screens/onboarding/forgot_screen.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
+import 'package:listi_shop/utils/dialogs/dialogs.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../blocs/drawer_cubit/drawer_cubit.dart';
-import 'package:listi_shop/utils/dialogs/dialogs.dart';
-import 'package:listi_shop/blocs/auth/auth_bloc.dart';
-import 'package:listi_shop/blocs/auth/auth_event.dart';
-
 import 'subscription_plan_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -150,30 +149,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      body: HorizontalPadding(
+      body: Padding(
+        padding: const EdgeInsets.only(
+          left: 29,
+          right: 29,
+          top: 40,
+          bottom: 30,
+        ),
         child: Column(
+          spacing: 10,
           children: [
-            SizedBox(height: SCREEN_HEIGHT * 0.08),
             _CustomButton(
               "Change password",
               () {
                 NavigationService.go(const ForgotPasswordScreen());
               },
             ),
-            gapH20,
             _CustomButton(
               "Subscription",
               () {
                 NavigationService.go(const SubscriptionPlanScreen());
               },
             ),
+            _CustomButton(
+              "Privacy Policy",
+              () {
+                launchUrlString(
+                    "https://pro-akbar.github.io/fitness-terms-page/listi-privacy.html");
+              },
+            ),
+            _CustomButton(
+              "Terms and Conditions",
+              () {
+                launchUrlString(
+                    "https://pro-akbar.github.io/fitness-terms-page/listi-terms.html");
+              },
+            ),
             const Spacer(),
+            CustomButton(
+                title: "Delete Account",
+                backgroundColor: Colors.red,
+                onPressed: () {
+                  CustomDialogs().deleteBox(
+                    title: "Confirm Deleting Account?",
+                    message:
+                        "Deleting your account will remove all of your information from our database. This cannot be undone.",
+                    onPositivePressed: () {
+                      context.read<AuthBloc>().add(AuthEventPerformDeletion());
+                    },
+                  );
+                }),
             CustomButton(
                 title: "Logout",
                 onPressed: () {
                   trigegrLogoutEvent(context.read<AuthBloc>());
                 }),
-            gapH30,
           ],
         ),
       ),

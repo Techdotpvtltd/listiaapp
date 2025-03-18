@@ -20,6 +20,7 @@ import 'package:listi_shop/utils/constants/app_assets.dart';
 import 'package:listi_shop/utils/constants/app_theme.dart';
 import 'package:listi_shop/utils/constants/constants.dart';
 import 'package:listi_shop/utils/extensions/navigation_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../blocs/auth/auth_event.dart';
 import '../../utils/dialogs/dialogs.dart';
@@ -179,10 +180,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const Color(0xFF414141).withValues(alpha: 0.67),
                         ),
                         TextSpan(
-                          text: "I agree to Terms ",
+                          text: "I agree to ",
                           children: [
                             TextSpan(
-                              text: "and",
+                              text: "Terms and Conditions",
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  launchUrl(Uri.parse(
+                                      "https://pro-akbar.github.io/fitness-terms-page/listi-terms.html"));
+                                },
+                              style: const TextStyle(
+                                color: AppTheme.primaryColor1,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                                decorationColor: AppTheme.primaryColor1,
+                              ),
+                            ),
+                            TextSpan(
+                              text: " & ",
                               style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 11,
@@ -191,12 +206,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             TextSpan(
-                              text: " condition & privacy.",
+                              text: "Privacy Policy",
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  NavigationService.offAll(const LoginScreen());
+                                  launchUrl(Uri.parse(
+                                      "https://pro-akbar.github.io/fitness-terms-page/listi-privacy.html"));
                                 },
-                            )
+                              style: const TextStyle(
+                                color: AppTheme.primaryColor1,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                                decorationColor: AppTheme.primaryColor1,
+                              ),
+                            ),
                           ],
                         ),
                       ),

@@ -5,8 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../exceptions/app_exceptions.dart';
 import '../../exceptions/auth_exceptions.dart';
 import '../../repos/auth_repo.dart';
+import '../../repos/category_repo.dart';
+import '../../repos/item_repo.dart';
+import '../../repos/list_repo.dart';
 import '../../repos/user_repo.dart';
 import '../../screens/onboarding/splash_screen.dart';
+import '../../services/local_storage_services.dart';
+import '../../services/notifications/push_notification_services.dart';
+import '../../services/web_services/firebase_auth_serivces.dart';
 import '../../utils/extensions/navigation_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -24,6 +30,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await AuthRepo().performLogout();
         NavigationService.offAll(const SplashScreen());
         emit(AuthStateInitialize());
+      },
+    );
+
+    // On Delete request  ============================================
+    on<AuthEventPerformDeletion>(
+      (event, emit) async {
+        await AuthRepo().performDeletion();
+        PushNotificationServices()
+            .unsubscribe(forTopic: "user-${UserRepo().currentUser.uid}");
+        FirebaseAuthService().logoutUser();
+        ListRepo().reset();
+        ItemRepo().reset();
+        LocalStorageServices().clearAll();
+        UserRepo().clearAll();
+        CategoryRepo().reset();
+        emit(AuthStateInitialize());
+        NavigationService.offAll(const SplashScreen());
       },
     );
 
