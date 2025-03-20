@@ -6,6 +6,7 @@
 // Description:
 
 import 'dart:developer';
+import 'dart:io' show Platform;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -16,7 +17,6 @@ import '../../managers/subscription_manager.dart';
 import '../../repos/subscription_repo.dart';
 import 'subscription_event.dart';
 import 'subscription_state.dart';
-import 'dart:io' show Platform;
 
 class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
   SubscriptionBloc() : super(SubscriptionStateInitial()) {
@@ -119,7 +119,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
               'household_monthly',
               'household_annual',
               'business_monthly',
-              'business_annual'
+              'business_annual:business365'
             },
             onNotFoundIDs: (ids) {
               for (final String id in ids) {
