@@ -168,6 +168,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
         body: HVPadding(
           verticle: 10,
           child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 80),
             child: isLoading
                 ? const Center(
                     child: CircularProgressIndicator(),
@@ -349,12 +350,14 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        product.title,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
-                                          color: AppTheme.titleColor1,
+                                      Flexible(
+                                        child: Text(
+                                          product.title,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 16,
+                                            color: AppTheme.titleColor1,
+                                          ),
                                         ),
                                       ),
                                       Text(

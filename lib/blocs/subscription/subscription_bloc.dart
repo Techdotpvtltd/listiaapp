@@ -119,7 +119,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
               'household_monthly',
               'household_annual',
               'business_monthly',
-              'business_annual:business365'
+              'business_annual'
             },
             onNotFoundIDs: (ids) {
               for (final String id in ids) {
